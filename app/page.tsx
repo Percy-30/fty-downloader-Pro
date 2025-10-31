@@ -69,7 +69,7 @@ export default function Home() {
 
             {/* Aquí también podemos mostrar un banner o video dentro del contenido */}
             <div className="mt-8">
-              <VideoRewardsAds/>
+              <VideoRewardsAds position='left'/>
             </div>
           </div>
 
