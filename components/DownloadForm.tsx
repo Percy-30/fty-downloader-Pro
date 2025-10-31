@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { processVideoUrl, simulateVideoProcessing } from '@/lib/video-service'
+import { simulateVideoProcessing, downloadVideo } from '@/lib/video-service'
 import { isValidFacebookUrl } from '@/lib/validators'
 
 export default function DownloadForm() {
@@ -22,10 +22,10 @@ export default function DownloadForm() {
 
     try {
       // ✅ USAR ESTA LÍNEA para servicio real (cuando tengas backend)
-      // const videoInfo = await processVideoUrl(url)
+       const videoInfo = await downloadVideo(url)
       
       // ✅ USAR ESTA LÍNEA para simulación (mientras configuras backend)
-      const videoInfo = await simulateVideoProcessing(url)
+      //const videoInfo = await simulateVideoProcessing(url)
       
       // Mostrar resultados en la consola para debug
       console.log('Video info obtenida:', videoInfo)
