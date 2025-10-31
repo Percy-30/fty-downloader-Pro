@@ -1,7 +1,7 @@
 {
   "name": "app-descargador",
   "version": "1.0.0",
-  "description": "Descargador de Facebook - Next.js 15",
+  "description": "FTYDownloader Pro - Next.js 15",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -17,8 +17,8 @@
     "next": "^15.5.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwind-merge": "^2.0.0",
-    "yt-dlp-exec": "^1.0.2",
+    "tailwind-merge": "^2.0.0", 
+    "yt-dlp-wrap": "^1.1.0",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
@@ -31,3 +31,5 @@
     "typescript": "^5.0.0"
   }
 }
+
+
