@@ -1,0 +1,10 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "cd downloader-api && npm install"
+  },
+  "deploy": {
+    "startCommand": "cd downloader-api && npm start",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
