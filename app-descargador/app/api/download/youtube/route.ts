@@ -1,72 +1,92 @@
+// app/api/download/youtube/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 
-// AGREGAR VALOR POR DEFECTO (igual que Facebook)
-const RAILWAY_API_URL = process.env.RAILWAY_API_URL || 'http://localhost:3001'
+const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8000'
 
 export async function POST(request: NextRequest) {
   try {
-    let { url } = await request.json()
+    let { url, quality = "1080p", format_type = "mp4" } = await request.json()
 
-    // AGREGAR LOGS DE DIAGNÓSTICO
-    console.log('🔧 DIAGNÓSTICO YouTube:')
-    console.log('🔧 RAILWAY_API_URL:', RAILWAY_API_URL)
-    console.log('🔧 process.env.RAILWAY_API_URL:', process.env.RAILWAY_API_URL)
-    console.log('📥 YouTube Info Request:', url)
+    console.log('🔗 [YouTube] Conectando con API Python:', PYTHON_API_URL)
 
-    if (!RAILWAY_API_URL) {
-      console.error('❌ ERROR: RAILWAY_API_URL no configurada para YouTube')
+    if (!PYTHON_API_URL) {
       return NextResponse.json(
         { error: 'Servidor de descargas no configurado' },
         { status: 500 }
       )
     }
 
-    // Limpiar URL (mantener tu lógica)
+    // Validación
+    const youtubeRegex = /^https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)/
+    if (!url || !youtubeRegex.test(url)) {
+      return NextResponse.json(
+        { error: 'URL de YouTube inválida' },
+        { status: 400 }
+      )
+    }
+
+    // Limpiar URL
     const cleanYoutubeUrl = (url: string): string => {
       const index = url.indexOf('&')
       return index !== -1 ? url.substring(0, index) : url
     }
     url = cleanYoutubeUrl(url)
 
-    // Validación (mantener tu lógica)
-    const youtubeRegex = /^https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)/
-  
-    if (!url || !youtubeRegex.test(url)) {
-      return NextResponse.json(
-        { error: 'URL de YouTube inválida. Ejemplo: https://www.youtube.com/watch?v=ABC123' },
-        { status: 400 }
-      )
-    }
-
-    console.log('🔗 Proxy YouTube -> Railway:', url)
-    console.log('🚀 Haciendo fetch a:', `${RAILWAY_API_URL}/api/youtube/info`)
-
-    // Proxy a Railway
-    const response = await fetch(`${RAILWAY_API_URL}/api/youtube/info`, {
+    console.log('🚀 [YouTube] Llamando a API Python:', `${PYTHON_API_URL}/api/v1/youtube/download`)
+    console.log('🎯 [YouTube] Parámetros:', { quality, format_type })
+    
+    // ✅ CORREGIDO: Usar el endpoint correcto
+    const response = await fetch(`${PYTHON_API_URL}/api/v1/youtube/download`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ 
+        url, 
+        quality,
+        format_type
+        // ❌ NO incluir combine_audio_video - no existe en tu backend
+      }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      console.error('❌ Error desde Railway YouTube:', data)
+      const errorData = await response.json()
+      console.error('❌ [YouTube] Error desde API Python:', errorData)
+      
+      let errorMessage = 'Error en el servidor de descargas'
+      if (errorData.detail) {
+        errorMessage = errorData.detail
+      } else if (errorData.message) {
+        errorMessage = errorData.message
+      }
+
       return NextResponse.json(
-        { error: data.error || 'Error en el servidor de descargas' },
+        { error: errorMessage },
         { status: response.status }
       )
     }
 
-    console.log('✅ YouTube info obtenida desde Railway')
+    const data = await response.json()
+    console.log('✅ [YouTube] Respuesta exitosa')
+    console.log('📊 [YouTube] Datos recibidos:', {
+      title: data.title,
+      platform: data.platform,
+      formats_count: data.formats?.length || 0,
+      statistics: data.statistics
+    })
+
     return NextResponse.json(data)
 
   } catch (error: any) {
-    console.error('💥 Proxy YouTube error:', error)
+    console.error('💥 [YouTube] Error en proxy:', error)
+    
+    let errorMessage = 'Error de conexión con el servidor'
+    if (error.message?.includes('fetch failed')) {
+      errorMessage = 'No se pudo conectar con el servidor de descargas'
+    }
+
     return NextResponse.json(
-      { error: 'Error de conexión con el servidor: ' + error.message },
+      { error: errorMessage },
       { status: 500 }
     )
   }

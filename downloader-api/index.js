@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
       health: 'GET /health'
     }
   });
-});
+});a
 
 app.listen(PORT, () => {
   console.log(`🚀 Downloader API running on port ${PORT}`);
