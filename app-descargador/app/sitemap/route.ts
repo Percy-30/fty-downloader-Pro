@@ -1,3 +1,4 @@
+// app/sitemap/route.ts
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -15,7 +16,9 @@ export async function GET() {
     status: 200,
     headers: {
       'Content-Type': 'application/xml',
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate',
+      'Content-Length': Buffer.byteLength(sitemap).toString(),
+      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+      'Content-Disposition': 'inline; filename="sitemap.xml"',
     },
   });
 }
