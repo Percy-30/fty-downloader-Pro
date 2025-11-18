@@ -1,4 +1,3 @@
-// app/sitemap/route.ts
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -10,15 +9,32 @@ export async function GET() {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://fty-downloader-pro.vercel.app/facebook</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fty-downloader-pro.vercel.app/youtube</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fty-downloader-pro.vercel.app/tiktok</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>`;
 
   return new NextResponse(sitemap, {
     status: 200,
     headers: {
       'Content-Type': 'application/xml',
-      'Content-Length': Buffer.byteLength(sitemap).toString(),
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
-      'Content-Disposition': 'inline; filename="sitemap.xml"',
+      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate',
+      'Content-Disposition': 'inline',
     },
   });
 }
