@@ -1,7 +1,9 @@
 // app/api/download/youtube/combined/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 
-const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000'
+//const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000'
+const PYTHON_API_URL = (process.env.PYTHON_API_URL || 'http://localhost:8000').replace(/\/$/, '')
+
 
 // ✅ FUNCIÓN PARA MAPEAR CALIDAD A ITAG
 const mapQualityToItag = (quality: string) => {
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     console.log('🎬 [YouTube Combined] Iniciando descarga combinada...')
     console.log('📋 [YouTube Combined] Parámetros:', { url, quality, format_type })
-    console.log('🔗 [YouTube Combined] Backend URL:', PYTHON_BACKEND_URL)
+    console.log('🔗 [YouTube Combined] Backend URL:', PYTHON_API_URL)
 
     // ✅ VALIDACIÓN MEJORADA DE URL
     if (!url) {
@@ -62,7 +64,7 @@ export async function POST(request: NextRequest) {
     const cleanedUrl = cleanUrl(url)
     console.log('🔧 [YouTube Combined] URL limpia:', cleanedUrl)
 
-    if (!PYTHON_BACKEND_URL) {
+    if (!PYTHON_API_URL) {
       return NextResponse.json(
         { error: 'Servidor de descargas no configurado' },
         { status: 500 }
@@ -85,7 +87,7 @@ export async function POST(request: NextRequest) {
       const timeoutId = setTimeout(() => controller.abort(), 300000) // 5 minutos
 
       // ✅ ENDPOINT CORRECTO DEL BACKEND
-      const combineResponse = await fetch(`${PYTHON_BACKEND_URL}/api/v1/combiner/youtube/combine`, {
+      const combineResponse = await fetch(`${PYTHON_API_URL}/api/v1/combiner/youtube/combine`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +199,7 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
     console.log('🔄 [YouTube Combined] Usando estrategia frontend...')
     
     // Obtener información del video primero
-    const infoResponse = await fetch(`${PYTHON_BACKEND_URL}/api/v1/youtube/download`, {
+    const infoResponse = await fetch(`${PYTHON_API_URL}/api/v1/youtube/download`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -410,6 +412,6 @@ export async function GET(request: NextRequest) {
       format_type: 'string (optional) - mp4, webm, etc.'
     },
     supported_qualities: ['144p', '240p', '360p', '480p', '720p', '1080p', '1440p', '2160p', '4k'],
-    backend_url: PYTHON_BACKEND_URL
+    backend_url: PYTHON_API_URL
   })
 }
