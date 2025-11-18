@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fty-downloader-pro.vercel.app/sitemap
+Sitemap: https://fty-downloader-pro.vercel.app/sitemap.xml
