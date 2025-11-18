@@ -1,8 +1,11 @@
 {
   "version": 2,
   "buildCommand": "cd app-descargador && npm run build",
-  "devCommand": "cd app-descargador && npm run dev", 
+  "devCommand": "cd app-descargador && npm run dev",
   "installCommand": "cd app-descargador && npm install",
   "framework": "nextjs",
-  "outputDirectory": "app-descargador/.next"
+  "outputDirectory": "app-descargador/.next",
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/sitemap" }
+  ]
 }
