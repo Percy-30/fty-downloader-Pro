@@ -17,7 +17,36 @@ const nextConfig = {
     ]
   },
   images: {
-    domains: ['images.unsplash.com', 'picsum.photos', 'via.placeholder.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+    ],
+  },
+  // AGREGAR estas redirecciones para manejar www
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.fty-downloader-pro.vercel.app',
+          },
+        ],
+        destination: 'https://fty-downloader-pro.vercel.app/:path*',
+        permanent: true,
+      },
+    ]
   },
 }
 
