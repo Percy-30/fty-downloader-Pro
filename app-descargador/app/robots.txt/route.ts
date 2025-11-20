@@ -7,7 +7,7 @@ Disallow: /_next/
 Disallow: /private/
 
 # Sitemaps
-Sitemap: https://fty-downloader-pro.vercel.app/sitemap.xml`
+Sitemap: https://ftydownloader.com/sitemap.xml`  // 🆕 NUEVO DOMINIO
 
   return new Response(robots, {
     status: 200,

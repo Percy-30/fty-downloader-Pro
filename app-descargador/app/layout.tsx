@@ -13,6 +13,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ftydownloader.com'), // 🆕 NUEVO - IMPORTANTE
   title: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube y TikTok',
   description:
     'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad. Compatible con móviles y PC.',
@@ -23,7 +24,7 @@ facebook downloader, convertir video a mp3, descargar mp4 gratis,
 bajar videos online, descargar videos para celular, youtube mp4,
 tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua, descargar videos tiktok sin marca de agua
 `,
-  authors: [{ name: 'ATP DEV', url: 'https://fty-downloader-pro.vercel.app/' }],
+  authors: [{ name: 'ATP DEV', url: 'https://ftydownloader.com/' }], // 🆕 ACTUALIZADO
   creator: 'ATP DEV',
   publisher: 'FTY Downloader',
   manifest: '/manifest.json',
@@ -31,11 +32,11 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     title: 'FTY Downloader Pro - Descarga Videos Gratis',
     description:
       'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
-    url: 'https://fty-downloader-pro.vercel.app/',
+    url: 'https://ftydownloader.com/', // 🆕 ACTUALIZADO
     siteName: 'FTY Downloader',
     images: [
       {
-        url: 'https://fty-downloader-pro.vercel.app/icons/icon-512.png',
+        url: 'https://ftydownloader.com/icons/icon-512.png', // 🆕 ACTUALIZADO
         width: 512,
         height: 512,
       },
@@ -48,7 +49,19 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     title: 'FTY Downloader Pro - Descarga Videos Gratis',
     description:
       'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
-    images: ['https://fty-downloader-pro.vercel.app/icons/icon-512.png'],
+    images: ['https://ftydownloader.com/icons/icon-512.png'], // 🆕 ACTUALIZADO
+  },
+  // 🆕 NUEVO - Para mejor SEO
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 
@@ -64,6 +77,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+        
+        {/* 🆕 NUEVO - Canonical URL para SEO */}
+        <link rel="canonical" href="https://ftydownloader.com/" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
