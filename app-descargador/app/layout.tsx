@@ -81,18 +81,49 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Canonical URL para SEO */}
         <link rel="canonical" href="https://ftydownloader.com/" />
         
-        {/* 🆕 NUEVO: Meta tags MANUALES para asegurar que funcione */}
+        {/* Meta tags MANUALES para asegurar que funcione */}
         <meta property="og:image" content="https://ftydownloader.com/images/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok" />
         <meta property="og:image:type" content="image/png" />
         
-        {/* 🆕 Twitter Card Manual */}
+        {/* Twitter Card Manual */}
         <meta name="twitter:image" content="https://ftydownloader.com/images/og-image.png" />
         
-        {/* 🆕 Favicon */}
+        {/* Favicon */}
         <link rel="icon" href="/icons/icon-192.png" />
+        
+        {/* 🆕 SCHEMA MARKUP PARA ACELERAR INDEXACIÓN DE IMAGEN */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication", 
+              "name": "FTY Downloader Pro",
+              "description": "Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad",
+              "url": "https://ftydownloader.com/",
+              "image": "https://ftydownloader.com/images/og-image.png",
+              "screenshot": "https://ftydownloader.com/images/og-image.png",
+              "applicationCategory": "UtilityApplication",
+              "operatingSystem": "All",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "author": {
+                "@type": "Organization",
+                "name": "ATP DEV"
+              }
+            })
+          }}
+        />
+        
+        {/* 🆕 META ADICIONAL PARA BÚSQUEDAS */}
+        <meta name="thumbnail" content="https://ftydownloader.com/images/og-image.png" />
+        <link rel="image_src" href="https://ftydownloader.com/images/og-image.png" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
