@@ -14,9 +14,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ftydownloader.com'),
-  title: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube y TikTok',
+  // 🎯 TITLE PERFECTO - Combina ambas ideas
+  title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
+  
   description:
-    'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad. Compatible con móviles y PC.',
+  '🚀 Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro. ✅ Videos MP4, audio MP3, sin marca de agua. Compatible con PC y móviles.',
   keywords: `
 descargar videos gratis, descargar videos de YouTube, youtube downloader,
 descargar videos de TikTok, tiktok downloader, descargar videos de Facebook,
@@ -29,10 +31,9 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
   publisher: 'FTY Downloader',
   manifest: '/manifest.json',
   openGraph: {
-    title: 'FTY Downloader Pro - Descarga Videos Gratis',
+    title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
     description:
-      'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
-    url: 'https://ftydownloader.com/',
+      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.',    url: 'https://ftydownloader.com/',
     siteName: 'FTY Downloader',
     images: [
       {
@@ -47,9 +48,9 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FTY Downloader Pro - Descarga Videos Gratis',
+    title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
     description:
-      'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
+      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.',
     images: ['https://ftydownloader.com/images/og-image.png'],
   },
   robots: {
