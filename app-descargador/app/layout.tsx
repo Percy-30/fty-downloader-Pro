@@ -1,4 +1,4 @@
-﻿// app/layout.tsx
+﻿// app/layout.tsx - ARCHIVO COMPLETO ACTUALIZADO
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ftydownloader.com'), // 🆕 NUEVO - IMPORTANTE
+  metadataBase: new URL('https://ftydownloader.com'),
   title: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube y TikTok',
   description:
     'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad. Compatible con móviles y PC.',
@@ -24,7 +24,7 @@ facebook downloader, convertir video a mp3, descargar mp4 gratis,
 bajar videos online, descargar videos para celular, youtube mp4,
 tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua, descargar videos tiktok sin marca de agua
 `,
-  authors: [{ name: 'ATP DEV', url: 'https://ftydownloader.com/' }], // 🆕 ACTUALIZADO
+  authors: [{ name: 'ATP DEV', url: 'https://ftydownloader.com/' }],
   creator: 'ATP DEV',
   publisher: 'FTY Downloader',
   manifest: '/manifest.json',
@@ -32,11 +32,11 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     title: 'FTY Downloader Pro - Descarga Videos Gratis',
     description:
       'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
-    url: 'https://ftydownloader.com/', // 🆕 ACTUALIZADO
+    url: 'https://ftydownloader.com/',
     siteName: 'FTY Downloader',
     images: [
       {
-        url: 'https://ftydownloader.com/images/og-image.png', // 🆕 ACTUALIZADO
+        url: 'https://ftydownloader.com/images/og-image.png',
         width: 1200,
         height: 630,
         alt: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok',
@@ -50,9 +50,8 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     title: 'FTY Downloader Pro - Descarga Videos Gratis',
     description:
       'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
-    images: ['https://ftydownloader.com/images/og-image.png'], // 🆕 ACTUALIZADO
+    images: ['https://ftydownloader.com/images/og-image.png'],
   },
-  // 🆕 NUEVO - Para mejor SEO
   robots: {
     index: true,
     follow: true,
@@ -79,8 +78,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
         
-        {/* 🆕 NUEVO - Canonical URL para SEO */}
+        {/* Canonical URL para SEO */}
         <link rel="canonical" href="https://ftydownloader.com/" />
+        
+        {/* 🆕 NUEVO: Meta tags MANUALES para asegurar que funcione */}
+        <meta property="og:image" content="https://ftydownloader.com/images/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok" />
+        <meta property="og:image:type" content="image/png" />
+        
+        {/* 🆕 Twitter Card Manual */}
+        <meta name="twitter:image" content="https://ftydownloader.com/images/og-image.png" />
+        
+        {/* 🆕 Favicon */}
+        <link rel="icon" href="/icons/icon-192.png" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
