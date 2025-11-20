@@ -36,9 +36,10 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     siteName: 'FTY Downloader',
     images: [
       {
-        url: 'https://ftydownloader.com/icons/icon-512.png', // 🆕 ACTUALIZADO
-        width: 512,
-        height: 512,
+        url: '/images/og-image.png', // 🆕 ACTUALIZADO
+        width: 1200,
+        height: 630,
+        alt: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok',
       },
     ],
     locale: 'es_PE',
@@ -49,7 +50,7 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     title: 'FTY Downloader Pro - Descarga Videos Gratis',
     description:
       'Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y seguro con FTY Downloader.',
-    images: ['https://ftydownloader.com/icons/icon-512.png'], // 🆕 ACTUALIZADO
+    images: ['/images/og-image.png'], // 🆕 ACTUALIZADO
   },
   // 🆕 NUEVO - Para mejor SEO
   robots: {
