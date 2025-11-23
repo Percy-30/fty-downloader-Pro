@@ -1,6 +1,19 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "installCommand": "npm install", 
-  "outputDirectory": ".next"
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "ftydownloader.com"
+        }
+      ],
+      "destination": "https://www.ftydownloader.com",
+      "permanent": true
+    }
+  ]
 }
