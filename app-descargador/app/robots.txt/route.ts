@@ -7,7 +7,7 @@ Disallow: /_next/
 Disallow: /private/
 
 # Sitemaps
-Sitemap: https://ftydownloader.com/sitemap.xml`  // 🆕 NUEVO DOMINIO
+Sitemap: https://www.ftydownloader.com/sitemap.xml`  // 🚨 CAMBIA A WWW
 
   return new Response(robots, {
     status: 200,
