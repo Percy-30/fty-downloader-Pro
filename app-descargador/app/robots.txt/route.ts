@@ -9,7 +9,7 @@ Disallow: /_next/data/
 Disallow: /private/
 
 # Sitemaps
-Sitemap: https://www.ftydownloader.com/sitemap.xml`
+Sitemap: https://ftydownloader.com/sitemap.xml`
 
   return new Response(robots, {
     status: 200,
