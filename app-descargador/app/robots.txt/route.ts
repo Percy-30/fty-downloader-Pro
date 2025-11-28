@@ -2,12 +2,14 @@
 export async function GET() {
   const robots = `User-agent: *
 Allow: /
+Allow: /_next/static/
+Allow: /_next/image/
 Disallow: /api/
-Disallow: /_next/
+Disallow: /_next/data/
 Disallow: /private/
 
 # Sitemaps
-Sitemap: https://www.ftydownloader.com/sitemap.xml`  // 🚨 CAMBIA A WWW
+Sitemap: https://www.ftydownloader.com/sitemap.xml`
 
   return new Response(robots, {
     status: 200,
