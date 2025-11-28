@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ftydownloader.com'),
+  metadataBase: new URL('https://www.ftydownloader.com'),
   // 🎯 TITLE PERFECTO - Combina ambas ideas
   title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
 
@@ -26,18 +26,18 @@ facebook downloader, convertir video a mp3, descargar mp4 gratis,
 bajar videos online, descargar videos para celular, youtube mp4,
 tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua, descargar videos tiktok sin marca de agua
 `,
-  authors: [{ name: 'ATP DEV', url: 'https://ftydownloader.com/' }],
+  authors: [{ name: 'ATP DEV', url: 'https://www.ftydownloader.com/' }],
   creator: 'ATP DEV',
   publisher: 'FTY Downloader',
   manifest: '/manifest.json',
   openGraph: {
     title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
     description:
-      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.', url: 'https://ftydownloader.com/',
+      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.', url: 'https://www.ftydownloader.com/',
     siteName: 'FTY Downloader',
     images: [
       {
-        url: 'https://ftydownloader.com/images/og-image.png',
+        url: 'https://www.ftydownloader.com/images/og-image.png',
         width: 1200,
         height: 630,
         alt: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok',
@@ -51,7 +51,7 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
     description:
       'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.',
-    images: ['https://ftydownloader.com/images/og-image.png'],
+    images: ['https://www.ftydownloader.com/images/og-image.png'],
   },
   robots: {
     index: true,
@@ -83,17 +83,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
 
         {/* Canonical URL para SEO */}
-        <link rel="canonical" href="https://ftydownloader.com/" />
+        <link rel="canonical" href="https://www.ftydownloader.com/" />
 
         {/* Meta tags MANUALES para asegurar que funcione */}
-        <meta property="og:image" content="https://ftydownloader.com/images/og-image.png" />
+        <meta property="og:image" content="https://www.ftydownloader.com/images/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok" />
         <meta property="og:image:type" content="image/png" />
 
         {/* Twitter Card Manual */}
-        <meta name="twitter:image" content="https://ftydownloader.com/images/og-image.png" />
+        <meta name="twitter:image" content="https://www.ftydownloader.com/images/og-image.png" />
 
         {/* Favicon */}
         <link rel="icon" href="/icons/icon-192.png" />
@@ -107,9 +107,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@type": "WebApplication",
               "name": "FTY Downloader Pro",
               "description": "Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad",
-              "url": "https://ftydownloader.com/",
-              "image": "https://ftydownloader.com/images/og-image.png",
-              "screenshot": "https://ftydownloader.com/images/og-image.png",
+              "url": "https://www.ftydownloader.com/",
+              "image": "https://www.ftydownloader.com/images/og-image.png",
+              "screenshot": "https://www.ftydownloader.com/images/og-image.png",
               "applicationCategory": "UtilityApplication",
               "operatingSystem": "All",
               "offers": {
@@ -126,8 +126,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
 
         {/* 🆕 META ADICIONAL PARA BÚSQUEDAS */}
-        <meta name="thumbnail" content="https://ftydownloader.com/images/og-image.png" />
-        <link rel="image_src" href="https://ftydownloader.com/images/og-image.png" />
+        <meta name="thumbnail" content="https://www.ftydownloader.com/images/og-image.png" />
+        <link rel="image_src" href="https://www.ftydownloader.com/images/og-image.png" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
