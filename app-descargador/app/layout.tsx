@@ -16,9 +16,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://ftydownloader.com'),
   // 🎯 TITLE PERFECTO - Combina ambas ideas
   title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
-  
+
   description:
-  '🚀 Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro. ✅ Videos MP4, audio MP3, sin marca de agua. Compatible con PC y móviles.',
+    '🚀 Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro. ✅ Videos MP4, audio MP3, sin marca de agua. Compatible con PC y móviles.',
   keywords: `
 descargar videos gratis, descargar videos de YouTube, youtube downloader,
 descargar videos de TikTok, tiktok downloader, descargar videos de Facebook,
@@ -33,7 +33,7 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
   openGraph: {
     title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
     description:
-      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.',    url: 'https://ftydownloader.com/',
+      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.', url: 'https://ftydownloader.com/',
     siteName: 'FTY Downloader',
     images: [
       {
@@ -70,6 +70,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        {/* Meta requerida por AdSense para verificar tu dominio */}
+        <meta name="google-adsense-account" content="ca-pub-5414009811868137" />
+
         {/* Google AdSense */}
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5414009811868137"
@@ -78,30 +81,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
-        
+
         {/* Canonical URL para SEO */}
         <link rel="canonical" href="https://ftydownloader.com/" />
-        
+
         {/* Meta tags MANUALES para asegurar que funcione */}
         <meta property="og:image" content="https://ftydownloader.com/images/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok" />
         <meta property="og:image:type" content="image/png" />
-        
+
         {/* Twitter Card Manual */}
         <meta name="twitter:image" content="https://ftydownloader.com/images/og-image.png" />
-        
+
         {/* Favicon */}
         <link rel="icon" href="/icons/icon-192.png" />
-        
+
         {/* 🆕 SCHEMA MARKUP PARA ACELERAR INDEXACIÓN DE IMAGEN */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebApplication", 
+              "@type": "WebApplication",
               "name": "FTY Downloader Pro",
               "description": "Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad",
               "url": "https://ftydownloader.com/",
@@ -121,7 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             })
           }}
         />
-        
+
         {/* 🆕 META ADICIONAL PARA BÚSQUEDAS */}
         <meta name="thumbnail" content="https://ftydownloader.com/images/og-image.png" />
         <link rel="image_src" href="https://ftydownloader.com/images/og-image.png" />
