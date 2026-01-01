@@ -13,7 +13,7 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     id: 1,
-    title: "Cómo Descargar Videos de YouTube en 2025: Guía Completa",
+    title: "Cómo Descargar Videos de YouTube en 2026: Guía Completa",
     excerpt: "Aprende los métodos más efectivos y seguros para descargar videos de YouTube en diferentes calidades y formatos.",
     content: `
       <h2>¿Por qué descargar videos de YouTube?</h2>
@@ -35,9 +35,9 @@ export const blogPosts: BlogPost[] = [
       <h2>Aspectos Legales Importantes</h2>
       <p>Es crucial respetar los derechos de autor. Solo descarga contenido que seas el propietario o tengas permiso para usar.</p>
     `,
-    date: "2025-01-15",
+    date: "2026-01-15",
     readTime: "8 min",
-    slug: "descargar-videos-youtube-2025",
+    slug: "descargar-videos-youtube-2026",
     category: "Tutoriales",
     image: "/images/blog/youtube-downloader.png"
   },
@@ -70,7 +70,7 @@ export const blogPosts: BlogPost[] = [
       <p>• Verifica que el video sea público para poder descargarlo</p>
       <p>• Respeta la privacidad y derechos de los creadores</p>
     `,
-    date: "2025-11-12",
+    date: "2026-11-12",
     readTime: "6 min",
     slug: "descargar-videos-facebook-guia",
     category: "Tutoriales",
@@ -78,7 +78,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 3,
-    title: "Descargar Videos de TikTok Sin Marca de Agua: Métodos 2025",
+    title: "Descargar Videos de TikTok Sin Marca de Agua: Métodos 2026",
     excerpt: "Aprende a descargar videos de TikTok en alta calidad y sin la marca de agua de la aplicación.",
     content: `
       <h2>El Desafío de TikTok</h2>
@@ -107,7 +107,7 @@ export const blogPosts: BlogPost[] = [
       <h2>Aspectos Éticos</h2>
       <p>Recuerda que el contenido de TikTok pertenece a sus creadores. Siempre da crédito cuando uses contenido de otros.</p>
     `,
-    date: "2025-01-10",
+    date: "2026-01-10",
     readTime: "7 min",
     slug: "descargar-tiktok-sin-marca-agua",
     category: "Tutoriales",
@@ -140,7 +140,7 @@ export const blogPosts: BlogPost[] = [
       <p><strong>Para edición:</strong> MOV o AVI</p>
       <p><strong>Para almacenamiento:</strong> MKV</p>
     `,
-    date: "2025-01-08",
+    date: "2026-01-08",
     readTime: "10 min",
     slug: "formatos-video-mp4-avi-mkv",
     category: "Tecnología",
@@ -149,7 +149,7 @@ export const blogPosts: BlogPost[] = [
   {
     id: 5,
     title: "Las 5 Mejores Herramientas para Creadores de Contenido",
-    excerpt: "Descubre las herramientas esenciales que todo creador de contenido debería conocer en 2025.",
+    excerpt: "Descubre las herramientas esenciales que todo creador de contenido debería conocer en 2026.",
     content: `
       <h2>El Kit del Creador Moderno</h2>
       <p>Ser creador de contenido requiere más que talento. Necesitas las herramientas adecuadas.</p>
@@ -174,7 +174,7 @@ export const blogPosts: BlogPost[] = [
       <h2>5. Almacenamiento en la Nube</h2>
       <p>Google Drive, Dropbox o OneDrive para respaldos.</p>
     `,
-    date: "2025-01-05",
+    date: "2026-01-05",
     readTime: "9 min",
     slug: "mejores-herramientas-creadores-contenido",
     category: "Herramientas",
@@ -182,7 +182,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 6,
-    title: "Cómo Optimizar Videos para Redes Sociales en 2025",
+    title: "Cómo Optimizar Videos para Redes Sociales en 2026",
     excerpt: "Guía completa con las especificaciones técnicas ideales para cada plataforma social.",
     content: `
       <h2>La Importancia de la Optimización</h2>
@@ -210,7 +210,7 @@ export const blogPosts: BlogPost[] = [
       <p>• Añade subtítulos</p>
       <p>• Optimiza las miniaturas</p>
     `,
-    date: "2025-01-03",
+    date: "2026-01-03",
     readTime: "8 min",
     slug: "optimizar-videos-redes-sociales",
     category: "Optimización",
@@ -243,7 +243,7 @@ export const blogPosts: BlogPost[] = [
       <p>• Usa contenido con licencia Creative Commons</p>
       <p>• Crea contenido original cuando sea posible</p>
     `,
-    date: "2025-01-01",
+    date: "2026-01-01",
     readTime: "11 min",
     slug: "derechos-autor-creadores-digitales",
     category: "Legal",
@@ -277,7 +277,7 @@ export const blogPosts: BlogPost[] = [
       <p>• Extraer audio de tutoriales</p>
       <p>• Archivar podcasts favoritos</p>
     `,
-    date: "2025-12-28",
+    date: "2026-12-28",
     readTime: "5 min",
     slug: "convertir-video-mp3-metodos",
     category: "Tutoriales",
@@ -306,7 +306,7 @@ export const blogPosts: BlogPost[] = [
       <h2>Contactar Soporte</h2>
       <p>Si los problemas persisten, contáctanos a través de nuestra página de contacto.</p>
     `,
-    date: "2025-12-25",
+    date: "2026-12-25",
     readTime: "6 min",
     slug: "solucion-problemas-descarga-videos",
     category: "Soporte",
@@ -338,18 +338,18 @@ export const blogPosts: BlogPost[] = [
       <h2>Nuestra Recomendación</h2>
       <p>Descarga el contenido importante para ti, usa streaming para explorar.</p>
     `,
-    date: "2025-12-22",
+    date: "2026-12-22",
     readTime: "7 min",
     slug: "ventajas-descargar-videos-vs-streaming",
     category: "Análisis",
     image: "/images/blog/streaming-vs-descarga.png"
   },
   // AGREGAR ESTOS 5 ARTÍCULOS NUEVOS al array existente
-{
-  id: 11,
-  title: "Cómo Descargar Videos en Calidad 4K: Guía Definitiva 2025",
-  excerpt: "Aprende a descargar videos en ultra alta definición y qué herramientas soportan resoluciones 4K y 8K.",
-  content: `
+  {
+    id: 11,
+    title: "Cómo Descargar Videos en Calidad 4K: Guía Definitiva 2026",
+    excerpt: "Aprende a descargar videos en ultra alta definición y qué herramientas soportan resoluciones 4K y 8K.",
+    content: `
     <h2>La Era del 4K en Video</h2>
     <p>El contenido 4K se ha vuelto estándar en plataformas como YouTube. Descargar en esta calidad ofrece una experiencia visual superior.</p>
     
@@ -378,17 +378,17 @@ export const blogPosts: BlogPost[] = [
     <h2>Consideraciones de Almacenamiento</h2>
     <p>Los videos 4K ocupan significativamente más espacio. Planifica tu almacenamiento accordingly.</p>
   `,
-  date: "2025-12-20",
-  readTime: "9 min",
-  slug: "descargar-videos-4k-guia",
-  category: "Calidad",
-  image: "/images/blog/calidad-4k.png"
-},
-{
-  id: 12,
-  title: "Las Mejores Alternativas a FTYDownloader Pro en 2025",
-  excerpt: "Análisis comparativo de las principales herramientas de descarga de video disponibles en el mercado.",
-  content: `
+    date: "2026-12-20",
+    readTime: "9 min",
+    slug: "descargar-videos-4k-guia",
+    category: "Calidad",
+    image: "/images/blog/calidad-4k.png"
+  },
+  {
+    id: 12,
+    title: "Las Mejores Alternativas a FTYDownloader Pro en 2026",
+    excerpt: "Análisis comparativo de las principales herramientas de descarga de video disponibles en el mercado.",
+    content: `
     <h2>El Mercado de las Herramientas de Descarga</h2>
     <p>Existen múltiples opciones para descargar videos. Te ayudamos a elegir la mejor para tus necesidades.</p>
     
@@ -417,17 +417,17 @@ export const blogPosts: BlogPost[] = [
     <h2>Nuestra Recomendación</h2>
     <p>Para la mayoría de usuarios, FTYDownloader Pro ofrece el mejor balance entre funcionalidad y facilidad de uso.</p>
   `,
-  date: "2025-12-18",
-  readTime: "8 min",
-  slug: "alternativas-ftydownloader-pro",
-  category: "Comparativas",
-  image: "/images/blog/alternativas-comparacion.png"
-},
-{
-  id: 13,
-  title: "Cómo Descargar Listas de Reproducción Completas de YouTube",
-  excerpt: "Guía paso a paso para descargar playlists enteras de YouTube de manera eficiente y organizada.",
-  content: `
+    date: "2026-12-18",
+    readTime: "8 min",
+    slug: "alternativas-ftydownloader-pro",
+    category: "Comparativas",
+    image: "/images/blog/alternativas-comparacion.png"
+  },
+  {
+    id: 13,
+    title: "Cómo Descargar Listas de Reproducción Completas de YouTube",
+    excerpt: "Guía paso a paso para descargar playlists enteras de YouTube de manera eficiente y organizada.",
+    content: `
     <h2>El Valor de las Listas de Reproducción</h2>
     <p>Las playlists contienen contenido organizado temáticamente. Descargarlas completas ahorra tiempo considerable.</p>
     
@@ -464,17 +464,17 @@ export const blogPosts: BlogPost[] = [
     <p>• Verificar el espacio disponible antes de empezar</p>
     <p>• Hacer pausas entre playlists muy grandes</p>
   `,
-  date: "2025-12-15",
-  readTime: "10 min",
-  slug: "descargar-listas-reproduccion-youtube",
-  category: "Tutoriales",
-  image: "/images/blog/listas-reproduccion.png"
-},
-{
-  id: 14,
-  title: "Seguridad en Herramientas de Descarga: Cómo Evitar Virus y Malware",
-  excerpt: "Guía esencial para proteger tu dispositivo al usar herramientas de descarga de video online.",
-  content: `
+    date: "2026-12-15",
+    readTime: "10 min",
+    slug: "descargar-listas-reproduccion-youtube",
+    category: "Tutoriales",
+    image: "/images/blog/listas-reproduccion.png"
+  },
+  {
+    id: 14,
+    title: "Seguridad en Herramientas de Descarga: Cómo Evitar Virus y Malware",
+    excerpt: "Guía esencial para proteger tu dispositivo al usar herramientas de descarga de video online.",
+    content: `
     <h2>Los Riesgos de la Descarga de Videos</h2>
     <p>No todas las herramientas de descarga son seguras. Aprende a identificar y evitar riesgos potenciales.</p>
     
@@ -515,17 +515,17 @@ export const blogPosts: BlogPost[] = [
     <p>3. Cambiar contraseñas si ingresaste datos</p>
     <p>4. Reportar el sitio si es claramente malicioso</p>
   `,
-  date: "2025-12-12",
-  readTime: "11 min",
-  slug: "seguridad-herramientas-descarga",
-  category: "Seguridad",
-  image: "/images/blog/seguridad-digital.png"
-},
-{
-  id: 15,
-  title: "El Futuro de la Descarga de Videos: Tendencias 2025-2026",
-  excerpt: "Análisis de las tendencias emergentes en tecnología de descarga de video y qué esperar en el futuro.",
-  content: `
+    date: "2026-12-12",
+    readTime: "11 min",
+    slug: "seguridad-herramientas-descarga",
+    category: "Seguridad",
+    image: "/images/blog/seguridad-digital.png"
+  },
+  {
+    id: 15,
+    title: "El Futuro de la Descarga de Videos: Tendencias 2026-2026",
+    excerpt: "Análisis de las tendencias emergentes en tecnología de descarga de video y qué esperar en el futuro.",
+    content: `
     <h2>Evolución del Mercado de Descarga</h2>
     <p>La tecnología de descarga de videos está en constante evolución. Estas son las tendencias que marcarán el futuro.</p>
     
@@ -563,10 +563,10 @@ export const blogPosts: BlogPost[] = [
     <h2>Conclusión</h2>
     <p>El futuro de la descarga de videos es brillante, con mejoras continuas en velocidad, calidad y seguridad.</p>
   `,
-  date: "2025-12-10",
-  readTime: "12 min",
-  slug: "futuro-descarga-videos-tendencias",
-  category: "Tecnología",
-  image: "/images/blog/futuro-tecnologia.png"
-}
+    date: "2026-12-10",
+    readTime: "12 min",
+    slug: "futuro-descarga-videos-tendencias",
+    category: "Tecnología",
+    image: "/images/blog/futuro-tecnologia.png"
+  }
 ]
