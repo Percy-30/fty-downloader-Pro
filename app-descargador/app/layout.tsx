@@ -64,6 +64,11 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
       'max-snippet': -1,
     },
   },
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/favicon.ico',
+    apple: '/icons/icon-192.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -95,8 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Twitter Card Manual */}
         <meta name="twitter:image" content="https://www.ftydownloader.com/images/og-image.png" />
 
-        {/* Favicon */}
-        <link rel="icon" href="/icons/icon-192.png" />
+
 
         {/* 🆕 SCHEMA MARKUP PARA ACELERAR INDEXACIÓN DE IMAGEN */}
         <script
