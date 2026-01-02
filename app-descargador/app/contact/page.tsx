@@ -53,8 +53,8 @@ export default function ContactPage() {
                 <span className="text-2xl mr-4">📧</span>
                 <div>
                   <h3 className="font-semibold text-lg text-blue-800">Email General</h3>
-                  <a href="mailto:contact@ftydownloader.com" className="text-blue-600 hover:underline">
-                    contact@ftydownloader.com
+                  <a href="mailto:atp.dev000@gmail.com" className="text-blue-600 hover:underline">
+                    atp.dev000@gmail.com
                   </a>
                   <p className="text-sm text-gray-600 mt-1">Respuesta en 24-48 horas</p>
                 </div>
@@ -67,8 +67,8 @@ export default function ContactPage() {
                 <span className="text-2xl mr-4">🛠️</span>
                 <div>
                   <h3 className="font-semibold text-lg text-green-800">Soporte Técnico</h3>
-                  <a href="mailto:support@ftydownloader.com" className="text-green-600 hover:underline">
-                    support@ftydownloader.com
+                  <a href="mailto:s.atpdev000@gmail.com" className="text-green-600 hover:underline">
+                    s.atpdev000@gmail.com
                   </a>
                   <p className="text-sm text-gray-600 mt-1">Ayuda con problemas técnicos</p>
                 </div>
@@ -81,8 +81,8 @@ export default function ContactPage() {
                 <span className="text-2xl mr-4">🤝</span>
                 <div>
                   <h3 className="font-semibold text-lg text-purple-800">Colaboraciones y Negocios</h3>
-                  <a href="mailto:business@ftydownloader.com" className="text-purple-600 hover:underline">
-                    business@ftydownloader.com
+                  <a href="mailto:atp.dev000@gmail.com" className="text-purple-600 hover:underline">
+                    atp.dev000@gmail.com
                   </a>
                   <p className="text-sm text-gray-600 mt-1">Propuestas comerciales o de partnership</p>
                 </div>
@@ -95,8 +95,8 @@ export default function ContactPage() {
                 <span className="text-2xl mr-4">🐛</span>
                 <div>
                   <h3 className="font-semibold text-lg text-red-800">Reportar Errores</h3>
-                  <a href="mailto:bugs@ftydownloader.com" className="text-red-600 hover:underline">
-                    bugs@ftydownloader.com
+                  <a href="mailto:s.atpdev000@gmail.com" className="text-red-600 hover:underline">
+                    s.atpdev000@gmail.com
                   </a>
                   <p className="text-sm text-gray-600 mt-1">Informa sobre bugs o mejoras</p>
                 </div>
