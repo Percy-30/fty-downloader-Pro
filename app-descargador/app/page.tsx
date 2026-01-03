@@ -14,12 +14,36 @@ import BannerAds from '@/components/Layout/BannerAds'
 import SidebarAds from '@/components/Layout/SidebarAds'
 import VideoRewardsAds from '@/components/Layout/VideoRewardsAds'
 import { usePlatform } from '@/hooks/usePlatform'
-import BottomNav from '@/components/AppLayout/BottomNav'
+// import BottomNav from '@/components/AppLayout/BottomNav' // Replaced by TopNav
+import TopNav from '@/components/AppLayout/TopNav'
 import AppHeader from '@/components/AppLayout/AppHeader'
+import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial'
+import { useEffect } from 'react'
 
 export default function Home() {
   const { isNative } = usePlatform()
   const [activePlatform, setActivePlatform] = useState<'facebook' | 'youtube' | 'tiktok'>('facebook')
+  const { showInterstitial } = useAdMobInterstitial()
+
+  // 📺 ANUNCIO AL INICIAR APP (App Open Ad simulado con Interstitial)
+  useEffect(() => {
+    if (isNative) {
+      const timer = setTimeout(() => {
+        showInterstitial()
+      }, 3000) // Pequeño delay para asegurar carga
+      return () => clearTimeout(timer)
+    }
+  }, [isNative, showInterstitial])
+
+  // 🔄 CAMBIAR PLATAFORMA + ANUNCIO
+  const handlePlatformChange = async (platform: 'facebook' | 'youtube' | 'tiktok') => {
+    // 1. Mostrar anuncio
+    if (isNative) {
+      await showInterstitial()
+    }
+    // 2. Cambiar pestaña
+    setActivePlatform(platform)
+  }
 
   const renderPlatform = () => {
     switch (activePlatform) {
@@ -37,8 +61,11 @@ export default function Home() {
   // 📱 MODO APP NATIVA
   if (isNative) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20 pt-16">
+
+
+      <div className="min-h-screen bg-gray-50 pb-safe pt-28"> {/* pt-28 para dar espacio a Header + TopNav */}
         <AppHeader />
+        <TopNav activePlatform={activePlatform} onPlatformChange={handlePlatformChange} />
 
         {/* Contenido Centrado Limpio */}
         <main className="container mx-auto px-4 py-6">
@@ -58,7 +85,7 @@ export default function Home() {
           </div>
         </main>
 
-        <BottomNav activePlatform={activePlatform} onPlatformChange={setActivePlatform} />
+        {/* <BottomNav activePlatform={activePlatform} onPlatformChange={setActivePlatform} /> */}
       </div>
     )
   }
