@@ -38,7 +38,7 @@ export default function FacebookDownloader() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!url.includes('facebook.com') && !url.includes('fb.watch')) {
       setError('Por favor, ingresa un enlace válido de Facebook')
       return
@@ -66,22 +66,22 @@ export default function FacebookDownloader() {
     try {
       setDownloading(qualityId)
       setDownloadProgress(0)
-      
+
       console.log('🎬 Iniciando descarga con proxy...', qualityValue)
 
       // Encontrar el formato específico
       const format = findFormatForQuality(qualityValue)
-      
+
       if (!format || !format.url) {
         setError(`No se encontró la calidad ${qualityValue} disponible`)
         return
       }
 
       const filename = `facebook_${qualityValue.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`
-      
+
       // Usar proxy para descarga
       await downloadWithProxy(format.url, filename, qualityValue)
-      
+
     } catch (error) {
       console.error('❌ Error en descarga de video:', error)
       setError(`Error al descargar ${qualityValue}: ${error instanceof Error ? error.message : 'Error desconocido'}`)
@@ -96,7 +96,7 @@ export default function FacebookDownloader() {
     try {
       setDownloading('audio-only')
       setDownloadProgress(0)
-      
+
       console.log('🎵 Iniciando descarga de audio con proxy...')
 
       // Buscar formato de audio
@@ -107,7 +107,7 @@ export default function FacebookDownloader() {
       } else {
         throw new Error('No se encontró formato de audio disponible')
       }
-      
+
     } catch (error) {
       console.error('❌ Error en descarga de audio:', error)
       setError(`Error al descargar audio: ${error instanceof Error ? error.message : 'Error desconocido'}`)
@@ -121,9 +121,9 @@ export default function FacebookDownloader() {
   const downloadWithProxy = async (downloadUrl: string, filename: string, quality: string) => {
     try {
       setDownloadProgress(0)
-      
-      console.log('⬇️ Iniciando descarga mediante proxy...', { 
-        quality, 
+
+      console.log('⬇️ Iniciando descarga mediante proxy...', {
+        quality,
         filename
       })
 
@@ -155,14 +155,14 @@ export default function FacebookDownloader() {
       if (!response.ok) {
         const errorText = await response.text();
         let errorDetail = 'Error desconocido';
-        
+
         try {
           const errorData = JSON.parse(errorText);
           errorDetail = errorData.error || errorText;
         } catch {
           errorDetail = errorText;
         }
-        
+
         throw new Error(errorDetail || `Error ${response.status}`)
       }
 
@@ -173,36 +173,36 @@ export default function FacebookDownloader() {
       }
 
       const blob = await response.blob()
-      
+
       if (blob.size === 0) {
         throw new Error('El archivo recibido está vacío')
       }
-      
+
       console.log('✅ Descarga exitosa mediante proxy:', {
         size: blob.size,
         type: blob.type
       })
-      
+
       setDownloadProgress(100)
-      
+
       // Crear y descargar el archivo
       const blobUrl = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = blobUrl
       link.download = filename
       link.style.display = 'none'
-      
+
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      
+
       // Limpiar
       setTimeout(() => {
         URL.revokeObjectURL(blobUrl)
         setDownloading(null)
         setDownloadProgress(0)
       }, 5000)
-      
+
     } catch (error) {
       console.error('❌ Error en descarga con proxy:', error)
       setError(error instanceof Error ? error.message : 'Error desconocido en la descarga')
@@ -215,7 +215,7 @@ export default function FacebookDownloader() {
   const findFormatForQuality = (quality: string): VideoFormat | null => {
     if (!videoInfo?.formats) return null
 
-    const validFormats = videoInfo.formats.filter(format => 
+    const validFormats = videoInfo.formats.filter(format =>
       format.url && format.url.startsWith('http')
     )
 
@@ -232,8 +232,8 @@ export default function FacebookDownloader() {
     const patterns = qualityPatterns[quality] || [quality.toLowerCase()]
 
     // Buscar formato que coincida con los patrones
-    const foundFormat = validFormats.find(format => 
-      patterns.some(pattern => 
+    const foundFormat = validFormats.find(format =>
+      patterns.some(pattern =>
         format.quality.toLowerCase().includes(pattern) ||
         format.resolution.toLowerCase().includes(pattern) ||
         format.format.toLowerCase().includes(pattern)
@@ -246,12 +246,12 @@ export default function FacebookDownloader() {
   const findBestAudioFormat = (): VideoFormat | null => {
     if (!videoInfo?.formats) return null
 
-    const validFormats = videoInfo.formats.filter(format => 
+    const validFormats = videoInfo.formats.filter(format =>
       format.url && format.url.startsWith('http')
     )
 
-    const audioFormats = validFormats.filter(format => 
-      format.quality.toLowerCase().includes('audio') || 
+    const audioFormats = validFormats.filter(format =>
+      format.quality.toLowerCase().includes('audio') ||
       format.format.toLowerCase().includes('m4a') ||
       (!format.hasVideo && format.hasAudio)
     )
@@ -270,19 +270,19 @@ export default function FacebookDownloader() {
     return format !== null && format.url !== undefined && format.url.startsWith('http')
   }
 
-  const getFormatInfo = (qualityValue: string): { 
-    type: string, 
-    size: string, 
-    hasAudio: boolean 
+  const getFormatInfo = (qualityValue: string): {
+    type: string,
+    size: string,
+    hasAudio: boolean
   } => {
     const format = findFormatForQuality(qualityValue)
-    
-    if (!format) return { 
-      type: 'No disponible', 
-      size: 'N/A', 
-      hasAudio: false 
+
+    if (!format) return {
+      type: 'No disponible',
+      size: 'N/A',
+      hasAudio: false
     }
-    
+
     let typeText = 'Video'
     if (format.quality.includes('audio') || !format.hasVideo) {
       typeText = 'Audio'
@@ -291,7 +291,7 @@ export default function FacebookDownloader() {
     } else {
       typeText = 'Video + Audio'
     }
-    
+
     return {
       type: typeText,
       size: format.size || 'N/A',
@@ -302,7 +302,7 @@ export default function FacebookDownloader() {
   const ProgressBar = ({ progress, quality }: { progress: number, quality: string }) => (
     <div className="w-full">
       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-        <div 
+        <div
           className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         ></div>
@@ -328,7 +328,7 @@ export default function FacebookDownloader() {
     return `${count} vistas`
   }
 
-  const availableQualities = facebookQualities.filter(quality => 
+  const availableQualities = facebookQualities.filter(quality =>
     isQualityAvailable(quality.value)
   )
 
@@ -390,7 +390,7 @@ export default function FacebookDownloader() {
         <div className="text-center mb-6">
           <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="h-8 w-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -415,8 +415,8 @@ export default function FacebookDownloader() {
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] flex items-center justify-center"
             >
@@ -435,7 +435,7 @@ export default function FacebookDownloader() {
               )}
             </button>
           </div>
-          
+
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-center space-x-2 text-red-800">
@@ -461,12 +461,12 @@ export default function FacebookDownloader() {
                 {videoInfo.method || 'facebook'}
               </span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {videoInfo.thumbnail && (
                 <div className="md:col-span-1">
-                  <img 
-                    src={videoInfo.thumbnail} 
+                  <img
+                    src={videoInfo.thumbnail}
                     alt={videoInfo.title}
                     className="w-full h-40 object-cover rounded-lg"
                   />
@@ -474,7 +474,7 @@ export default function FacebookDownloader() {
               )}
               <div className="md:col-span-2">
                 <h4 className="font-semibold text-gray-900 mb-2 text-sm leading-tight">{videoInfo.title}</h4>
-                
+
                 <div className="text-xs text-gray-600 space-y-2">
                   {videoInfo.uploader && (
                     <p className="flex items-center">
@@ -484,7 +484,7 @@ export default function FacebookDownloader() {
                       {videoInfo.uploader}
                     </p>
                   )}
-                  
+
                   <div className="flex flex-wrap gap-4">
                     <p className="flex items-center">
                       <svg className="h-3 w-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -492,7 +492,7 @@ export default function FacebookDownloader() {
                       </svg>
                       ⏱️ {formatDuration(videoInfo.duration)}
                     </p>
-                    
+
                     {videoInfo.view_count && (
                       <p className="flex items-center">
                         <svg className="h-3 w-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -503,7 +503,7 @@ export default function FacebookDownloader() {
                       </p>
                     )}
                   </div>
-                  
+
                   <p className="text-green-600 font-medium">
                     ✅ {availableQualities.length} formatos disponibles
                   </p>
@@ -554,60 +554,59 @@ export default function FacebookDownloader() {
                     {facebookQualities
                       .filter(q => q.id !== 'audio-only')
                       .map((quality) => {
-                      const isAvailable = isQualityAvailable(quality.value)
-                      const isDownloading = downloading === quality.id
-                      const formatInfo = getFormatInfo(quality.value)
-                      
-                      return (
-                        <tr key={quality.id} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
-                            {quality.label}
-                            {!isAvailable && (
-                              <span className="text-xs text-red-500 ml-2">(No disponible)</span>
-                            )}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                            {quality.ext.toUpperCase()}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                            {formatInfo.type}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                            {formatInfo.size}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3">
-                            {isDownloading ? (
-                              <div className="w-full">
-                                <ProgressBar progress={downloadProgress} quality={quality.value} />
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => handleDownloadWithAd(() => 
-                                  handleVideoDownload(quality.id, quality.value, quality.ext)
-                                )}
-                                disabled={!isAvailable || !!downloading}
-                                className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${
-                                  isAvailable && !downloading
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
-                              >
-                                {isAvailable ? (
-                                  <>
-                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    Descargar
-                                  </>
-                                ) : (
-                                  'No disponible'
-                                )}
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    })}
+                        const isAvailable = isQualityAvailable(quality.value)
+                        const isDownloading = downloading === quality.id
+                        const formatInfo = getFormatInfo(quality.value)
+
+                        return (
+                          <tr key={quality.id} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
+                              {quality.label}
+                              {!isAvailable && (
+                                <span className="text-xs text-red-500 ml-2">(No disponible)</span>
+                              )}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {quality.ext.toUpperCase()}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {formatInfo.type}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {formatInfo.size}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3">
+                              {isDownloading ? (
+                                <div className="w-full">
+                                  <ProgressBar progress={downloadProgress} quality={quality.value} />
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleDownloadWithAd(() =>
+                                    handleVideoDownload(quality.id, quality.value, quality.ext)
+                                  )}
+                                  disabled={!isAvailable || !!downloading}
+                                  className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
+                                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                >
+                                  {isAvailable ? (
+                                    <>
+                                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                      </svg>
+                                      Descargar
+                                    </>
+                                  ) : (
+                                    'No disponible'
+                                  )}
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -625,7 +624,7 @@ export default function FacebookDownloader() {
               Ejemplos de Facebook:
             </p>
           </div>
-          <div className="text-xs text-blue-700 space-y-1">
+          <div className="text-xs text-blue-700 space-y-1 break-all">
             <div className="font-mono">• https://www.facebook.com/watch/?v=123456789</div>
             <div className="font-mono">• https://fb.watch/abc123def/</div>
             <div className="font-mono">• https://www.facebook.com/username/videos/123456789</div>

@@ -68,7 +68,7 @@ export default function YoutubeDownloader() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
       setError('Por favor, ingresa un enlace válido de YouTube')
       return
@@ -127,11 +127,11 @@ export default function YoutubeDownloader() {
     try {
       setDownloading(`combined-${quality}`)
       setDownloadProgress(0)
-      
+
       console.log('🎬 Iniciando descarga combinada con streaming...', quality)
-      
+
       const downloadUrl = originalUrl
-      
+
       if (!downloadUrl) {
         throw new Error('No hay URL disponible para descargar. Por favor, busca el video nuevamente.')
       }
@@ -162,7 +162,7 @@ export default function YoutubeDownloader() {
         file_size: data.file_size,
         has_file_content: !!data.file_content
       })
-      
+
       const progressInterval = setInterval(() => {
         setDownloadProgress(prev => {
           if (prev >= 90) {
@@ -176,46 +176,46 @@ export default function YoutubeDownloader() {
       // ✅ ESTRATEGIA MEJORADA PARA STREAMING
       if (data.status === 'success') {
         console.log('✅ Backend procesó exitosamente la combinación')
-        
+
         // ESTRATEGIA 1: Contenido base64 desde streaming (PRINCIPAL)
         if (data.file_content) {
           console.log('🔧 Procesando archivo combinado base64 desde streaming')
           const filename = data.filename || `youtube_${quality}_${Date.now()}.mp4`
           await handleBase64Download(data.file_content, filename, quality)
         }
-        
+
         // ESTRATEGIA 2: URLs separadas (fallback)
         else if (data.video_url && data.audio_url) {
           console.log('🎵 Combinando con URLs separadas (fallback)')
           const filename = data.filename || `youtube_${quality}_${Date.now()}.mp4`
           await downloadCombinedWithProxy(data.video_url, data.audio_url, filename, quality)
         }
-        
+
         // ESTRATEGIA 3: URL directa (fallback)
         else if (data.download_url && data.download_url.startsWith('http')) {
           console.log('📥 Usando URL directa combinada (fallback)')
           const filename = data.filename || `youtube_${quality}_${Date.now()}.mp4`
           await downloadThroughBackend(data.download_url, filename, quality, false)
         }
-        
+
         else {
           throw new Error('Backend no proporcionó datos válidos para la combinación')
         }
-        
+
       } else {
         throw new Error(data.message || 'El backend no completó la combinación correctamente')
       }
-      
+
       clearInterval(progressInterval)
       setDownloadProgress(100)
-      
+
     } catch (error) {
       console.error('❌ Error en descarga combinada:', error)
       setError(error instanceof Error ? error.message : 'Error en descarga combinada')
-      
+
       // ✅ FALLBACK MEJORADO
       console.log('🔄 Intentando estrategias de fallback...')
-      
+
       try {
         // Estrategia de fallback: Descarga normal del formato disponible
         const { format } = findBestFormatForQuality(quality)
@@ -225,9 +225,9 @@ export default function YoutubeDownloader() {
           await downloadThroughBackend(format.url, filename, quality, false)
           return
         }
-        
+
         throw new Error('No hay formatos disponibles para fallback')
-        
+
       } catch (fallbackError) {
         console.error('❌ Todos los fallbacks fallaron:', fallbackError)
         setError('No se pudo completar la descarga. Por favor, intenta con una calidad diferente.')
@@ -242,11 +242,11 @@ export default function YoutubeDownloader() {
   const handleBase64Download = async (base64Content: string, filename: string, quality: string) => {
     try {
       console.log('🔧 Procesando archivo combinado base64 desde streaming...')
-      
+
       if (!base64Content) {
         throw new Error('El contenido base64 está vacío')
       }
-      
+
       // Decodificar base64 a blob
       const byteCharacters = atob(base64Content);
       const byteNumbers = new Array(byteCharacters.length);
@@ -255,28 +255,28 @@ export default function YoutubeDownloader() {
       }
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'video/mp4' });
-      
+
       if (blob.size === 0) {
         throw new Error('El archivo base64 está vacío')
       }
-      
+
       console.log('✅ Archivo base64 procesado:', blob.size, 'bytes')
-      
+
       // Descargar blob
       const blobUrl = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = blobUrl
       link.download = filename
       link.style.display = 'none'
-      
+
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      
+
       // Limpiar URL después de 5 segundos
       setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
       console.log('✅ Descarga base64 completada')
-      
+
     } catch (error) {
       console.error('❌ Error procesando base64:', error)
       throw error
@@ -287,7 +287,7 @@ export default function YoutubeDownloader() {
   const downloadCombinedWithProxy = async (videoUrl: string, audioUrl: string, filename: string, quality: string) => {
     try {
       console.log('🎵 Combinando con URLs separadas (proxy fallback)...')
-      
+
       // Enviar ambas URLs al proxy para combinación
       const response = await fetch('/api/download/proxy', {
         method: 'POST',
@@ -309,26 +309,26 @@ export default function YoutubeDownloader() {
       }
 
       const blob = await response.blob()
-      
+
       if (blob.size === 0) {
         throw new Error('El archivo combinado está vacío')
       }
-      
+
       console.log('✅ Archivo combinado recibido:', blob.size, 'bytes')
-      
+
       const blobUrl = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = blobUrl
       link.download = filename
       link.style.display = 'none'
-      
+
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      
+
       setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
       console.log('✅ Combinación por proxy completada')
-      
+
     } catch (error) {
       console.error('❌ Error en combinación por proxy:', error)
       throw error
@@ -338,7 +338,7 @@ export default function YoutubeDownloader() {
   // ✅ DESCARGA SIMPLE (SIN COMBINAR)
   const handleSimpleDownload = async (quality: string, fileExt: string = 'mp4') => {
     const { format } = findBestFormatForQuality(quality)
-    
+
     if (!format || !format.url) {
       setError(`No se encontró la calidad ${quality} disponible`)
       return
@@ -359,17 +359,17 @@ export default function YoutubeDownloader() {
 
   // ✅ FUNCIÓN PRINCIPAL DE DESCARGA
   const downloadThroughBackend = async (
-    downloadUrl: string, 
-    filename: string, 
-    quality?: string, 
+    downloadUrl: string,
+    filename: string,
+    quality?: string,
     isAudio: boolean = false
   ) => {
     try {
       setDownloading(quality || (isAudio ? 'audio' : 'video'))
       setDownloadProgress(0)
-      
+
       console.log('⬇️ Iniciando descarga...', { quality, filename, isAudio, downloadUrl: downloadUrl?.substring(0, 100) })
-      
+
       // ✅ VERIFICACIÓN CRÍTICA: Asegurar que la URL sea válida
       if (!downloadUrl || !downloadUrl.startsWith('http')) {
         console.error('❌ URL inválida para descarga:', downloadUrl)
@@ -403,50 +403,50 @@ export default function YoutubeDownloader() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-        
+
         if (response.status === 408) {
           throw new Error(`TIMEOUT: ${errorData.error || 'El servidor tardó demasiado en responder'}`)
         }
-        
+
         throw new Error(errorData.error || `Error ${response.status}`)
       }
 
       const blob = await response.blob()
-      
+
       if (blob.size === 0) {
         throw new Error('El archivo recibido está vacío')
       }
-      
+
       console.log('✅ Descarga exitosa:', blob.size, 'bytes')
       setDownloadProgress(100)
-      
+
       const blobUrl = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = blobUrl
       link.download = filename
       link.style.display = 'none'
-      
+
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      
+
       setTimeout(() => {
         URL.revokeObjectURL(blobUrl)
         setDownloading(null)
         setDownloadProgress(0)
       }, 5000)
-      
+
     } catch (error) {
       console.error('❌ Error en descarga:', error)
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-      
+
       if (errorMessage.includes('TIMEOUT') && quality && ['1440p', '2160p', '1080p'].includes(quality)) {
         setError(`⚠️ ${errorMessage} Recomendamos intentar con 720p o 480p.`)
       } else {
         setError(errorMessage)
       }
-      
+
       if (!errorMessage.includes('TIMEOUT') && downloadUrl && downloadUrl.startsWith('http')) {
         console.log('🔄 Intentando descarga directa...')
         try {
@@ -463,7 +463,7 @@ export default function YoutubeDownloader() {
           console.error('❌ Error en descarga directa:', fallbackError)
         }
       }
-      
+
       setDownloading(null)
       setDownloadProgress(0)
     }
@@ -493,8 +493,8 @@ export default function YoutubeDownloader() {
   }
 
   // ✅ FUNCIONES AUXILIARES
-  const findBestFormatForQuality = (quality: string): { 
-    format: VideoFormat | null, 
+  const findBestFormatForQuality = (quality: string): {
+    format: VideoFormat | null,
     hasAudio: boolean,
     hasRecommendedAudio: boolean
   } => {
@@ -503,18 +503,18 @@ export default function YoutubeDownloader() {
     }
 
     // Filtrar solo formatos con URLs válidas
-    const validFormats = videoInfo.formats.filter(format => 
+    const validFormats = videoInfo.formats.filter(format =>
       format.url && format.url.startsWith('http')
     )
 
-    const formatsWithAudio = validFormats.filter(format => 
+    const formatsWithAudio = validFormats.filter(format =>
       format.hasAudio === true &&
       !format.quality.toLowerCase().includes('audio only') &&
       !format.quality.toLowerCase().includes('video only')
     )
 
-    let bestFormat = formatsWithAudio.find(f => 
-      f.quality.toLowerCase().includes(quality) || 
+    let bestFormat = formatsWithAudio.find(f =>
+      f.quality.toLowerCase().includes(quality) ||
       f.resolution.includes(quality) ||
       (quality === '1440p' && (f.resolution.includes('1440') || f.quality.toLowerCase().includes('1440'))) ||
       (quality === '2160p' && (f.resolution.includes('2160') || f.quality.toLowerCase().includes('2160') || f.quality.toLowerCase().includes('4k')))
@@ -524,13 +524,13 @@ export default function YoutubeDownloader() {
       return { format: bestFormat, hasAudio: true, hasRecommendedAudio: false }
     }
 
-    const videoOnlyFormats = validFormats.filter(format => 
+    const videoOnlyFormats = validFormats.filter(format =>
       !format.quality.toLowerCase().includes('audio only') &&
       format.hasVideo !== false
     )
 
-    bestFormat = videoOnlyFormats.find(f => 
-      f.quality.toLowerCase().includes(quality) || 
+    bestFormat = videoOnlyFormats.find(f =>
+      f.quality.toLowerCase().includes(quality) ||
       f.resolution.includes(quality) ||
       (quality === '1440p' && (f.resolution.includes('1440') || f.quality.toLowerCase().includes('1440'))) ||
       (quality === '2160p' && (f.resolution.includes('2160') || f.quality.toLowerCase().includes('2160') || f.quality.toLowerCase().includes('4k')))
@@ -539,11 +539,11 @@ export default function YoutubeDownloader() {
     if (!bestFormat) {
       const qualityOrder = ['2160p', '1440p', '1080p', '720p', '480p', '360p', '240p', '144p']
       const currentQualityIndex = qualityOrder.indexOf(quality)
-      
+
       if (currentQualityIndex >= 0) {
         for (let i = currentQualityIndex; i < qualityOrder.length; i++) {
-          bestFormat = videoOnlyFormats.find(f => 
-            f.resolution.includes(qualityOrder[i]) || 
+          bestFormat = videoOnlyFormats.find(f =>
+            f.resolution.includes(qualityOrder[i]) ||
             f.quality.toLowerCase().includes(qualityOrder[i])
           )
           if (bestFormat) break
@@ -553,8 +553,8 @@ export default function YoutubeDownloader() {
 
     const hasRecommendedAudio = bestFormat?.recommended_audio !== undefined
 
-    return { 
-      format: bestFormat || null, 
+    return {
+      format: bestFormat || null,
       hasAudio: false,
       hasRecommendedAudio
     }
@@ -564,12 +564,12 @@ export default function YoutubeDownloader() {
     if (!videoInfo?.formats) return null
 
     // Filtrar solo formatos con URLs válidas
-    const validFormats = videoInfo.formats.filter(format => 
+    const validFormats = videoInfo.formats.filter(format =>
       format.url && format.url.startsWith('http')
     )
 
-    const audioFormats = validFormats.filter(format => 
-      format.quality.toLowerCase().includes('audio') || 
+    const audioFormats = validFormats.filter(format =>
+      format.quality.toLowerCase().includes('audio') ||
       format.format.toLowerCase().includes('mp3') ||
       format.format.toLowerCase().includes('m4a') ||
       (format.hasAudio === true && format.hasVideo === false)
@@ -600,27 +600,27 @@ export default function YoutubeDownloader() {
     return format !== null && format.url !== undefined && format.url.startsWith('http')
   }
 
-  const getFormatInfo = (quality: string): { 
-    type: string, 
-    size: string, 
+  const getFormatInfo = (quality: string): {
+    type: string,
+    size: string,
     hasAudio: boolean,
     canCombine: boolean,
     combinationAllowed: boolean
   } => {
     const { format, hasAudio, hasRecommendedAudio } = findBestFormatForQuality(quality)
-    
-    if (!format) return { 
-      type: 'No disponible', 
-      size: 'N/A', 
+
+    if (!format) return {
+      type: 'No disponible',
+      size: 'N/A',
       hasAudio: false,
       canCombine: false,
       combinationAllowed: false
     }
-    
+
     let typeText = 'Video'
     let canCombine = false
     const combinationAllowed = isCombinationAllowed(quality)
-    
+
     if (hasAudio) {
       typeText = 'Video + Audio'
       canCombine = false
@@ -634,7 +634,7 @@ export default function YoutubeDownloader() {
       typeText = 'Video (sin audio)'
       canCombine = false
     }
-    
+
     return {
       type: typeText,
       size: format.size || 'N/A',
@@ -647,7 +647,7 @@ export default function YoutubeDownloader() {
   const ProgressBar = ({ progress, quality }: { progress: number, quality: string }) => (
     <div className="w-full">
       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-        <div 
+        <div
           className="bg-green-600 h-2.5 rounded-full transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         ></div>
@@ -662,7 +662,7 @@ export default function YoutubeDownloader() {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
     const remainingSeconds = seconds % 60
-    
+
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
     }
@@ -678,7 +678,7 @@ export default function YoutubeDownloader() {
     return `${count} vistas`
   }
 
-  const availableQualities = predefinedQualities.filter(quality => 
+  const availableQualities = predefinedQualities.filter(quality =>
     isQualityAvailable(quality.value)
   )
 
@@ -699,18 +699,17 @@ export default function YoutubeDownloader() {
   }, [showAd, adCountdown, pendingAction]);
 
   // ✅ COMPONENTE DE PESTAÑAS
-  const TabButton = ({ active, onClick, children }: { 
-    active: boolean; 
-    onClick: () => void; 
-    children: React.ReactNode 
+  const TabButton = ({ active, onClick, children }: {
+    active: boolean;
+    onClick: () => void;
+    children: React.ReactNode
   }) => (
     <button
       onClick={onClick}
-      className={`px-4 py-2 font-semibold rounded-t-lg transition-colors ${
-        active 
-          ? 'bg-red-600 text-white border-b-2 border-red-700' 
+      className={`px-4 py-2 font-semibold rounded-t-lg transition-colors ${active
+          ? 'bg-red-600 text-white border-b-2 border-red-700'
           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-      }`}
+        }`}
     >
       {children}
     </button>
@@ -758,7 +757,7 @@ export default function YoutubeDownloader() {
         <div className="text-center mb-6">
           <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+              <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
             </svg>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -783,8 +782,8 @@ export default function YoutubeDownloader() {
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               required
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
               className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] flex items-center justify-center"
             >
@@ -803,7 +802,7 @@ export default function YoutubeDownloader() {
               )}
             </button>
           </div>
-          
+
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-center space-x-2 text-red-800">
@@ -829,12 +828,12 @@ export default function YoutubeDownloader() {
                 {videoInfo.method}
               </span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {videoInfo.thumbnail && (
                 <div className="md:col-span-1">
-                  <img 
-                    src={videoInfo.thumbnail} 
+                  <img
+                    src={videoInfo.thumbnail}
                     alt={videoInfo.title}
                     className="w-full h-40 object-cover rounded-lg"
                   />
@@ -842,7 +841,7 @@ export default function YoutubeDownloader() {
               )}
               <div className="md:col-span-2">
                 <h4 className="font-semibold text-gray-900 mb-2 text-sm leading-tight">{videoInfo.title}</h4>
-                
+
                 <div className="text-xs text-gray-600 space-y-2">
                   {videoInfo.channel && (
                     <p className="flex items-center">
@@ -852,7 +851,7 @@ export default function YoutubeDownloader() {
                       {videoInfo.channel}
                     </p>
                   )}
-                  
+
                   <div className="flex flex-wrap gap-4">
                     <p className="flex items-center">
                       <svg className="h-3 w-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -860,7 +859,7 @@ export default function YoutubeDownloader() {
                       </svg>
                       ⏱️ {formatDuration(videoInfo.duration)}
                     </p>
-                    
+
                     {videoInfo.viewCount && (
                       <p className="flex items-center">
                         <svg className="h-3 w-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -871,7 +870,7 @@ export default function YoutubeDownloader() {
                       </p>
                     )}
                   </div>
-                  
+
                   <p className="text-green-600 font-medium">
                     ✅ {availableQualities.length} calidades disponibles
                   </p>
@@ -905,17 +904,17 @@ export default function YoutubeDownloader() {
             {/* PESTAÑAS DE VIDEO */}
             <div className="mb-4">
               <h4 className="text-lg font-bold text-gray-900 mb-4">## Descargar Video</h4>
-              
+
               {/* NAVEGACIÓN DE PESTAÑAS */}
               <div className="flex space-x-2 mb-6 border-b">
-                <TabButton 
-                  active={activeTab === 'simple'} 
+                <TabButton
+                  active={activeTab === 'simple'}
                   onClick={() => setActiveTab('simple')}
                 >
                   🎬 Solo Video (Sin Combinar)
                 </TabButton>
-                <TabButton 
-                  active={activeTab === 'combined'} 
+                <TabButton
+                  active={activeTab === 'combined'}
                   onClick={() => setActiveTab('combined')}
                 >
                   🎵 Video con Audio (Combinado)
@@ -952,7 +951,7 @@ export default function YoutubeDownloader() {
                           const isAvailable = isQualityAvailable(quality.value)
                           const isDownloading = downloading === quality.value
                           const formatInfo = getFormatInfo(quality.value)
-                          
+
                           return (
                             <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
                               <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
@@ -981,11 +980,10 @@ export default function YoutubeDownloader() {
                                   <button
                                     onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
                                     disabled={!isAvailable || !!downloading}
-                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${
-                                      isAvailable && !downloading
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    }`}
+                                      }`}
                                   >
                                     {isAvailable ? (
                                       <>
@@ -1020,7 +1018,7 @@ export default function YoutubeDownloader() {
                       <span className="font-semibold">Límite de Combinación</span>
                     </div>
                     <p className="text-yellow-700 text-sm mt-2">
-                      La combinación automática está disponible solo hasta 1080p. Para 1440p y 4K, 
+                      La combinación automática está disponible solo hasta 1080p. Para 1440p y 4K,
                       descarga el video y audio por separado y combínalos localmente.
                     </p>
                   </div>
@@ -1040,7 +1038,7 @@ export default function YoutubeDownloader() {
                           const isAvailable = isQualityAvailable(quality.value)
                           const isDownloading = downloading === `combined-${quality.value}`
                           const formatInfo = getFormatInfo(quality.value)
-                          
+
                           return (
                             <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
                               <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
@@ -1072,11 +1070,10 @@ export default function YoutubeDownloader() {
                                   <button
                                     onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
                                     disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
-                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${
-                                      isAvailable && !downloading && formatInfo.combinationAllowed
-                                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading && formatInfo.combinationAllowed
+                                        ? 'bg-green-600 hover:bg-green-700 text-white'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    }`}
+                                      }`}
                                   >
                                     {isAvailable ? (
                                       formatInfo.combinationAllowed ? (
@@ -1119,7 +1116,7 @@ export default function YoutubeDownloader() {
               Ejemplos de YouTube:
             </p>
           </div>
-          <div className="text-xs text-red-700 space-y-1">
+          <div className="text-xs text-red-700 space-y-1 break-all">
             <div className="font-mono">• https://www.youtube.com/watch?v=dQw4w9WgXcQ</div>
             <div className="font-mono">• https://youtu.be/dQw4w9WgXcQ</div>
             <div className="font-mono">• https://www.youtube.com/embed/dQw4w9WgXcQ</div>
