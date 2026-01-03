@@ -13,8 +13,12 @@ import HeroSection from '@/components/HeroSection'
 import BannerAds from '@/components/Layout/BannerAds'
 import SidebarAds from '@/components/Layout/SidebarAds'
 import VideoRewardsAds from '@/components/Layout/VideoRewardsAds'
+import { usePlatform } from '@/hooks/usePlatform'
+import BottomNav from '@/components/AppLayout/BottomNav'
+import AppHeader from '@/components/AppLayout/AppHeader'
 
 export default function Home() {
+  const { isNative } = usePlatform()
   const [activePlatform, setActivePlatform] = useState<'facebook' | 'youtube' | 'tiktok'>('facebook')
 
   const renderPlatform = () => {
@@ -30,6 +34,36 @@ export default function Home() {
     }
   }
 
+  // 📱 MODO APP NATIVA
+  if (isNative) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20 pt-16">
+        <AppHeader />
+
+        {/* Contenido Centrado Limpio */}
+        <main className="container mx-auto px-4 py-6">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            {/* Título simple dinámico */}
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center capitalize">
+              Descargar de {activePlatform}
+            </h2>
+
+            {/* Renderizador de componente */}
+            {renderPlatform()}
+          </div>
+
+          {/* Espacio para publicidad nativa (gestionada por AdMob overlays, pero dejamos espacio visual si es necesario) */}
+          <div className="mt-8 text-center text-xs text-gray-400">
+            Versión Pro 1.0.0
+          </div>
+        </main>
+
+        <BottomNav activePlatform={activePlatform} onPlatformChange={setActivePlatform} />
+      </div>
+    )
+  }
+
+  // 🌐 MODO WEB (Original)
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Header />
@@ -45,7 +79,7 @@ export default function Home() {
         <main className="flex-1 container mx-auto px-4 py-8 main-with-sidebars">
           {/* 1. Hero Section */}
           <HeroSection />
-          
+
           {/* Banner Top */}
           <div className="max-w-4xl mx-auto mb-8">
             <BannerAds />
