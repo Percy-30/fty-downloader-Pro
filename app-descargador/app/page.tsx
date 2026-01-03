@@ -26,12 +26,23 @@ export default function Home() {
   const { showInterstitial } = useAdMobInterstitial()
 
   // 📺 ANUNCIO AL INICIAR APP (App Open Ad simulado con Interstitial)
+  // 📺 ANUNCIO AL INICIAR APP + INTERVALO CADA 3 MIN
   useEffect(() => {
     if (isNative) {
+      // 1. App Open Ad (simulado)
       const timer = setTimeout(() => {
         showInterstitial()
-      }, 3000) // Pequeño delay para asegurar carga
-      return () => clearTimeout(timer)
+      }, 3000)
+
+      // 2. Intervalo cada 3 minutos (180,000 ms)
+      const interval = setInterval(() => {
+        showInterstitial()
+      }, 180000)
+
+      return () => {
+        clearTimeout(timer)
+        clearInterval(interval)
+      }
     }
   }, [isNative, showInterstitial])
 

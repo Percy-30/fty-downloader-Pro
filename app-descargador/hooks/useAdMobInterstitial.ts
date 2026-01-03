@@ -41,7 +41,7 @@ export function useAdMobInterstitial() {
                 // Reset loaded state and prepare next ad
                 setIsLoaded(false);
                 await AdMob.prepareInterstitial({
-                    adId: 'ca-app-pub-3940256099942544/1033173712'
+                    adId: 'ca-app-pub-5414009811868137/9123842162'
                 });
             } else {
                 console.log('Interstitial not ready yet');

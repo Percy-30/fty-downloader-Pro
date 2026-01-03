@@ -42,13 +42,13 @@ export default function TopNav({ activePlatform, onPlatformChange }: TopNavProps
     ] as const
 
     return (
-        <div className="bg-white shadow-sm pt-1 pb-1 px-2 fixed top-14 left-0 right-0 z-30">
-            <div className="flex space-x-2">
+        <div className="bg-white shadow-sm pt-1 pb-1 px-1 fixed top-14 left-0 right-0 z-30">
+            <div className="grid grid-cols-3 gap-1">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => onPlatformChange(tab.id)}
-                        className={`flex items-center justify-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 border ${activePlatform === tab.id
+                        className={`flex flex-col items-center justify-center space-y-1 py-2 rounded-lg text-xs font-medium transition-all duration-200 border ${activePlatform === tab.id
                                 ? `${tab.color} text-white border-transparent shadow-md`
                                 : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
                             }`}
