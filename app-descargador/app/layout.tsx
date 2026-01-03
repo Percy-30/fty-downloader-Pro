@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
+import AdManager from '@/components/AdManager'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -78,14 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Meta requerida por AdSense para verificar tu dominio */}
         <meta name="google-adsense-account" content="ca-pub-5414009811868137" />
 
-        {/* Google AdSense */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5414009811868137"
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-        />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
-        <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+
 
         {/* Canonical URL para SEO */}
         <link rel="canonical" href="https://www.ftydownloader.com/" />
@@ -133,7 +127,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="thumbnail" content="https://www.ftydownloader.com/images/og-image.png" />
         <link rel="image_src" href="https://www.ftydownloader.com/images/og-image.png" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AdManager />
+        {children}
+      </body>
     </html>
   )
 }
