@@ -707,8 +707,8 @@ export default function YoutubeDownloader() {
     <button
       onClick={onClick}
       className={`px-4 py-2 font-semibold rounded-t-lg transition-colors ${active
-          ? 'bg-red-600 text-white border-b-2 border-red-700'
-          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        ? 'bg-red-600 text-white border-b-2 border-red-700'
+        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
         }`}
     >
       {children}
@@ -936,7 +936,66 @@ export default function YoutubeDownloader() {
                     </p>
                   </div>
 
-                  <div className="overflow-x-auto">
+                  {/* MOBILE: Card Layout */}
+                  <div className="block md:hidden space-y-3">
+                    {predefinedQualities.map((quality) => {
+                      const isAvailable = isQualityAvailable(quality.value)
+                      const isDownloading = downloading === quality.value
+                      const formatInfo = getFormatInfo(quality.value)
+
+                      return (
+                        <div key={quality.value} className={`border rounded-lg p-4 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                          <div className="flex items-center justify-between mb-3">
+                            <h5 className="font-bold text-gray-900">{quality.label}</h5>
+                            {!isAvailable && (
+                              <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">No disponible</span>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+                            <div>
+                              <p className="text-gray-500 text-xs">Formato</p>
+                              <p className="font-medium text-gray-900">
+                                {formatInfo.type}
+                                {formatInfo.hasAudio && <span className="ml-2 text-green-600">🎵</span>}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs">Peso</p>
+                              <p className="font-medium text-gray-900">{formatInfo.size}</p>
+                            </div>
+                          </div>
+
+                          {isDownloading ? (
+                            <ProgressBar progress={downloadProgress} quality={quality.value} />
+                          ) : (
+                            <button
+                              onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
+                              disabled={!isAvailable || !!downloading}
+                              className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center ${isAvailable && !downloading
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                            >
+                              {isAvailable ? (
+                                <>
+                                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                  </svg>
+                                  Descargar
+                                </>
+                              ) : (
+                                'No disponible'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* DESKTOP: Table Layout */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                       <thead>
                         <tr className="bg-gray-100">
@@ -981,8 +1040,8 @@ export default function YoutubeDownloader() {
                                     onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
                                     disabled={!isAvailable || !!downloading}
                                     className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                       }`}
                                   >
                                     {isAvailable ? (
@@ -1023,7 +1082,71 @@ export default function YoutubeDownloader() {
                     </p>
                   </div>
 
-                  <div className="overflow-x-auto">
+                  {/* MOBILE: Card Layout */}
+                  <div className="block md:hidden space-y-3">
+                    {predefinedQualities.map((quality) => {
+                      const isAvailable = isQualityAvailable(quality.value)
+                      const isDownloading = downloading === `combined-${quality.value}`
+                      const formatInfo = getFormatInfo(quality.value)
+
+                      return (
+                        <div key={quality.value} className={`border rounded-lg p-4 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                          <div className="flex items-center justify-between mb-3">
+                            <h5 className="font-bold text-gray-900">{quality.label}</h5>
+                            {!isAvailable && (
+                              <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">No disponible</span>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+                            <div>
+                              <p className="text-gray-500 text-xs">Formato</p>
+                              <p className="font-medium text-gray-900">
+                                {formatInfo.type}
+                                {formatInfo.canCombine && formatInfo.combinationAllowed && <span className="ml-2 text-green-600">🔊</span>}
+                                {formatInfo.canCombine && !formatInfo.combinationAllowed && <span className="ml-2 text-yellow-600">⚠️</span>}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs">Peso</p>
+                              <p className="font-medium text-gray-900">{formatInfo.size}</p>
+                            </div>
+                          </div>
+
+                          {isDownloading ? (
+                            <ProgressBar progress={downloadProgress} quality={quality.value} />
+                          ) : (
+                            <button
+                              onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
+                              disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
+                              className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center ${isAvailable && !downloading && formatInfo.combinationAllowed
+                                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                            >
+                              {isAvailable ? (
+                                formatInfo.combinationAllowed ? (
+                                  <>
+                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Combinar y Descargar
+                                  </>
+                                ) : (
+                                  <span className="text-xs">⚠️ Muy grande para combinar</span>
+                                )
+                              ) : (
+                                'No disponible'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* DESKTOP: Table Layout */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                       <thead>
                         <tr className="bg-gray-100">
@@ -1071,8 +1194,8 @@ export default function YoutubeDownloader() {
                                     onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
                                     disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
                                     className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading && formatInfo.combinationAllowed
-                                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                       }`}
                                   >
                                     {isAvailable ? (

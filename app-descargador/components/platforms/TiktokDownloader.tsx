@@ -379,7 +379,68 @@ export default function TiktokDownloader() {
             <div className="mb-4">
               <h4 className="text-lg font-bold text-gray-900 mb-4">Formatos Disponibles</h4>
 
-              <div className="overflow-x-auto">
+              {/* MOBILE: Card Layout */}
+              <div className="block md:hidden space-y-3">
+                {predefinedQualities.map((quality) => {
+                  const format = videoInfo.formats?.find(f =>
+                    f.quality.toLowerCase().includes(quality.value) ||
+                    f.quality.toLowerCase().includes(quality.value.replace('nowatermark', 'sin marca'))
+                  )
+
+                  const isAvailable = !!format
+                  const isDownloading = downloading === quality.value
+
+                  return (
+                    <div key={quality.value} className={`border rounded-lg p-4 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-bold text-gray-900">{quality.label}</h5>
+                        {!isAvailable && (
+                          <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">No disponible</span>
+                        )}
+                      </div>
+
+                      <div className="mb-4 text-sm">
+                        <p className="text-gray-500 text-xs">Formato</p>
+                        <p className="font-medium text-gray-900">{format?.format || 'Auto'}</p>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          if (format) {
+                            handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
+                          } else {
+                            handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
+                          }
+                        }}
+                        disabled={!isAvailable || isDownloading}
+                        className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center ${isAvailable && !isDownloading
+                            ? 'bg-black hover:bg-gray-800 text-white'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
+                      >
+                        {isDownloading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                            Descargando...
+                          </>
+                        ) : isAvailable ? (
+                          <>
+                            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Descargar
+                          </>
+                        ) : (
+                          'No disponible'
+                        )}
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* DESKTOP: Table Layout */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                   <thead>
                     <tr className="bg-gray-100">
@@ -422,8 +483,8 @@ export default function TiktokDownloader() {
                               }}
                               disabled={!isAvailable || isDownloading}
                               className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !isDownloading
-                                  ? 'bg-black hover:bg-gray-800 text-white'
-                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                ? 'bg-black hover:bg-gray-800 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 }`}
                             >
                               {isDownloading ? (
@@ -473,8 +534,8 @@ export default function TiktokDownloader() {
                   }}
                   disabled={!!downloading}
                   className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center ${downloading
-                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
                     }`}
                 >
                   {downloading ? (
