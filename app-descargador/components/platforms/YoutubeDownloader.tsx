@@ -1095,85 +1095,87 @@ export default function YoutubeDownloader() {
                       )
                     })}
                   </div>
+                  )}
 
-                  {/* DESKTOP: Table Layout */}
-                  <div className="hidden md:block overflow-x-auto">
-                    <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                      <thead>
-                        <tr className="bg-gray-100">
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">File type</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Format</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {predefinedQualities.map((quality) => {
-                          const isAvailable = isQualityAvailable(quality.value)
-                          const isDownloading = downloading === `combined-${quality.value}`
-                          const formatInfo = getFormatInfo(quality.value)
+                  {/* WEB: Table Layout */}
+                  {!isNative && (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                        <thead>
+                          <tr className="bg-gray-100">
+                            <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">File type</th>
+                            <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Format</th>
+                            <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
+                            <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {predefinedQualities.map((quality) => {
+                            const isAvailable = isQualityAvailable(quality.value)
+                            const isDownloading = downloading === `combined-${quality.value}`
+                            const formatInfo = getFormatInfo(quality.value)
 
-                          return (
-                            <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
-                              <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
-                                {quality.label}
-                                {!isAvailable && (
-                                  <span className="text-xs text-red-500 ml-2">(No disponible)</span>
-                                )}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                                <div className="flex items-center">
-                                  {formatInfo.type}
-                                  {formatInfo.canCombine && formatInfo.combinationAllowed && (
-                                    <span className="ml-2 text-green-600" title="Audio será combinado">🔊</span>
+                            return (
+                              <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
+                                <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
+                                  {quality.label}
+                                  {!isAvailable && (
+                                    <span className="text-xs text-red-500 ml-2">(No disponible)</span>
                                   )}
-                                  {formatInfo.canCombine && !formatInfo.combinationAllowed && (
-                                    <span className="ml-2 text-yellow-600" title="Combinación no disponible">⚠️</span>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                                {formatInfo.size}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-3">
-                                {isDownloading ? (
-                                  <div className="w-full">
-                                    <ProgressBar progress={downloadProgress} quality={quality.value} />
-                                  </div>
-                                ) : (
-                                  <button
-                                    onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
-                                    disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
-                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading && formatInfo.combinationAllowed
-                                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                      }`}
-                                  >
-                                    {isAvailable ? (
-                                      formatInfo.combinationAllowed ? (
-                                        <>
-                                          <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                          </svg>
-                                          Combinar y Descargar
-                                        </>
-                                      ) : (
-                                        <span className="text-xs">
-                                          ⚠️ Muy grande para combinar
-                                        </span>
-                                      )
-                                    ) : (
-                                      'No disponible'
+                                </td>
+                                <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                                  <div className="flex items-center">
+                                    {formatInfo.type}
+                                    {formatInfo.canCombine && formatInfo.combinationAllowed && (
+                                      <span className="ml-2 text-green-600" title="Audio será combinado">🔊</span>
                                     )}
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                                    {formatInfo.canCombine && !formatInfo.combinationAllowed && (
+                                      <span className="ml-2 text-yellow-600" title="Combinación no disponible">⚠️</span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                                  {formatInfo.size}
+                                </td>
+                                <td className="border border-gray-300 px-4 py-3">
+                                  {isDownloading ? (
+                                    <div className="w-full">
+                                      <ProgressBar progress={downloadProgress} quality={quality.value} />
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
+                                      disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
+                                      className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading && formatInfo.combinationAllowed
+                                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
+                                    >
+                                      {isAvailable ? (
+                                        formatInfo.combinationAllowed ? (
+                                          <>
+                                            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Combinar y Descargar
+                                          </>
+                                        ) : (
+                                          <span className="text-xs">
+                                            ⚠️ Muy grande para combinar
+                                          </span>
+                                        )
+                                      ) : (
+                                        'No disponible'
+                                      )}
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                 </div>
               )}
             </div>

@@ -379,122 +379,125 @@ export default function TiktokDownloader() {
             <div className="mb-4">
               <h4 className="text-lg font-bold text-gray-900 mb-4">Formatos Disponibles</h4>
 
-              {/* MOBILE: Simplified Layout - Only Quality + Action */}
-              <div className="block md:hidden space-y-2">
-                {predefinedQualities.map((quality) => {
-                  const format = videoInfo.formats?.find(f =>
-                    f.quality.toLowerCase().includes(quality.value) ||
-                    f.quality.toLowerCase().includes(quality.value.replace('nowatermark', 'sin marca'))
-                  )
+              {/* ANDROID APP: Simplified Layout */}
+              {isNative && (
+                <div className="space-y-2">
+                  {predefinedQualities.map((quality) => {
+                    const format = videoInfo.formats?.find(f =>
+                      f.quality.toLowerCase().includes(quality.value) ||
+                      f.quality.toLowerCase().includes(quality.value.replace('nowatermark', 'sin marca'))
+                    )
 
-                  const isAvailable = !!format
-                  const isDownloading = downloading === quality.value
+                    const isAvailable = !!format
+                    const isDownloading = downloading === quality.value
 
-                  return (
-                    <div key={quality.value} className={`flex items-center gap-3 border rounded-lg p-3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{quality.label}</p>
-                        {!isAvailable && <p className="text-xs text-red-500">No disponible</p>}
-                      </div>
-
-                      {isDownloading ? (
-                        <div className="w-24 text-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mx-auto" />
+                    return (
+                      <div key={quality.value} className={`flex items-center gap-3 border rounded-lg p-3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900">{quality.label}</p>
+                          {!isAvailable && <p className="text-xs text-red-500">No disponible</p>}
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            if (format) {
-                              handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
-                            } else {
-                              handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
-                            }
-                          }}
-                          disabled={!isAvailable || isDownloading}
-                          className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !isDownloading
+
+                        {isDownloading ? (
+                          <div className="w-24 text-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mx-auto" />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              if (format) {
+                                handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
+                              } else {
+                                handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
+                              }
+                            }}
+                            disabled={!isAvailable || isDownloading}
+                            className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !isDownloading
                               ? 'bg-black hover:bg-gray-800 text-white'
                               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            }`}
-                        >
-                          {isAvailable ? 'Descargar' : 'N/A'}
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
+                              }`}
+                          >
+                            {isAvailable ? 'Descargar' : 'N/A'}
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
 
-              {/* DESKTOP: Table Layout */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Tipo de Archivo</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Formato</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {predefinedQualities.map((quality) => {
-                      const format = videoInfo.formats?.find(f =>
-                        f.quality.toLowerCase().includes(quality.value) ||
-                        f.quality.toLowerCase().includes(quality.value.replace('nowatermark', 'sin marca'))
-                      )
+              {/* WEB: Table Layout */}
+              {!isNative && (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Tipo de Archivo</th>
+                        <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Formato</th>
+                        <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {predefinedQualities.map((quality) => {
+                        const format = videoInfo.formats?.find(f =>
+                          f.quality.toLowerCase().includes(quality.value) ||
+                          f.quality.toLowerCase().includes(quality.value.replace('nowatermark', 'sin marca'))
+                        )
 
-                      const isAvailable = !!format
-                      const isDownloading = downloading === quality.value
+                        const isAvailable = !!format
+                        const isDownloading = downloading === quality.value
 
-                      return (
-                        <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
-                            {quality.label}
-                            {!isAvailable && (
-                              <span className="text-xs text-red-500 ml-2">(No disponible)</span>
-                            )}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                            {format?.format || 'Auto'}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3">
-                            <button
-                              onClick={() => {
-                                if (format) {
-                                  //handleDownload(format.url, quality.value, quality.ext)
-                                  handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
-                                } else {
-                                  //handleDirectDownload(quality.value, quality.ext)
-                                  handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
-                                }
-                              }}
-                              disabled={!isAvailable || isDownloading}
-                              className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !isDownloading
-                                ? 'bg-black hover:bg-gray-800 text-white'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
-                            >
-                              {isDownloading ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-                                  Descargando...
-                                </>
-                              ) : isAvailable ? (
-                                <>
-                                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                  </svg>
-                                  Descargar
-                                </>
-                              ) : (
-                                'No disponible'
+                        return (
+                          <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
+                              {quality.label}
+                              {!isAvailable && (
+                                <span className="text-xs text-red-500 ml-2">(No disponible)</span>
                               )}
-                            </button>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {format?.format || 'Auto'}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3">
+                              <button
+                                onClick={() => {
+                                  if (format) {
+                                    //handleDownload(format.url, quality.value, quality.ext)
+                                    handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
+                                  } else {
+                                    //handleDirectDownload(quality.value, quality.ext)
+                                    handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
+                                  }
+                                }}
+                                disabled={!isAvailable || isDownloading}
+                                className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !isDownloading
+                                  ? 'bg-black hover:bg-gray-800 text-white'
+                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                  }`}
+                              >
+                                {isDownloading ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                                    Descargando...
+                                  </>
+                                ) : isAvailable ? (
+                                  <>
+                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Descargar
+                                  </>
+                                ) : (
+                                  'No disponible'
+                                )}
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
             </div>
 
             {/* Descarga Rápida - Sin Marca de Agua */}
