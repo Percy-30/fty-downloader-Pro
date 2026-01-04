@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:web": "cp .env.example .env.local && next build",
+    "build:playstore": "cp .env.playstore .env.local && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cap:sync": "npx cap sync",
+    "cap:sync:playstore": "npm run build:playstore && npx cap sync android"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.0.0",

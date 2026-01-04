@@ -19,10 +19,13 @@ import TopNav from '@/components/AppLayout/TopNav'
 import AppHeader from '@/components/AppLayout/AppHeader'
 import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial'
 import { useEffect } from 'react'
+import { FEATURES } from '@/lib/featureFlags'
 
 export default function Home() {
   const { isNative } = usePlatform()
-  const [activePlatform, setActivePlatform] = useState<'facebook' | 'youtube' | 'tiktok'>('facebook')
+  // Default to Facebook if YouTube is disabled (Play Store build)
+  const defaultPlatform: 'facebook' | 'youtube' | 'tiktok' = FEATURES.YOUTUBE_ENABLED ? 'facebook' : 'facebook'
+  const [activePlatform, setActivePlatform] = useState<'facebook' | 'youtube' | 'tiktok'>(defaultPlatform)
   const { showInterstitial } = useAdMobInterstitial()
 
   // 📺 ANUNCIO AL INICIAR APP (App Open Ad simulado con Interstitial)

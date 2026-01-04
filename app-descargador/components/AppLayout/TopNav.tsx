@@ -1,14 +1,16 @@
 'use client'
 
+import { FEATURES } from '@/lib/featureFlags'
+
 interface TopNavProps {
     activePlatform: 'facebook' | 'youtube' | 'tiktok'
     onPlatformChange: (platform: 'facebook' | 'youtube' | 'tiktok') => void
 }
 
 export default function TopNav({ activePlatform, onPlatformChange }: TopNavProps) {
-    const tabs = [
+    const allTabs = [
         {
-            id: 'facebook',
+            id: 'facebook' as const,
             label: 'Facebook',
             color: 'bg-blue-600',
             icon: (
@@ -18,7 +20,7 @@ export default function TopNav({ activePlatform, onPlatformChange }: TopNavProps
             )
         },
         {
-            id: 'youtube',
+            id: 'youtube' as const,
             label: 'YouTube',
             color: 'bg-red-600',
             icon: (
@@ -29,7 +31,7 @@ export default function TopNav({ activePlatform, onPlatformChange }: TopNavProps
             )
         },
         {
-            id: 'tiktok',
+            id: 'tiktok' as const,
             label: 'TikTok',
             color: 'bg-black',
             icon: (
@@ -39,18 +41,26 @@ export default function TopNav({ activePlatform, onPlatformChange }: TopNavProps
                 </svg>
             )
         }
-    ] as const
+    ]
+
+    // Filter tabs based on feature flags
+    const tabs = FEATURES.YOUTUBE_ENABLED
+        ? allTabs
+        : allTabs.filter(tab => tab.id !== 'youtube')
+
+    // Adjust grid columns based on number of tabs
+    const gridClass = tabs.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
 
     return (
         <div className="bg-white shadow-sm pt-1 pb-1 px-1 fixed top-14 left-0 right-0 z-30">
-            <div className="grid grid-cols-3 gap-1">
+            <div className={`grid ${gridClass} gap-1`}>
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => onPlatformChange(tab.id)}
                         className={`flex flex-col items-center justify-center space-y-1 py-2 px-0 rounded-lg text-xs font-medium transition-all duration-200 border w-full ${activePlatform === tab.id
-                                ? `${tab.color} text-white border-transparent shadow-md`
-                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                            ? `${tab.color} text-white border-transparent shadow-md`
+                            : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
                             }`}
                     >
                         {tab.icon}
