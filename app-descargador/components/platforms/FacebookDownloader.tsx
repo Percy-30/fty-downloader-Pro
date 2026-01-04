@@ -539,7 +539,74 @@ export default function FacebookDownloader() {
               <h4 className="text-lg font-bold text-gray-900 mb-4">## Video</h4>
               <p className="text-gray-600 mb-4">- Calidades Disponibles</p>
 
-              <div className="overflow-x-auto">
+              {/* MOBILE: Card Layout */}
+              <div className="block md:hidden space-y-3">
+                {facebookQualities
+                  .filter(q => q.id !== 'audio-only')
+                  .map((quality) => {
+                    const isAvailable = isQualityAvailable(quality.value)
+                    const isDownloading = downloading === quality.id
+                    const formatInfo = getFormatInfo(quality.value)
+
+                    return (
+                      <div key={quality.id} className={`border rounded-lg p-4 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                        {/* Quality Header */}
+                        <div className="flex items-center justify-between mb-3">
+                          <h5 className="font-bold text-gray-900">{quality.label}</h5>
+                          {!isAvailable && (
+                            <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">No disponible</span>
+                          )}
+                        </div>
+
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+                          <div>
+                            <p className="text-gray-500 text-xs">Formato</p>
+                            <p className="font-medium text-gray-900">{quality.ext.toUpperCase()}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 text-xs">Tipo</p>
+                            <p className="font-medium text-gray-900">{formatInfo.type}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <p className="text-gray-500 text-xs">Peso</p>
+                            <p className="font-medium text-gray-900">{formatInfo.size}</p>
+                          </div>
+                        </div>
+
+                        {/* Download Button */}
+                        {isDownloading ? (
+                          <ProgressBar progress={downloadProgress} quality={quality.value} />
+                        ) : (
+                          <button
+                            onClick={() => handleDownloadWithAd(() =>
+                              handleVideoDownload(quality.id, quality.value, quality.ext)
+                            )}
+                            disabled={!isAvailable || !!downloading}
+                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center ${isAvailable && !downloading
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              }`}
+                          >
+                            {isAvailable ? (
+                              <>
+                                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Descargar
+                              </>
+                            ) : (
+                              'No disponible'
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })}
+              </div>
+
+              {/* DESKTOP: Table Layout */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                   <thead>
                     <tr className="bg-gray-100">
