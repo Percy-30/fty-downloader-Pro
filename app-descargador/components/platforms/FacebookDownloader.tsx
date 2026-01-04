@@ -539,146 +539,132 @@ export default function FacebookDownloader() {
               <h4 className="text-lg font-bold text-gray-900 mb-4">## Video</h4>
               <p className="text-gray-600 mb-4">- Calidades Disponibles</p>
 
-              {/* ANDROID APP: Simplified Layout - Only Quality + Action */}
-              {isNative && (
-                <div className="space-y-2">
-                  {facebookQualities
-                    .filter(q => q.id !== 'audio-only')
-                    .map((quality) => {
-                      const isAvailable = isQualityAvailable(quality.value)
-                      const isDownloading = downloading === quality.id
+              {/* MOBILE: Simplified Layout - Quality + Action */}
+              <div className="block md:hidden space-y-2">
+                {facebookQualities
+                  .filter(q => q.id !== 'audio-only')
+                  .map((quality) => {
+                    const isAvailable = isQualityAvailable(quality.value)
+                    const isDownloading = downloading === quality.id
 
-                      return (
-                        <div key={quality.id} className={`flex items-center gap-3 border rounded-lg p-3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
-                          {/* Quality Label */}
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900">{quality.label}</p>
-                            {!isAvailable && <p className="text-xs text-red-500">No disponible</p>}
+                    return (
+                      <div key={quality.id} className={`flex items-center gap-3 border rounded-lg p-3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                        {/* Quality Label */}
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900">{quality.label}</p>
+                          {!isAvailable && <p className="text-xs text-red-500">No disponible</p>}
+                        </div>
+
+                        {/* Action Button */}
+                        {isDownloading ? (
+                          <div className="w-24 text-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mx-auto" />
                           </div>
-
-                          {/* Action Button */}
-                          {isDownloading ? (
-                            <div className="w-24 text-center">
-                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mx-auto" />
+                        ) : (
+                          <button
+                            onClick={() => handleDownloadWithAd(() =>
+                              handleVideoDownload(quality.id, quality.value, quality.ext)
+                            )}
+                            disabled={!isAvailable || !!downloading}
                             </div>
-                          ) : (
-                            <button
-                              onClick={() => handleDownloadWithAd(() =>
-                                handleVideoDownload(quality.id, quality.value, quality.ext)
-                              )}
-                              disabled={!isAvailable || !!downloading}
-                              className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !downloading
-                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
-                            >
-                            </div>
-                          )}
-
-                          {/* WEB (Desktop + Mobile): Table Layout */}
-                          {!isNative && (
-                            <div className="overflow-x-auto">
-                              <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                                <thead>
-                                  <tr className="bg-gray-100">
-                                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Calidad</th>
-                                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Formato</th>
-                                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Tipo</th>
+                    )
+                  }
                                     <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
-                                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Acción</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Acción</th>
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  {facebookQualities
-                                    .filter(q => q.id !== 'audio-only')
-                                    .map((quality) => {
-                                      const isAvailable = isQualityAvailable(quality.value)
-                                      const isDownloading = downloading === quality.id
-                                      const formatInfo = getFormatInfo(quality.value)
+            </thead>
+            <tbody>
+              {facebookQualities
+                .filter(q => q.id !== 'audio-only')
+                .map((quality) => {
+                  const isAvailable = isQualityAvailable(quality.value)
+                  const isDownloading = downloading === quality.id
+                  const formatInfo = getFormatInfo(quality.value)
 
-                                      return (
-                                        <tr key={quality.id} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
-                                          <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
-                                            {quality.label}
-                                            {!isAvailable && (
-                                              <span className="text-xs text-red-500 ml-2">(No disponible)</span>
-                                            )}
-                                          </td>
-                                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                                            {quality.ext.toUpperCase()}
-                                          </td>
-                                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                                            {formatInfo.type}
-                                          </td>
-                                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                                            {formatInfo.size}
-                                          </td>
-                                          <td className="border border-gray-300 px-4 py-3">
-                                            {isDownloading ? (
-                                              <div className="w-full">
-                                                <ProgressBar progress={downloadProgress} quality={quality.value} />
-                                              </div>
-                                            ) : (
-                                              <button
-                                                onClick={() => handleDownloadWithAd(() =>
-                                                  handleVideoDownload(quality.id, quality.value, quality.ext)
-                                                )}
-                                                disabled={!isAvailable || !!downloading}
-                                                className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
-                                                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                  }`}
-                                              >
-                                                {isAvailable ? (
-                                                  <>
-                                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                    </svg>
-                                                    Descargar
-                                                  </>
-                                                ) : (
-                                                  'No disponible'
-                                                )}
-                                              </button>
-                                            )}
-                                          </td>
-                                        </tr>
-                                      )
-                                    })}
-                                </tbody>
-                              </table>
+                  return (
+                    <tr key={quality.id} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
+                      <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
+                        {quality.label}
+                        {!isAvailable && (
+                          <span className="text-xs text-red-500 ml-2">(No disponible)</span>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                        {quality.ext.toUpperCase()}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                        {formatInfo.type}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                        {formatInfo.size}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3">
+                        {isDownloading ? (
+                          <div className="w-full">
+                            <ProgressBar progress={downloadProgress} quality={quality.value} />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleDownloadWithAd(() =>
+                              handleVideoDownload(quality.id, quality.value, quality.ext)
+                            )}
+                            disabled={!isAvailable || !!downloading}
+                            className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
+                              ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              }`}
+                          >
+                            {isAvailable ? (
+                              <>
+                                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Descargar
+                              </>
+                            ) : (
+                              'No disponible'
+                            )}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          </table>
                             </div>
-            </div>
-          </div>
-              )}
+    </div >
+          </div >
+              )
+}
 
-              {/* SECCIÓN DE EJEMPLOS */}
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <svg className="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                  <p className="text-sm font-semibold text-blue-800">
-                    Ejemplos de Facebook:
-                  </p>
-                </div>
-                <div className="text-xs text-blue-700 space-y-1 break-all">
-                  <div className="font-mono">• https://www.facebook.com/watch/?v=123456789</div>
-                  <div className="font-mono">• https://fb.watch/abc123def/</div>
-                  <div className="font-mono">• https://www.facebook.com/username/videos/123456789</div>
-                </div>
-              </div>
+{/* SECCIÓN DE EJEMPLOS */ }
+<div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+  <div className="flex items-center space-x-2 mb-2">
+    <svg className="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+    </svg>
+    <p className="text-sm font-semibold text-blue-800">
+      Ejemplos de Facebook:
+    </p>
+  </div>
+  <div className="text-xs text-blue-700 space-y-1 break-all">
+    <div className="font-mono">• https://www.facebook.com/watch/?v=123456789</div>
+    <div className="font-mono">• https://fb.watch/abc123def/</div>
+    <div className="font-mono">• https://www.facebook.com/username/videos/123456789</div>
+  </div>
+</div>
 
-              {/* INFORMACIÓN ADICIONAL */}
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Formatos soportados: MP4, M4A. Calidades desde 480p hasta 1080p y DASH</span>
-                </div>
-              </div>
-            </div>
+{/* INFORMACIÓN ADICIONAL */ }
+<div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+  <div className="flex items-center space-x-2 text-sm text-gray-600">
+    <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>Formatos soportados: MP4, M4A. Calidades desde 480p hasta 1080p y DASH</span>
+  </div>
+</div>
+            </div >
           </>
         )
         }
