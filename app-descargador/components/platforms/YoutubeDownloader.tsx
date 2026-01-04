@@ -1084,8 +1084,8 @@ export default function YoutubeDownloader() {
                               onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
                               disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
                               className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !downloading && formatInfo.combinationAllowed
-                                  ? 'bg-green-600 hover:bg-green-700 text-white'
-                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 }`}
                             >
                               {isAvailable && formatInfo.combinationAllowed ? 'Combinar' : 'N/A'}
@@ -1095,120 +1095,119 @@ export default function YoutubeDownloader() {
                       )
                     })}
                   </div>
-                </div>
 
-            {/* DESKTOP: Table Layout */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">File type</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Format</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {predefinedQualities.map((quality) => {
-                      const isAvailable = isQualityAvailable(quality.value)
-                      const isDownloading = downloading === `combined-${quality.value}`
-                      const formatInfo = getFormatInfo(quality.value)
-
-                      return (
-                        <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
-                            {quality.label}
-                            {!isAvailable && (
-                              <span className="text-xs text-red-500 ml-2">(No disponible)</span>
-                            )}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                            <div className="flex items-center">
-                              {formatInfo.type}
-                              {formatInfo.canCombine && formatInfo.combinationAllowed && (
-                                <span className="ml-2 text-green-600" title="Audio será combinado">🔊</span>
-                              )}
-                              {formatInfo.canCombine && !formatInfo.combinationAllowed && (
-                                <span className="ml-2 text-yellow-600" title="Combinación no disponible">⚠️</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                            {formatInfo.size}
-                          </td>
-                          <td className="border border-gray-300 px-4 py-3">
-                            {isDownloading ? (
-                              <div className="w-full">
-                                <ProgressBar progress={downloadProgress} quality={quality.value} />
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
-                                disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
-                                className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading && formatInfo.combinationAllowed
-                                  ? 'bg-green-600 hover:bg-green-700 text-white'
-                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                  }`}
-                              >
-                                {isAvailable ? (
-                                  formatInfo.combinationAllowed ? (
-                                    <>
-                                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                      </svg>
-                                      Combinar y Descargar
-                                    </>
-                                  ) : (
-                                    <span className="text-xs">
-                                      ⚠️ Muy grande para combinar
-                                    </span>
-                                  )
-                                ) : (
-                                  'No disponible'
-                                )}
-                              </button>
-                            )}
-                          </td>
+                  {/* DESKTOP: Table Layout */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">File type</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Format</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Action</th>
                         </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                      </thead>
+                      <tbody>
+                        {predefinedQualities.map((quality) => {
+                          const isAvailable = isQualityAvailable(quality.value)
+                          const isDownloading = downloading === `combined-${quality.value}`
+                          const formatInfo = getFormatInfo(quality.value)
+
+                          return (
+                            <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
+                              <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
+                                {quality.label}
+                                {!isAvailable && (
+                                  <span className="text-xs text-red-500 ml-2">(No disponible)</span>
+                                )}
+                              </td>
+                              <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                                <div className="flex items-center">
+                                  {formatInfo.type}
+                                  {formatInfo.canCombine && formatInfo.combinationAllowed && (
+                                    <span className="ml-2 text-green-600" title="Audio será combinado">🔊</span>
+                                  )}
+                                  {formatInfo.canCombine && !formatInfo.combinationAllowed && (
+                                    <span className="ml-2 text-yellow-600" title="Combinación no disponible">⚠️</span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                                {formatInfo.size}
+                              </td>
+                              <td className="border border-gray-300 px-4 py-3">
+                                {isDownloading ? (
+                                  <div className="w-full">
+                                    <ProgressBar progress={downloadProgress} quality={quality.value} />
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
+                                    disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
+                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading && formatInfo.combinationAllowed
+                                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      }`}
+                                  >
+                                    {isAvailable ? (
+                                      formatInfo.combinationAllowed ? (
+                                        <>
+                                          <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                          </svg>
+                                          Combinar y Descargar
+                                        </>
+                                      ) : (
+                                        <span className="text-xs">
+                                          ⚠️ Muy grande para combinar
+                                        </span>
+                                      )
+                                    ) : (
+                                      'No disponible'
+                                    )}
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
-        )}
+          </div >
+        )
+        }
+
+        {/* SECCIÓN DE EJEMPLOS */}
+        <div className="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
+          <div className="flex items-center space-x-2 mb-2">
+            <svg className="h-4 w-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <p className="text-sm font-semibold text-red-800">
+              Ejemplos de YouTube:
+            </p>
           </div>
-    </div >
-      )
-}
+          <div className="text-xs text-red-700 space-y-1 break-all">
+            <div className="font-mono">• https://www.youtube.com/watch?v=dQw4w9WgXcQ</div>
+            <div className="font-mono">• https://youtu.be/dQw4w9WgXcQ</div>
+            <div className="font-mono">• https://www.youtube.com/embed/dQw4w9WgXcQ</div>
+          </div>
+        </div>
 
-      {/* SECCIÓN DE EJEMPLOS */}
-      <div className="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
-        <div className="flex items-center space-x-2 mb-2">
-          <svg className="h-4 w-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-          <p className="text-sm font-semibold text-red-800">
-            Ejemplos de YouTube:
-          </p>
+        {/* CONSEJOS */}
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>💡 <strong>Consejo:</strong> Para videos largos o alta calidad, prueba con 720p o 480p para mejor rendimiento.</span>
+          </div>
         </div>
-        <div className="text-xs text-red-700 space-y-1 break-all">
-          <div className="font-mono">• https://www.youtube.com/watch?v=dQw4w9WgXcQ</div>
-          <div className="font-mono">• https://youtu.be/dQw4w9WgXcQ</div>
-          <div className="font-mono">• https://www.youtube.com/embed/dQw4w9WgXcQ</div>
-        </div>
-      </div>
-
-      {/* CONSEJOS */}
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>💡 <strong>Consejo:</strong> Para videos largos o alta calidad, prueba con 720p o 480p para mejor rendimiento.</span>
-        </div>
-      </div>
-    </div >
+      </div >
     </>
   )
 }
