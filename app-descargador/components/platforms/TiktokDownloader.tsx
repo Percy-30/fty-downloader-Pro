@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useEffect } from 'react'; // ya que no lo habías importado
+import { useState, useEffect } from 'react'
+import { usePlatform } from '@/hooks/usePlatform'
 
 interface VideoFormat {
   quality: string
