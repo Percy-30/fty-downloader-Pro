@@ -35,6 +35,7 @@ const predefinedQualities = [
 ]
 
 export default function TiktokDownloader() {
+  const { isNative } = usePlatform()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -380,7 +381,7 @@ export default function TiktokDownloader() {
               <h4 className="text-lg font-bold text-gray-900 mb-4">Formatos Disponibles</h4>
 
               {/* MOBILE: Simplified Layout */}
-              <div className="block md:hidden space-y-2">
+              <div className={isNative ? 'block' : 'block md:hidden space-y-2'}>
                 {predefinedQualities.map((quality) => {
                   const format = videoInfo.formats?.find(f =>
                     f.quality.toLowerCase().includes(quality.value) ||
@@ -425,7 +426,7 @@ export default function TiktokDownloader() {
               </div>
 
               {/* DESKTOP: Table Layout */}
-              <div className="hidden md:block overflow-x-auto">
+              <div className={isNative ? 'hidden' : 'hidden md:block overflow-x-auto'}>
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                   <thead>
                     <tr className="bg-gray-100">

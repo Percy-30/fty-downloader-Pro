@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useEffect } from 'react';
 import { getFacebookInfo, FacebookVideoInfo } from '@/lib/platforms/facebook';
+import { usePlatform } from '@/hooks/usePlatform';
 
 interface VideoFormat {
   quality: string
@@ -25,6 +26,7 @@ const facebookQualities = [
 ]
 
 export default function FacebookDownloader() {
+  const { isNative } = usePlatform()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -540,7 +542,7 @@ export default function FacebookDownloader() {
               <p className="text-gray-600 mb-4">- Calidades Disponibles</p>
 
               {/* MOBILE: Simplified Layout - Quality + Action */}
-              <div className="block md:hidden space-y-2">
+              <div className={isNative ? 'block' : 'block md:hidden space-y-2'}>
                 {facebookQualities
                   .filter(q => q.id !== 'audio-only')
                   .map((quality) => {
@@ -580,7 +582,7 @@ export default function FacebookDownloader() {
               </div>
 
               {/* DESKTOP: Table Layout */}
-              <div className="hidden md:block overflow-x-auto">
+              <div className={isNative ? 'hidden' : 'hidden md:block overflow-x-auto'}>
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                   <thead>
                     <tr className="bg-gray-100">
