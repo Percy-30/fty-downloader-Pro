@@ -1066,7 +1066,7 @@ export default function YoutubeDownloader() {
                   </div>
 
                   {/* MOBILE: Simplified Layout - Only Quality + Action */}
-                  <div className="block md:hidden space-y-2">
+                  <div className={isNative ? 'block' : 'block md:hidden space-y-2'}>
                     {predefinedQualities.map((quality) => {
                       const isAvailable = isQualityAvailable(quality.value)
                       const isDownloading = downloading === `combined - ${ quality.value } `
@@ -1105,7 +1105,7 @@ export default function YoutubeDownloader() {
                   </div>
 
                   {/* DESKTOP: Table Layout */}
-                  <div className="hidden md:block overflow-x-auto">
+                  <div className={isNative ? 'hidden' : 'hidden md:block overflow-x-auto'}>
                     <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                       <thead>
                         <tr className="bg-gray-100">
