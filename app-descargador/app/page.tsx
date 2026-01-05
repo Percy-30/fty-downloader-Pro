@@ -79,7 +79,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
             {/* Título simple dinámico */}
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center capitalize">
-              Descargar de {activePlatform}
+              Descargar de {activePlatform} (TEST V2)
             </h2>
 
             {/* Renderizador de componente */}
@@ -88,7 +88,7 @@ export default function Home() {
 
           {/* Espacio para publicidad nativa (gestionada por AdMob overlays, pero dejamos espacio visual si es necesario) */}
           <div className="mt-8 text-center text-xs text-gray-400">
-            Versión Pro 1.0.0
+            Versión Pro 1.0.0 - DEBUG: {isNative ? 'NATIVE' : 'WEB'}
           </div>
         </main>
 
@@ -139,7 +139,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Herramientas de Gestión de Contenido
+                  Herramientas de Gestión (TEST V2)
                 </h2>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                   Utiliza nuestras herramientas profesionales para gestionar y respaldar tu contenido digital.
