@@ -124,7 +124,7 @@ export default function YoutubeDownloader() {
   const downloadCombined = async (quality: string) => {
     // ✅ VERIFICAR LÍMITE ANTES DE PROCESAR
     if (!isCombinationAllowed(quality)) {
-      setError(`La combinación automática no está disponible para ${ quality }. Descarga el video por separado.`)
+      setError("La combinación automática no está disponible para " + quality + ". Descarga el video por separado.")
       return
     }
 
