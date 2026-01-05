@@ -566,73 +566,117 @@ export default function FacebookDownloader() {
                               handleVideoDownload(quality.id, quality.value, quality.ext)
                             )}
                             disabled={!isAvailable || !!downloading}
-                            </div>
-                    )
-                  }
-                                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Acción</th>
-                                  </tr>
-            </thead>
-            <tbody>
-              {facebookQualities
-                .filter(q => q.id !== 'audio-only')
-                .map((quality) => {
-                  const isAvailable = isQualityAvailable(quality.value)
-                  const isDownloading = downloading === quality.id
-                  const formatInfo = getFormatInfo(quality.value)
-
-                  return (
-                    <tr key={quality.id} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
-                      <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
-                        {quality.label}
-                        {!isAvailable && (
-                          <span className="text-xs text-red-500 ml-2">(No disponible)</span>
-                        )}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                        {quality.ext.toUpperCase()}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                        {formatInfo.type}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-gray-600">
-                        {formatInfo.size}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        {isDownloading ? (
-                          <div className="w-full">
-                            <ProgressBar progress={downloadProgress} quality={quality.value} />
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleDownloadWithAd(() =>
-                              handleVideoDownload(quality.id, quality.value, quality.ext)
-                            )}
-                            disabled={!isAvailable || !!downloading}
-                            className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
+                            className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !downloading
                               ? 'bg-blue-600 hover:bg-blue-700 text-white'
                               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                               }`}
                           >
-                            {isAvailable ? (
-                              <>
-                                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Descargar
-                              </>
-                            ) : (
-                              'No disponible'
-                            )}
+                            {isAvailable ? 'Descargar' : 'N/A'}
                           </button>
                         )}
-                      </td>
+                      </div>
+                    )
+                  })}
+              </div>
+
+              {/* DESKTOP: Table Layout */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Calidad</th>
+                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Formato</th>
+                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Tipo</th>
+                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Peso</th>
+                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">Acción</th>
                     </tr>
-                  )
+                  </thead>
+                  <tbody>
+                    {facebookQualities
+                      .filter(q => q.id !== 'audio-only')
+                      .map((quality) => {
+                        const isAvailable = isQualityAvailable(quality.value)
+                        const isDownloading = downloading === quality.id
+                        const formatInfo = getFormatInfo(quality.value)
+
+                        return (
+                          <tr key={quality.id} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
+                              {quality.label}
+                              {!isAvailable && (
+                                <span className="text-xs text-red-500 ml-2">(No disponible)</span>
+                              )}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {quality.ext.toUpperCase()}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {formatInfo.type}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3 text-gray-600">
+                              {formatInfo.size}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-3">
+                              {isDownloading ? (
+                                <div className="flex justify-center">
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600" />
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleDownloadWithAd(() =>
+                                    handleVideoDownload(quality.id, quality.value, quality.ext)
+                                  )}
+                                  disabled={!isAvailable || !!downloading}
+                                  className={`px-4 py-1.5 rounded text-sm font-semibold transition-colors ${isAvailable && !downloading
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                >
+                                  {isAvailable ? 'Descargar' : 'No disponible'}
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                  </tbody>
+                </table>
+              </div>
+              <td className="border border-gray-300 px-4 py-3">
+                {isDownloading ? (
+                  <div className="w-full">
+                    <ProgressBar progress={downloadProgress} quality={quality.value} />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleDownloadWithAd(() =>
+                      handleVideoDownload(quality.id, quality.value, quality.ext)
+                    )}
+                    disabled={!isAvailable || !!downloading}
+                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                  >
+                    {isAvailable ? (
+                      <>
+                        <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Descargar
+                      </>
+                    ) : (
+                      'No disponible'
+                    )}
+                  </button>
+                )}
+              </td>
+            </tr>
+            )
                 })}
-            </tbody>
+          </tbody>
           </table>
-                            </div>
+    </div >
     </div >
           </div >
               )
