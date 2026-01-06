@@ -4,7 +4,8 @@ import { useState } from 'react'
 
 import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
-import { LocalNotifications } from '@capacitor/local-notifications';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useDownloadHistory } from '@/hooks/useDownloadHistory';
 
 interface VideoFormat {
   quality: string
@@ -57,6 +58,8 @@ const predefinedQualities = [
 
 export default function YoutubeDownloader() {
   const { isNative } = usePlatform()
+  const { scheduleNotification } = useNotifications()
+  const { addToHistory } = useDownloadHistory()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -110,38 +113,7 @@ export default function YoutubeDownloader() {
     }
   }
 
-  // ✅ FUNCIÓN PARA NOTIFICACIONES LOCALES
-  const scheduleNotification = async (title: string, body: string) => {
-    try {
-      if (isNative) {
-        // Solicitar permisos si es necesario (Android 13+)
-        const check = await LocalNotifications.checkPermissions();
-        if (check.display !== 'granted') {
-          await LocalNotifications.requestPermissions();
-        }
 
-        await LocalNotifications.schedule({
-          notifications: [
-            {
-              title: title,
-              body: body,
-              id: Math.floor(Math.random() * 100000),
-              schedule: { at: new Date(Date.now() + 100) }, // Inmediato
-              smallIcon: 'ic_stat_icon_config_sample', // Icono por defecto o personalizado
-              actionTypeId: '',
-              extra: null
-            }
-          ]
-        });
-      } else {
-        // En Web, usar Toast o Alert simple si se desea, por ahora solo console
-        console.log('🔔 Notificación Web:', title, body);
-        // alert(`${title}\n${body}`); // Opcional, puede ser molesto en web
-      }
-    } catch (e) {
-      console.error('Error mostrando notificación:', e);
-    }
-  }
 
   // ✅ FUNCIÓN PARA VERIFICAR SI LA COMBINACIÓN ESTÁ PERMITIDA (HASTA 1080p)
   const isCombinationAllowed = (quality: string): boolean => {
@@ -316,6 +288,20 @@ export default function YoutubeDownloader() {
       setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
       console.log('✅ Descarga base64 completada')
       scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'youtube',
+        thumbnail: videoInfo?.thumbnail,
+        status: 'completed',
+        format: quality
+      })
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'youtube',
+        thumbnail: videoInfo?.thumbnail,
+        status: 'completed',
+        format: quality
+      })
 
     } catch (error) {
       console.error('❌ Error procesando base64:', error)
@@ -366,6 +352,14 @@ export default function YoutubeDownloader() {
         }
       } else {
         scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+        addToHistory({
+          title: videoInfo?.title || filename,
+          platform: 'youtube',
+          thumbnail: videoInfo?.thumbnail,
+          status: 'completed',
+          format: quality
+        })
+
       }
 
       const blobUrl = URL.createObjectURL(blob)
@@ -489,6 +483,13 @@ export default function YoutubeDownloader() {
       }, 5000)
 
       scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'youtube',
+        thumbnail: videoInfo?.thumbnail,
+        status: 'completed',
+        format: quality
+      })
 
     } catch (error) {
       console.error('❌ Error en descarga:', error)

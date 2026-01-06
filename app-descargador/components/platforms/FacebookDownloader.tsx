@@ -4,6 +4,8 @@ import { useState } from 'react'
 
 import { getFacebookInfo, FacebookVideoInfo } from '@/lib/platforms/facebook';
 import { usePlatform } from '@/hooks/usePlatform';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useDownloadHistory } from '@/hooks/useDownloadHistory';
 
 interface VideoFormat {
   quality: string
@@ -27,6 +29,8 @@ const facebookQualities = [
 
 export default function FacebookDownloader() {
   const { isNative } = usePlatform()
+  const { scheduleNotification } = useNotifications()
+  const { addToHistory } = useDownloadHistory()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -202,6 +206,15 @@ export default function FacebookDownloader() {
         setDownloading(null)
         setDownloadProgress(0)
       }, 5000)
+
+      scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'facebook',
+        thumbnail: videoInfo?.thumbnail,
+        status: 'completed',
+        format: quality
+      })
 
     } catch (error) {
       console.error('❌ Error en descarga con proxy:', error)

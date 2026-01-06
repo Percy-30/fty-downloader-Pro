@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { usePlatform } from '@/hooks/usePlatform'
+import { useNotifications } from '@/hooks/useNotifications'
+import { useDownloadHistory } from '@/hooks/useDownloadHistory'
 
 interface VideoFormat {
   quality: string
@@ -36,6 +38,8 @@ const predefinedQualities = [
 
 export default function TiktokDownloader() {
   const { isNative } = usePlatform()
+  const { scheduleNotification } = useNotifications()
+  const { addToHistory } = useDownloadHistory()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -116,7 +120,18 @@ export default function TiktokDownloader() {
       link.click()
       document.body.removeChild(link)
 
+      document.body.removeChild(link)
+
       window.URL.revokeObjectURL(urlObject)
+
+      scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'tiktok',
+        thumbnail: videoInfo?.thumbnail,
+        status: 'completed',
+        format: quality
+      })
     } catch (error) {
       console.error('Error en descarga:', error)
       setError('Error al descargar el archivo: ' + (error instanceof Error ? error.message : 'Error desconocido'))
@@ -152,6 +167,15 @@ export default function TiktokDownloader() {
 
       // Limpiar el URL creado
       window.URL.revokeObjectURL(urlObject)
+
+      scheduleNotification('Descarga Completada', `El video se ha guardado correctamente.`)
+      addToHistory({
+        title: videoInfo?.title || `tiktok_${quality}`,
+        platform: 'tiktok',
+        thumbnail: videoInfo?.thumbnail,
+        status: 'completed',
+        format: quality
+      })
 
     } catch (error) {
       console.error('Error en descarga:', error)

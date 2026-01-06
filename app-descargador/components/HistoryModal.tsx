@@ -1,0 +1,114 @@
+import { X, Trash2, Clock, CheckCircle } from 'lucide-react';
+import { HistoryItem } from '@/hooks/useDownloadHistory';
+import { useEffect, useState } from 'react';
+
+interface HistoryModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    history: HistoryItem[];
+    onClear: () => void;
+    onDelete: (id: string) => void;
+}
+
+export default function HistoryModal({ isOpen, onClose, history, onClear, onDelete }: HistoryModalProps) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted || !isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
+
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                    <div className="flex items-center gap-2 text-gray-800">
+                        <Clock className="w-5 h-5 text-blue-600" />
+                        <h2 className="text-lg font-bold">Historial de Descargas</h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                    {history.length === 0 ? (
+                        <div className="text-center py-12 text-gray-500">
+                            <Clock className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                            <p>No hay descargas recientes</p>
+                        </div>
+                    ) : (
+                        history.map((item) => (
+                            <div key={item.id} className="flex gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 relative group">
+                                {/* Icono Plataforma */}
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${item.platform === 'youtube' ? 'bg-red-100 text-red-600' :
+                                        item.platform === 'facebook' ? 'bg-blue-100 text-blue-600' :
+                                            'bg-black text-white'
+                                    }`}>
+                                    {item.platform === 'youtube' && (
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                                    )}
+                                    {item.platform === 'facebook' && (
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                                    )}
+                                    {item.platform === 'tiktok' && (
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.65-1.62-1.12v8.76c-.52 4.03-3.71 6.83-7.79 6.83-4.08 0-7.39-3.23-7.39-7.22 0-3.99 3.32-7.22 7.4-7.22.51-.01 1.02.04 1.53.12v4.06c-.36-.12-.73-.2-1.11-.2-1.89 0-3.41 1.53-3.41 3.42s1.52 3.42 3.41 3.42c1.67 0 3.08-1.2 3.36-2.81.07-.38.08-.77.08-1.15V.02z" /></svg>
+                                    )}
+                                </div>
+
+                                {/* Info */}
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-sm font-semibold text-gray-900 truncate pr-6">{item.title}</h3>
+                                    <div className="flex items-center text-xs text-gray-500 gap-2 mt-1">
+                                        <span className="capitalize">{item.platform}</span>
+                                        <span>•</span>
+                                        <span>{new Date(item.date).toLocaleDateString()}</span>
+                                        {item.format && (
+                                            <>
+                                                <span>•</span>
+                                                <span className="uppercase bg-gray-200 px-1 rounded text-[10px]">{item.format}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Status Icon */}
+                                <div className="absolute top-3 right-3">
+                                    <CheckCircle className="w-4 h-4 text-green-500" />
+                                </div>
+
+                                {/* Delete Button (visible on hover/active) */}
+                                {/* <button 
+                  onClick={() => onDelete(item.id)}
+                  className="absolute right-2 bottom-2 text-red-500 p-1 hover:bg-red-50 rounded"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button> */}
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Footer */}
+                {history.length > 0 && (
+                    <div className="p-4 border-t border-gray-100">
+                        <button
+                            onClick={onClear}
+                            className="w-full py-3 flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            Borrar Historial
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
