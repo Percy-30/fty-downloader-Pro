@@ -358,6 +358,18 @@ export default function YoutubeDownloader() {
 
       console.log('✅ Archivo combinado recibido:', blob.size, 'bytes')
 
+      // Verificar headers por si hubo fallback
+      const combinedStatus = response.headers.get('X-Combined-Status')
+      if (combinedStatus === 'video_only_with_audio_available') {
+        const msg = 'Se descargó solo el video debido a límites del servidor. Intenta con 720p para tener audio.'
+        setError(msg)
+        if (isNative) {
+          scheduleNotification('Descarga Parcial', msg)
+        }
+      } else {
+        scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      }
+
       const blobUrl = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = blobUrl

@@ -9,23 +9,23 @@ const CONNECT_TIMEOUT = 60000   // 60 segundos para conexión inicial
 // ✅ FUNCIÓN PARA VALIDAR URLs DE DESCARGA
 function isValidDownloadUrl(url: string): boolean {
   if (!url || !url.startsWith('http')) return false
-  
+
   // Verificar que no sea una página de YouTube
   if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
     return false
   }
-  
+
   // Verificar que sea un URL de Google Video u otro servicio de descarga directa
   const validDomains = [
     'googlevideo.com',
     'rr1---sn-',
-    'rr2---sn-', 
+    'rr2---sn-',
     'rr3---sn-',
     'rr4---sn-',
     'rr5---sn-',
     'videoplayback'
   ]
-  
+
   return validDomains.some(domain => url.includes(domain))
 }
 
@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
   try {
     const { url, filename, quality, isAudio, isCombined = false, video_url, audio_url } = await request.json()
 
-    console.log('🔧 [Proxy] Solicitud recibida:', { 
-      url: url?.substring(0, 100), 
-      filename, 
-      quality, 
-      isAudio, 
+    console.log('🔧 [Proxy] Solicitud recibida:', {
+      url: url?.substring(0, 100),
+      filename,
+      quality,
+      isAudio,
       isCombined,
       hasVideoUrl: !!video_url,
       hasAudioUrl: !!audio_url
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       }
       if (!isValidDownloadUrl(audio_url)) {
         return NextResponse.json({
-          error: 'URL de audio inválida para descarga directa'  
+          error: 'URL de audio inválida para descarga directa'
         }, { status: 400 })
       }
       return await handleCombinedDownload(video_url, audio_url, filename, quality)
@@ -82,19 +82,19 @@ export async function POST(request: NextRequest) {
     console.log('📋 [Proxy] Parámetros:', { filename, quality, isAudio })
 
     // Detectar tipo de contenido basado en parámetros y URL
-    const detectedIsAudio = isAudio || 
-                           url.includes('mime=audio') || 
-                           url.includes('m4a') || 
-                           url.includes('webm') || 
-                           url.includes('audio') ||
-                           quality === 'audio'
-    
+    const detectedIsAudio = isAudio ||
+      url.includes('mime=audio') ||
+      url.includes('m4a') ||
+      url.includes('webm') ||
+      url.includes('audio') ||
+      quality === 'audio'
+
     const detectedIsVideo = !detectedIsAudio && (
-                           url.includes('mime=video') || 
-                           url.includes('mp4') || 
-                           url.includes('video') ||
-                           quality !== undefined
-                         )
+      url.includes('mime=video') ||
+      url.includes('mp4') ||
+      url.includes('video') ||
+      quality !== undefined
+    )
 
     // ✅ CONFIGURACIÓN MEJORADA: Timeouts extendidos para videos grandes
     const controller = new AbortController()
@@ -123,19 +123,19 @@ export async function POST(request: NextRequest) {
       // Usar fetch con retry en caso de error
       let response: Response
       let retries = 3 // ✅ Aumentado a 3 reintentos
-      
+
       while (retries >= 0) {
         try {
           console.log(`🔄 [Proxy] Intento ${3 - retries + 1} de 3`)
           response = await fetch(url, fetchOptions)
-          
+
           // ✅ VERIFICAR CONTENT-TYPE PARA EVITAR DESCARGAR HTML
           const contentType = response.headers.get('content-type') || ''
           if (contentType.includes('text/html') || contentType.includes('application/json')) {
             console.error('❌ [Proxy] La respuesta es HTML/JSON, no un archivo multimedia')
             throw new Error('El servidor devolvió una página web en lugar de un archivo multimedia')
           }
-          
+
           break
         } catch (fetchError: any) {
           if (retries === 0) throw fetchError
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
       // Detectar tipo de contenido y extensión
       let contentType = blob.type
       let fileExtension = 'mp4'
-      
+
       if (!contentType || contentType === 'application/octet-stream') {
         if (detectedIsAudio) {
           contentType = 'audio/mp4'
@@ -236,23 +236,23 @@ export async function POST(request: NextRequest) {
 
     } catch (fetchError: any) {
       clearTimeout(timeoutId)
-      
+
       console.error('❌ [Proxy] Fetch error:', fetchError)
-      
+
       // ✅ MANEJO ESPECÍFICO DE TIMEOUT CON MENSAJES MEJORADOS
       if (fetchError.name === 'AbortError' || fetchError.code === 'UND_ERR_CONNECT_TIMEOUT') {
         return NextResponse.json({
           error: 'Timeout: La descarga tomó más de 4 minutos. Para videos grandes (>90MB) recomiendo: 1) Usar WiFi, 2) Intentar calidad 720p o 480p, 3) Reintentar más tarde.'
         }, { status: 408 })
       }
-      
+
       // ✅ MANEJO DE HTML/JSON INESPERADO
       if (fetchError.message.includes('HTML') || fetchError.message.includes('JSON') || fetchError.message.includes('página web')) {
         return NextResponse.json({
           error: fetchError.message
         }, { status: 400 })
       }
-      
+
       // ✅ MANEJO DE OTROS ERRORES DE RED
       if (fetchError.message.includes('fetch failed') || fetchError.message.includes('network')) {
         return NextResponse.json({
@@ -278,142 +278,105 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ✅ FUNCIÓN PARA MANEJAR COMBINACIÓN DE AUDIO Y VIDEO (nueva estructura)
+// ✅ FUNCIÓN PARA MANEJAR COMBINACIÓN DE AUDIO Y VIDEO (IMPLEMENTACIÓN REAL CON FFMPEG)
 async function handleCombinedDownload(videoUrl: string, audioUrl: string, filename: string, quality?: string) {
   try {
-    console.log('🎵 [Proxy] Combinando video y audio...')
+    console.log('🎵 [Proxy] Iniciando combinación REAL con FFmpeg...')
     console.log('📹 Video URL:', videoUrl.substring(0, 100) + '...')
     console.log('🎶 Audio URL:', audioUrl.substring(0, 100) + '...')
-    
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => {
-      console.log('⏰ [Proxy] Timeout en combinación (5 minutos), abortando...')
-      controller.abort()
-    }, COMBINE_TIMEOUT)
 
-    try {
-      // ✅ ESTRATEGIA MEJORADA: Descargar en paralelo
-      console.log('📥 [Proxy] Descargando video y audio en paralelo...')
-      
-      const downloadPromises = [
-        // Descargar video
-        fetch(videoUrl, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.youtube.com/',
-            'Origin': 'https://www.youtube.com',
-            'Accept': 'video/*,*/*',
-            'Accept-Encoding': 'identity',
-          },
-          signal: controller.signal,
-        }),
-        
-        // Descargar audio
-        fetch(audioUrl, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.youtube.com/',
-            'Origin': 'https://www.youtube.com',
-            'Accept': 'audio/*,*/*',
-            'Accept-Encoding': 'identity',
-          },
-          signal: controller.signal,
-        })
-      ]
+    // Importaciones dinámicas para evitar problemas en build time si no se usan
+    const ffmpeg = require('fluent-ffmpeg');
+    const ffmpegPath = require('ffmpeg-static');
 
-      const [videoResponse, audioResponse] = await Promise.all(downloadPromises)
-      
-      if (!videoResponse.ok) {
-        throw new Error(`Error descargando video: ${videoResponse.status} ${videoResponse.statusText}`)
-      }
-      
-      if (!audioResponse.ok) {
-        throw new Error(`Error descargando audio: ${audioResponse.status} ${audioResponse.statusText}`)
-      }
-      
-      const [videoBlob, audioBlob] = await Promise.all([
-        videoResponse.blob(),
-        audioResponse.blob()
-      ])
-      
-      clearTimeout(timeoutId)
-      
-      console.log(`✅ [Proxy] Archivos descargados - Video: ${(videoBlob.size / (1024 * 1024)).toFixed(2)}MB, Audio: ${(audioBlob.size / (1024 * 1024)).toFixed(2)}MB`)
-      
-      // ✅ VERIFICAR QUE LOS ARCHIVOS NO SEAN HTML
-      const videoFirstChunk = await videoBlob.slice(0, 50).text()
-      const audioFirstChunk = await audioBlob.slice(0, 50).text()
-      
-      if (videoFirstChunk.trim().startsWith('<!DOCTYPE') || audioFirstChunk.trim().startsWith('<!DOCTYPE')) {
-        throw new Error('Uno de los archivos descargados es HTML en lugar de multimedia')
-      }
-      
-      // ✅ ESTRATEGIA: Por ahora, priorizamos el video (sin combinación real)
-      let finalBlob = videoBlob
-      let finalContentType = 'video/mp4'
-      let combinedSuccess = false
-      
-      // Si ambos archivos son razonables, podríamos intentar combinación
-      if (videoBlob.size < 50 * 1024 * 1024 && audioBlob.size < 10 * 1024 * 1024) {
-        console.log('🔄 [Proxy] Archivos de tamaño razonable para procesamiento')
-        try {
-          // En una implementación real, aquí usarías ffmpeg.wasm o un servicio externo
-          // Por ahora, usamos solo el video pero indicamos que hay audio disponible
-          finalBlob = videoBlob
-          combinedSuccess = false
-          console.log('⚠️ [Proxy] Combinación real requiere ffmpeg, usando solo video con indicación de audio disponible')
-        } catch (combineError) {
-          console.log('⚠️ [Proxy] Error en combinación, usando video:', combineError)
-          finalBlob = videoBlob
-          combinedSuccess = false
-        }
-      } else {
-        console.log('📋 [Proxy] Archivos muy grandes, usando solo video con indicación')
-        finalBlob = videoBlob
-        combinedSuccess = false
-      }
-      
-      // Crear nombre de archivo final
-      let finalFilename = filename || `youtube_${quality || 'combined'}_${Date.now()}.mp4`
-      if (!finalFilename.endsWith('.mp4')) {
-        finalFilename += '.mp4'
-      }
-
-      // Crear respuesta
-      return new NextResponse(finalBlob, {
-        status: 200,
-        headers: {
-          'Content-Type': finalContentType,
-          'Content-Disposition': `attachment; filename="${finalFilename}"`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Content-Length': finalBlob.size.toString(),
-          'X-File-Size': finalBlob.size.toString(),
-          'X-File-Type': 'video',
-          'X-Combined': combinedSuccess ? 'true' : 'false',
-          'X-Video-Size': videoBlob.size.toString(),
-          'X-Audio-Size': audioBlob.size.toString(),
-          'X-Combined-Status': combinedSuccess ? 'success' : 'video_only_with_audio_available',
-          'X-Audio-Download-Url': audioUrl, // ✅ Proporcionar URL de audio para descarga separada
-          'X-Timeouts-Used': 'extended',
-          'X-Url-Validated': 'true'
-        }
-      })
-      
-    } catch (fetchError: any) {
-      clearTimeout(timeoutId)
-      
-      if (fetchError.name === 'AbortError') {
-        throw new Error('Timeout: La combinación tomó más de 5 minutos. Intenta con una calidad más baja (720p o 480p).')
-      }
-      throw fetchError
+    if (ffmpegPath) {
+      ffmpeg.setFfmpegPath(ffmpegPath);
+    } else {
+      throw new Error('ffmpeg-static binary not found');
     }
-    
+
+    const { PassThrough } = require('stream');
+
+    // Crear streams de salida
+    const outputStream = new PassThrough();
+
+    // Promesa para manejar el proceso de ffmpeg
+    const ffmpegPromise = new Promise<void>((resolve, reject) => {
+      const command = ffmpeg()
+        .input(videoUrl)
+        .inputOptions([
+          '-headers', 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\nReferer: https://www.youtube.com/',
+          '-re'
+        ])
+        .input(audioUrl)
+        .inputOptions([
+          '-headers', 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\nReferer: https://www.youtube.com/',
+          '-re'
+        ])
+        .outputOptions([
+          '-c:v copy',
+          '-c:a aac',
+          '-strict experimental',
+          '-movflags frag_keyframe+empty_moov'
+        ])
+        .format('mp4')
+        .on('start', (commandLine: string) => {
+          console.log('🚀 [FFmpeg] Spawned Ffmpeg with command: ' + commandLine);
+        })
+        .on('error', (err: Error, stdout: string, stderr: string) => {
+          console.error('❌ [FFmpeg] Error:', err.message);
+          console.error('❌ [FFmpeg] Stderr:', stderr);
+          reject(err);
+        })
+        .on('end', () => {
+          console.log('✅ [FFmpeg] Processing finished!');
+          resolve();
+        });
+
+      // Pipe to output stream
+      command.pipe(outputStream, { end: true });
+    });
+
+    // Crear nombre de archivo final
+    let finalFilename = filename || `youtube_${quality || 'combined'}_${Date.now()}.mp4`
+    if (!finalFilename.endsWith('.mp4')) {
+      finalFilename += '.mp4'
+    }
+
+    // Configurar encabezados de respuesta
+    const responseHeaders = new Headers();
+    responseHeaders.set('Content-Type', 'video/mp4');
+    responseHeaders.set('Content-Disposition', `attachment; filename="${finalFilename}"`);
+
+    const webStream = new ReadableStream({
+      start(controller) {
+        outputStream.on('data', (chunk: any) => {
+          controller.enqueue(chunk);
+        });
+        outputStream.on('end', () => {
+          controller.close();
+        });
+        outputStream.on('error', (err: any) => {
+          controller.error(err);
+        });
+      }
+    });
+
+    ffmpegPromise.catch(err => {
+      console.error('💥 [Proxy] FFmpeg Background Error:', err);
+    });
+
+    return new NextResponse(webStream, {
+      status: 200,
+      headers: responseHeaders
+    });
+
   } catch (error: any) {
-    console.error('💥 [Proxy] Error en combinación:', error)
+    console.error('💥 [Proxy] Error en combinación FFmpeg:', error)
     return NextResponse.json({
       error: 'Error combinando audio y video: ' + (error instanceof Error ? error.message : 'Unknown error'),
-      details: 'Se descargó solo el video sin audio. Puedes descargar el audio por separado.',
-      fallback_url: videoUrl // ✅ Proporcionar URL de fallback
+      details: 'El servidor no pudo procesar la combinación.',
+      fallback_url: videoUrl
     }, { status: 500 })
   }
 }
@@ -422,7 +385,7 @@ async function handleCombinedDownload(videoUrl: string, audioUrl: string, filena
 async function handleCombinedDownloadBase64(fileContent: string, filename: string) {
   try {
     console.log('🎯 [Proxy] Procesando archivo combinado base64...')
-    
+
     if (!fileContent) {
       return NextResponse.json({ error: 'No file content provided' }, { status: 400 })
     }
@@ -447,7 +410,7 @@ async function handleCombinedDownloadBase64(fileContent: string, filename: strin
     // Decodificar el contenido base64
     const base64Data = fileContent.replace(/^data:video\/mp4;base64,/, '')
     const fileBuffer = Buffer.from(base64Data, 'base64')
-    
+
     if (fileBuffer.length === 0) {
       return NextResponse.json({ error: 'Empty file content' }, { status: 500 })
     }
