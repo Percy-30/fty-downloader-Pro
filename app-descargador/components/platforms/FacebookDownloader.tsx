@@ -680,12 +680,10 @@ export default function FacebookDownloader() {
           </table>
     </div >
     </div >
-          </div >
-              )
-}
 
-{/* SECCIÓN DE EJEMPLOS */ }
-<div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+
+    {/* SECCIÓN DE EJEMPLOS */ }
+    < div className = "mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200" >
   <div className="flex items-center space-x-2 mb-2">
     <svg className="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -699,18 +697,18 @@ export default function FacebookDownloader() {
     <div className="font-mono">• https://fb.watch/abc123def/</div>
     <div className="font-mono">• https://www.facebook.com/username/videos/123456789</div>
   </div>
-</div>
+</div >
 
-{/* INFORMACIÓN ADICIONAL */ }
-<div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-  <div className="flex items-center space-x-2 text-sm text-gray-600">
-    <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <span>Formatos soportados: MP4, M4A. Calidades desde 480p hasta 1080p y DASH</span>
-  </div>
-</div>
+    {/* INFORMACIÓN ADICIONAL */ }
+    < div className = "mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200" >
+      <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <svg className="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Formatos soportados: MP4, M4A. Calidades desde 480p hasta 1080p y DASH</span>
+      </div>
+</div >
             </div >
           </>
         )
-        }
+}
