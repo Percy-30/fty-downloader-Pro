@@ -79,7 +79,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
             {/* Título simple dinámico */}
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center capitalize">
-              Descargar de {activePlatform} (TEST V2)
+              Descargar de {activePlatform}
             </h2>
 
             {/* Renderizador de componente */}
