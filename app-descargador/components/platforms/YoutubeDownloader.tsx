@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useEffect } from 'react';
+
 import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
 import { LocalNotifications } from '@capacitor/local-notifications';
@@ -63,9 +63,7 @@ export default function YoutubeDownloader() {
   const [videoInfo, setVideoInfo] = useState<DownloadResponse | null>(null)
   const [downloading, setDownloading] = useState<string | null>(null)
   const [downloadProgress, setDownloadProgress] = useState(0)
-  const [showAd, setShowAd] = useState(false)
-  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
-  const [adCountdown, setAdCountdown] = useState(5);
+
   const [originalUrl, setOriginalUrl] = useState('');
   const [activeTab, setActiveTab] = useState<'simple' | 'combined'>('simple');
 
@@ -645,11 +643,7 @@ export default function YoutubeDownloader() {
     return audioFormats[0] || null
   }
 
-  const handleDownloadWithAd = (downloadFn: () => void, quality?: string) => {
-    setPendingAction(() => downloadFn);
-    setAdCountdown(5);
-    setShowAd(true);
-  };
+
 
   const isQualityAvailable = (quality: string): boolean => {
     const { format } = findBestFormatForQuality(quality)
@@ -738,21 +732,7 @@ export default function YoutubeDownloader() {
     isQualityAvailable(quality.value)
   )
 
-  useEffect(() => {
-    if (!showAd) return;
-    if (adCountdown <= 0) {
-      setShowAd(false);
-      pendingAction?.();
-      setPendingAction(null);
-      return;
-    }
 
-    const timer = setInterval(() => {
-      setAdCountdown((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [showAd, adCountdown, pendingAction]);
 
   // ✅ COMPONENTE DE PESTAÑAS
   const TabButton = ({ active, onClick, children }: {
@@ -773,41 +753,7 @@ export default function YoutubeDownloader() {
 
   return (
     <>
-      {showAd && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg max-w-sm w-full text-center">
-            <h2 className="text-lg font-bold mb-4">Antes de descargar</h2>
-            <p className="mb-4">Mira este anuncio o espera {adCountdown} segundos para continuar.</p>
 
-            <div className="bg-gray-200 h-32 mb-4 flex items-center justify-center">
-              <span>Anuncio</span>
-            </div>
-
-            <div className="flex justify-center gap-2">
-              <button
-                className={`bg - blue - 600 text - white px - 4 py - 2 rounded ${adCountdown > 0 ? 'opacity-50 cursor-not-allowed' : ''} `}
-                disabled={adCountdown > 0}
-                onClick={() => {
-                  setShowAd(false)
-                  pendingAction?.()
-                  setPendingAction(null)
-                }}
-              >
-                Continuar
-              </button>
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={() => {
-                  setShowAd(false)
-                  setPendingAction(null)
-                }}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200">
         <div className="text-center mb-6">
@@ -1011,7 +957,7 @@ export default function YoutubeDownloader() {
                             </div>
                           ) : (
                             <button
-                              onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
+                              onClick={() => handleSimpleDownload(quality.value, quality.ext)}
                               disabled={!isAvailable || !!downloading}
                               className={`px - 4 py - 2 rounded - lg font - semibold text - sm whitespace - nowrap ${isAvailable && !downloading
                                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -1069,7 +1015,7 @@ export default function YoutubeDownloader() {
                                   </div>
                                 ) : (
                                   <button
-                                    onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
+                                    onClick={() => handleSimpleDownload(quality.value, quality.ext)}
                                     disabled={!isAvailable || !!downloading}
                                     className={`py - 2 px - 4 rounded - lg font - semibold transition - colors text - sm flex items - center justify - center w - full ${isAvailable && !downloading
                                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -1198,10 +1144,11 @@ export default function YoutubeDownloader() {
                                   </div>
                                 ) : (
                                   <button
-                                    onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
+                                    onClick={() => downloadCombined(quality.value)}
                                     disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
                                     className={`py - 2 px - 4 rounded - lg font - semibold transition - colors text - sm flex items - center justify - center w - full ${isAvailable && !downloading && formatInfo.combinationAllowed
                                       ? 'bg-green-600 hover:bg-green-700 text-white'
+
                                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                       } `}
                                   >

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useEffect } from 'react';
+
 import { getFacebookInfo, FacebookVideoInfo } from '@/lib/platforms/facebook';
 import { usePlatform } from '@/hooks/usePlatform';
 
@@ -33,9 +33,7 @@ export default function FacebookDownloader() {
   const [videoInfo, setVideoInfo] = useState<FacebookVideoInfo | null>(null)
   const [downloading, setDownloading] = useState<string | null>(null)
   const [downloadProgress, setDownloadProgress] = useState(0)
-  const [showAd, setShowAd] = useState(false)
-  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
-  const [adCountdown, setAdCountdown] = useState(5);
+
   const [originalUrl, setOriginalUrl] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -261,11 +259,7 @@ export default function FacebookDownloader() {
     return audioFormats[0] || null
   }
 
-  const handleDownloadWithAd = (downloadFn: () => void) => {
-    setPendingAction(() => downloadFn);
-    setAdCountdown(5);
-    setShowAd(true);
-  };
+
 
   const isQualityAvailable = (qualityValue: string): boolean => {
     const format = findFormatForQuality(qualityValue)
@@ -334,59 +328,11 @@ export default function FacebookDownloader() {
     isQualityAvailable(quality.value)
   )
 
-  useEffect(() => {
-    if (!showAd) return;
-    if (adCountdown <= 0) {
-      setShowAd(false);
-      pendingAction?.();
-      setPendingAction(null);
-      return;
-    }
 
-    const timer = setInterval(() => {
-      setAdCountdown((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [showAd, adCountdown, pendingAction]);
 
   return (
     <>
-      {showAd && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg max-w-sm w-full text-center">
-            <h2 className="text-lg font-bold mb-4">Antes de descargar</h2>
-            <p className="mb-4">Mira este anuncio o espera {adCountdown} segundos para continuar.</p>
 
-            <div className="bg-gray-200 h-32 mb-4 flex items-center justify-center">
-              <span>Anuncio</span>
-            </div>
-
-            <div className="flex justify-center gap-2">
-              <button
-                className={`bg-blue-600 text-white px-4 py-2 rounded ${adCountdown > 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={adCountdown > 0}
-                onClick={() => {
-                  setShowAd(false)
-                  pendingAction?.()
-                  setPendingAction(null)
-                }}
-              >
-                Continuar
-              </button>
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={() => {
-                  setShowAd(false)
-                  setPendingAction(null)
-                }}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200">
         <div className="text-center mb-6">
@@ -523,7 +469,7 @@ export default function FacebookDownloader() {
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleDownloadWithAd(handleAudioDownload)}
+                    onClick={handleAudioDownload}
                     disabled={!!downloading || !isQualityAvailable('DASH audio')}
                     className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto"
                   >
@@ -564,9 +510,7 @@ export default function FacebookDownloader() {
                           </div>
                         ) : (
                           <button
-                            onClick={() => handleDownloadWithAd(() =>
-                              handleVideoDownload(quality.id, quality.value, quality.ext)
-                            )}
+                            onClick={() => handleVideoDownload(quality.id, quality.value, quality.ext)}
                             disabled={!isAvailable || !!downloading}
                             className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !downloading
                               ? 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -625,9 +569,7 @@ export default function FacebookDownloader() {
                                 </div>
                               ) : (
                                 <button
-                                  onClick={() => handleDownloadWithAd(() =>
-                                    handleVideoDownload(quality.id, quality.value, quality.ext)
-                                  )}
+                                  onClick={() => handleVideoDownload(quality.id, quality.value, quality.ext)}
                                   disabled={!isAvailable || !!downloading}
                                   className={`px-4 py-1.5 rounded text-sm font-semibold transition-colors ${isAvailable && !downloading
                                     ? 'bg-blue-600 hover:bg-blue-700 text-white'

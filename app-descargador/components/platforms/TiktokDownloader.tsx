@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { usePlatform } from '@/hooks/usePlatform'
 
 interface VideoFormat {
@@ -42,9 +42,7 @@ export default function TiktokDownloader() {
   const [videoInfo, setVideoInfo] = useState<DownloadResponse | null>(null)
   const [downloading, setDownloading] = useState<string | null>(null)
 
-  const [showAd, setShowAd] = useState(false)
-  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
-  const [adCountdown, setAdCountdown] = useState(5); // temporizador 5 segundos
+
 
 
   // Función para validar URL de TikTok
@@ -164,12 +162,7 @@ export default function TiktokDownloader() {
   }
 
 
-  // Función que envuelve cualquier descarga con el anuncio
-  const handleDownloadWithAd = (downloadFn: () => void) => {
-    setPendingAction(() => downloadFn); // guarda la acción pendiente
-    setAdCountdown(5); // reinicia contador
-    setShowAd(true); // muestra el modal
-  };
+
 
   // Formatear números de visualizaciones
   const formatViewCount = (count: number): string => {
@@ -182,64 +175,14 @@ export default function TiktokDownloader() {
   }
 
 
-  useEffect(() => {
-    if (!showAd) return;
-    // Si el countdown ya llegó a 0, ejecuta acción pendiente y cierra modal
-    if (adCountdown <= 0) {
-      setShowAd(false);
-      pendingAction?.();
-      setPendingAction(null);
-      return;
-    }
 
-    const timer = setInterval(() => {
-      setAdCountdown((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [showAd, adCountdown, pendingAction]);
 
 
   return (
 
     <>
       {/* Modal del anuncio */}
-      {showAd && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg max-w-sm w-full text-center">
-            <h2 className="text-lg font-bold mb-4">Antes de descargar</h2>
-            <p className="mb-4">Mira este anuncio o espera {adCountdown} segundos para continuar.</p>
 
-            {/* Placeholder de anuncio */}
-            <div className="bg-gray-200 h-32 mb-4 flex items-center justify-center">
-              <span>Anuncio</span>
-            </div>
-
-            <div className="flex justify-center gap-2">
-              <button
-                className={`bg-blue-600 text-white px-4 py-2 rounded ${adCountdown > 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={adCountdown > 0}
-                onClick={() => {
-                  setShowAd(false)
-                  pendingAction?.() // ejecuta la acción pendiente (descarga)
-                  setPendingAction(null)
-                }}
-              >
-                Continuar
-              </button>
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={() => {
-                  setShowAd(false)
-                  setPendingAction(null)
-                }}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Contenido principal */}
 
@@ -406,9 +349,9 @@ export default function TiktokDownloader() {
                         <button
                           onClick={() => {
                             if (format) {
-                              handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
+                              handleDownload(format.url, quality.value, quality.ext);
                             } else {
-                              handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
+                              handleDirectDownload(quality.value, quality.ext);
                             }
                           }}
                           disabled={!isAvailable || isDownloading}
@@ -460,11 +403,9 @@ export default function TiktokDownloader() {
                             <button
                               onClick={() => {
                                 if (format) {
-                                  //handleDownload(format.url, quality.value, quality.ext)
-                                  handleDownloadWithAd(() => handleDownload(format.url, quality.value, quality.ext));
+                                  handleDownload(format.url, quality.value, quality.ext);
                                 } else {
-                                  //handleDirectDownload(quality.value, quality.ext)
-                                  handleDownloadWithAd(() => handleDirectDownload(quality.value, quality.ext));
+                                  handleDirectDownload(quality.value, quality.ext);
                                 }
                               }}
                               disabled={!isAvailable || isDownloading}
@@ -513,8 +454,7 @@ export default function TiktokDownloader() {
                       f.quality.toLowerCase().includes('sin marca') || f.quality.toLowerCase().includes('nowatermark')
                     )
                     if (noWatermarkFormat) {
-                      //handleDownload(noWatermarkFormat.url, 'sin_marca_agua', 'mp4')
-                      handleDownloadWithAd(() => handleDownload(noWatermarkFormat.url, 'sin_marca_agua', 'mp4'))
+                      handleDownload(noWatermarkFormat.url, 'sin_marca_agua', 'mp4')
 
                     }
                   }}
