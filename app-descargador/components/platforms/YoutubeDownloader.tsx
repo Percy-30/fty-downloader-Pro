@@ -890,7 +890,7 @@ export default function YoutubeDownloader() {
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleDownloadWithAd(handleAudioDownload)}
+                    onClick={handleAudioDownload}
                     disabled={!!downloading}
                     className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto"
                   >
@@ -1083,7 +1083,7 @@ export default function YoutubeDownloader() {
                             </div>
                           ) : (
                             <button
-                              onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
+                              onClick={() => downloadCombined(quality.value)}
                               disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
                               className={`px - 4 py - 2 rounded - lg font - semibold text - sm whitespace - nowrap ${isAvailable && !downloading && formatInfo.combinationAllowed
                                 ? 'bg-green-600 hover:bg-green-700 text-white'
