@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useEffect } from 'react';
 import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 interface VideoFormat {
   quality: string
@@ -111,6 +112,39 @@ export default function YoutubeDownloader() {
     }
   }
 
+  // ✅ FUNCIÓN PARA NOTIFICACIONES LOCALES
+  const scheduleNotification = async (title: string, body: string) => {
+    try {
+      if (isNative) {
+        // Solicitar permisos si es necesario (Android 13+)
+        const check = await LocalNotifications.checkPermissions();
+        if (check.display !== 'granted') {
+          await LocalNotifications.requestPermissions();
+        }
+
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              title: title,
+              body: body,
+              id: Math.floor(Math.random() * 100000),
+              schedule: { at: new Date(Date.now() + 100) }, // Inmediato
+              smallIcon: 'ic_stat_icon_config_sample', // Icono por defecto o personalizado
+              actionTypeId: '',
+              extra: null
+            }
+          ]
+        });
+      } else {
+        // En Web, usar Toast o Alert simple si se desea, por ahora solo console
+        console.log('🔔 Notificación Web:', title, body);
+        // alert(`${title}\n${body}`); // Opcional, puede ser molesto en web
+      }
+    } catch (e) {
+      console.error('Error mostrando notificación:', e);
+    }
+  }
+
   // ✅ FUNCIÓN PARA VERIFICAR SI LA COMBINACIÓN ESTÁ PERMITIDA (HASTA 1080p)
   const isCombinationAllowed = (quality: string): boolean => {
     // ✅ LIMITAR COMBINACIÓN HASTA 1080p (MENOS DE 200MB)
@@ -139,6 +173,11 @@ export default function YoutubeDownloader() {
       }
 
       console.log('🔗 URL para descarga combinada:', downloadUrl)
+
+      // ✅ Notificar al usuario (especialmente en Android)
+      if (isNative) {
+        // Opcional: Toast o Log
+      }
 
       const response = await fetch('/api/download/youtube/combined', {
         method: 'POST',
@@ -278,6 +317,7 @@ export default function YoutubeDownloader() {
       // Limpiar URL después de 5 segundos
       setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
       console.log('✅ Descarga base64 completada')
+      scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
 
     } catch (error) {
       console.error('❌ Error procesando base64:', error)
@@ -437,6 +477,8 @@ export default function YoutubeDownloader() {
         setDownloading(null)
         setDownloadProgress(0)
       }, 5000)
+
+      scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
 
     } catch (error) {
       console.error('❌ Error en descarga:', error)
@@ -709,8 +751,8 @@ export default function YoutubeDownloader() {
     <button
       onClick={onClick}
       className={`px - 4 py - 2 font - semibold rounded - t - lg transition - colors ${active
-          ? 'bg-red-600 text-white border-b-2 border-red-700'
-          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        ? 'bg-red-600 text-white border-b-2 border-red-700'
+        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
         } `}
     >
       {children}
@@ -960,8 +1002,8 @@ export default function YoutubeDownloader() {
                               onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
                               disabled={!isAvailable || !!downloading}
                               className={`px - 4 py - 2 rounded - lg font - semibold text - sm whitespace - nowrap ${isAvailable && !downloading
-                                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 } `}
                             >
                               {isAvailable ? 'Descargar' : 'N/A'}
@@ -1018,8 +1060,8 @@ export default function YoutubeDownloader() {
                                     onClick={() => handleDownloadWithAd(() => handleSimpleDownload(quality.value, quality.ext))}
                                     disabled={!isAvailable || !!downloading}
                                     className={`py - 2 px - 4 rounded - lg font - semibold transition - colors text - sm flex items - center justify - center w - full ${isAvailable && !downloading
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                       } `}
                                   >
                                     {isAvailable ? (
@@ -1086,8 +1128,8 @@ export default function YoutubeDownloader() {
                               onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
                               disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
                               className={`px - 4 py - 2 rounded - lg font - semibold text - sm whitespace - nowrap ${isAvailable && !downloading && formatInfo.combinationAllowed
-                                  ? 'bg-green-600 hover:bg-green-700 text-white'
-                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 } `}
                             >
                               {isAvailable && formatInfo.combinationAllowed ? 'Combinar' : 'N/A'}
@@ -1147,8 +1189,8 @@ export default function YoutubeDownloader() {
                                     onClick={() => handleDownloadWithAd(() => downloadCombined(quality.value), quality.value)}
                                     disabled={!isAvailable || !!downloading || !formatInfo.combinationAllowed}
                                     className={`py - 2 px - 4 rounded - lg font - semibold transition - colors text - sm flex items - center justify - center w - full ${isAvailable && !downloading && formatInfo.combinationAllowed
-                                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                       } `}
                                   >
                                     {isAvailable ? (

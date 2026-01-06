@@ -87,8 +87,10 @@ export default function Home() {
           </div>
 
           {/* Espacio para publicidad nativa (gestionada por AdMob overlays, pero dejamos espacio visual si es necesario) */}
-          <div className="mt-8 text-center text-xs text-gray-400">
-            Versión Pro 1.0.0 - DEBUG: {isNative ? 'NATIVE' : 'WEB'}
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-500">
+              v1.0.0
+            </p>
           </div>
         </main>
 
@@ -138,9 +140,9 @@ export default function Home() {
           <section id="herramientas" className="max-w-4xl mx-auto mb-16">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Herramientas de Gestión (TEST V2)
-                </h2>
+                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 truncate">
+                  FTY Downloader Pro
+                </h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                   Utiliza nuestras herramientas profesionales para gestionar y respaldar tu contenido digital.
                 </p>
