@@ -26,6 +26,18 @@ export function useNotifications() {
         if (!isNative) return;
 
         try {
+            // Verificar permisos antes de cada notificación
+            let permStatus = await LocalNotifications.checkPermissions();
+
+            if (permStatus.display !== 'granted') {
+                permStatus = await LocalNotifications.requestPermissions();
+            }
+
+            if (permStatus.display !== 'granted') {
+                console.warn('Permisos de notificación no concedidos');
+                return;
+            }
+
             const id = Math.floor(Math.random() * 1000000);
             await LocalNotifications.schedule({
                 notifications: [
@@ -33,11 +45,15 @@ export function useNotifications() {
                         title,
                         body,
                         id,
-                        channelId: 'downloads', // Vinculación crucial con el canal
-                        schedule: { at: new Date(Date.now() + 100) }, // Pequeño delay
+                        channelId: 'downloads',
+                        schedule: { at: new Date(Date.now() + 100) },
+                        sound: undefined,
+                        actionTypeId: '',
+                        extra: null
                     }
                 ]
             });
+            console.log('Notificación programada:', title);
         } catch (error) {
             console.error('Error scheduling notification:', error);
         }

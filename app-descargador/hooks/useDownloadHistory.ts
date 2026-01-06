@@ -52,15 +52,18 @@ export function useDownloadHistory() {
             date: Date.now(),
         };
 
-        // We read current state from localStorage to ensure we have latest data
-        // before appending, to avoid race conditions with stale state closures
         const stored = localStorage.getItem(HISTORY_KEY);
         const currentHistory: HistoryItem[] = stored ? JSON.parse(stored) : [];
 
         const updated = [newItem, ...currentHistory].slice(0, MAX_ITEMS);
         localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+
+        // Update local state
         setHistory(updated);
+
+        // Notify other components
         window.dispatchEvent(new Event('history-updated'));
+        console.log('✅ History updated:', newItem.title);
     };
 
     const clearHistory = () => {
