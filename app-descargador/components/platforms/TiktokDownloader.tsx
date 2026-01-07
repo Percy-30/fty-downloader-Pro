@@ -138,10 +138,12 @@ export default function TiktokDownloader() {
                 data: base64Data,
                 directory: Directory.Cache
               });
+              console.log('[DEBUG-PATH] TK 1. Cache:', tempResult.uri);
+
               // 2. Galería
               await Media.saveVideo({ path: tempResult.uri });
+              console.log('[DEBUG-PATH] TK 2. Saved to Gallery');
 
-              console.log('Video guardado en Galería:', filename);
               scheduleNotification('Descarga Completada', `Guardado en Galería`);
 
               // 3. Limpiar
@@ -152,11 +154,12 @@ export default function TiktokDownloader() {
             } catch (e) {
               console.warn('Fallback a Documents:', e);
               try {
-                await Filesystem.writeFile({
+                const docResult = await Filesystem.writeFile({
                   path: filename,
                   data: base64Data,
                   directory: Directory.Documents
                 });
+                console.log('[DEBUG-PATH] TK 3. Documents Fallback:', docResult.uri);
                 scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
               } catch (docError: any) {
                 await Dialog.alert({

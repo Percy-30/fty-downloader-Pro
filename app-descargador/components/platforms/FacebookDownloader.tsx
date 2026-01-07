@@ -219,10 +219,12 @@ export default function FacebookDownloader() {
               data: base64Data,
               directory: Directory.Cache
             });
+            console.log('[DEBUG-PATH] FB 1. Cache:', tempResult.uri);
+
             // 2. Galería
             await Media.saveVideo({ path: tempResult.uri });
+            console.log('[DEBUG-PATH] FB 2. Saved to Gallery');
 
-            console.log('Video guardado en Galería:', filename);
             scheduleNotification('Descarga Completada', `Guardado en Galería`);
 
             // 3. Limpiar
@@ -233,11 +235,12 @@ export default function FacebookDownloader() {
           } catch (e) {
             console.warn('Fallo Media.saveVideo, intentando fallback Documents', e);
             try {
-              await Filesystem.writeFile({
+              const docResult = await Filesystem.writeFile({
                 path: filename,
                 data: base64Data,
                 directory: Directory.Documents
               });
+              console.log('[DEBUG-PATH] FB 3. Documents Fallback:', docResult.uri);
               scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
             } catch (docError: any) {
               await Dialog.alert({

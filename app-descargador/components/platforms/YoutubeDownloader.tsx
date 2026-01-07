@@ -501,10 +501,13 @@ export default function YoutubeDownloader() {
                 directory: Directory.Cache
               });
 
+              console.log('[DEBUG-PATH] 1. Archivo escrito en Cache:', tempResult.uri);
+
               // 2. Mover a Galería usando Media Plugin
+              console.log('[DEBUG-PATH] 2. Intentando Media.saveVideo con:', tempResult.uri);
               await Media.saveVideo({ path: tempResult.uri });
 
-              console.log('Video guardado en Galería:', filename);
+              console.log('[DEBUG-PATH] 3. Media.saveVideo completado. El video debería estar en la Galería.');
               scheduleNotification('Descarga Completada', `Guardado en Galería`);
 
               // 3. Limpiar temporal
@@ -513,22 +516,28 @@ export default function YoutubeDownloader() {
                   path: filename,
                   directory: Directory.Cache
                 });
+                console.log('[DEBUG-PATH] 4. Cache limpiado correctamente');
               } catch (cleanupErr) { console.warn('No se pudo borrar cache', cleanupErr); }
 
             } catch (e) {
               console.warn('Fallo Media.saveVideo, intentando fallback Documents:', e);
+              console.log('[DEBUG-PATH] ERROR en Galería. Intentando Documents...');
+
               // Fallback: Guardar en Documents como antes
               try {
-                await Filesystem.writeFile({
+                const docResult = await Filesystem.writeFile({
                   path: filename,
                   data: base64Data,
                   directory: Directory.Documents
                 });
+                console.log('[DEBUG-PATH] 5. Fallback guardado en Documents:', docResult.uri);
+
                 scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
               } catch (docError: any) {
+                console.error('[DEBUG-PATH] CRITICAL FAIL Documents:', docError);
                 await Dialog.alert({
                   title: 'Error de Guardado',
-                  message: `No se pudo guardar en Galería ni Documentos.\nError: ${docError.message}`
+                  message: `No se pudo guardar en Galería ni Documentos.\nError: ${docError.message}\nRuta intentada: Documents/${filename}`
                 });
                 throw docError;
               }
