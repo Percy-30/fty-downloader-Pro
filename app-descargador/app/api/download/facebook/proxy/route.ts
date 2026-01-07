@@ -162,11 +162,9 @@ async function handleAudioWithThumbnail(audioUrl: string, thumbnailUrl: string, 
           '-map 0:0',
           '-map 1:0',
           '-c copy',
-          '-id3v2_version 3',
-          '-metadata:s:v title="Album cover"',
-          '-metadata:s:v comment="Cover (front)"'
+          '-disposition:v:1 attached_pic'
         ])
-        .format('mp3') // Forzamos MP3
+        .format('ipod') // Force M4A/MP4 container (fastest copy)
         .on('error', (err: Error) => {
           console.error('❌ [FFmpeg/Audio] Error:', err.message);
           reject(err);
@@ -178,12 +176,12 @@ async function handleAudioWithThumbnail(audioUrl: string, thumbnailUrl: string, 
         .pipe(outputStream, { end: true });
     });
 
-    // Ajustar nombre archivo a .mp3
-    let finalFilename = filename.replace(/\.(m4a|webm|mp4)$/, '.mp3');
-    if (!finalFilename.endsWith('.mp3')) finalFilename += '.mp3';
+    // Ajustar nombre archivo a .m4a
+    let finalFilename = filename.replace(/\.(mp3|webm|mp4)$/, '.m4a');
+    if (!finalFilename.endsWith('.m4a')) finalFilename += '.m4a';
 
     const responseHeaders = new Headers();
-    responseHeaders.set('Content-Type', 'audio/mpeg');
+    responseHeaders.set('Content-Type', 'audio/mp4');
     responseHeaders.set('Content-Disposition', `attachment; filename="${finalFilename}"`);
 
     // Stream response
