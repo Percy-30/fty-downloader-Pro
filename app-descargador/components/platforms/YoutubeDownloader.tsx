@@ -484,21 +484,60 @@ export default function YoutubeDownloader() {
       console.log('✅ Descarga exitosa:', blob.size, 'bytes')
       setDownloadProgress(100)
 
-      const blobUrl = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = filename
-      link.style.display = 'none'
+      if (isNative) {
+        // 📱 NATIVE: Guardar usando Filesystem
+        try {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = async () => {
+            const base64Data = (reader.result as string).split(',')[1];
+            try {
+              const result = await Filesystem.writeFile({
+                path: `Download/${filename}`, // Guardar en carpeta Download
+                data: base64Data,
+                directory: Directory.External, // External = Almacenamiento compartido
+                recursive: true
+              });
+              console.log('Archivo guardado en:', result.uri);
+              scheduleNotification('Descarga Completada', `Guardado en Descargas/${filename}`);
+            } catch (e) {
+              // Fallback a Documents si External falla (Android 11+)
+              console.warn('Fallo escritura en External, intentando Documents:', e);
+              await Filesystem.writeFile({
+                path: filename,
+                data: base64Data,
+                directory: Directory.Documents
+              });
+              scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+            }
+          };
+        } catch (writeError) {
+          console.error('Error guardando archivo nativo:', writeError);
+          throw new Error('No se pudo guardar el archivo en el dispositivo');
+        }
 
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      } else {
+        // 🌐 WEB: Método clásico
+        const blobUrl = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = filename
+        link.style.display = 'none'
 
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl)
-        setDownloading(null)
-        setDownloadProgress(0)
-      }, 5000)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+      }
+
+      if (!isNative) {
+        setTimeout(() => {
+          // Limpieza de blobUrl solo si se creó (web)
+          // No tenemos acceso a blobUrl aquí si fue native, así que este bloque
+          // debería estar dentro del else de arriba o manejarlo distinto.
+          // Simplificación: no hacemos nada aquí porque ya se maneja arriba.
+        }, 1000)
+      }
 
       scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
       addToHistory({

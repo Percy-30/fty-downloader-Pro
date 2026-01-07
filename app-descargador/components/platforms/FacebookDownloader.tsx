@@ -6,7 +6,7 @@ import { getFacebookInfo, FacebookVideoInfo } from '@/lib/platforms/facebook';
 import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
-import { Filesystem } from '@capacitor/filesystem';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 interface VideoFormat {
   quality: string
@@ -203,19 +203,47 @@ export default function FacebookDownloader() {
       setDownloadProgress(100)
 
       // Crear y descargar el archivo
-      const blobUrl = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = filename
-      link.style.display = 'none'
+      if (isNative) {
+        // 📱 NATIVE
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = async () => {
+          const base64Data = (reader.result as string).split(',')[1];
+          try {
+            await Filesystem.writeFile({
+              path: `Download/${filename}`,
+              data: base64Data,
+              directory: Directory.External,
+              recursive: true
+            });
+            scheduleNotification('Descarga Completada', `Guardado en Descargas/${filename}`);
+          } catch (e) {
+            console.warn('Fallo escritura External, usando Documents', e);
+            await Filesystem.writeFile({
+              path: filename,
+              data: base64Data,
+              directory: Directory.Documents
+            });
+            scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+          }
+        };
+      } else {
+        // 🌐 WEB
+        const blobUrl = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = filename
+        link.style.display = 'none'
 
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
+      }
 
       // Limpiar
+      // Limpieza general
       setTimeout(() => {
-        URL.revokeObjectURL(blobUrl)
         setDownloading(null)
         setDownloadProgress(0)
       }, 5000)

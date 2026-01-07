@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { usePlatform } from '@/hooks/usePlatform'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useDownloadHistory } from '@/hooks/useDownloadHistory'
-import { Filesystem } from '@capacitor/filesystem'
+import { Filesystem, Directory } from '@capacitor/filesystem'
 
 interface VideoFormat {
   quality: string
@@ -120,18 +120,49 @@ export default function TiktokDownloader() {
       if (!response.ok) throw new Error('Error al descargar el archivo')
 
       const blob = await response.blob()
-      const urlObject = window.URL.createObjectURL(blob)
 
-      const link = document.createElement('a')
-      link.href = urlObject
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      if (isNative) {
+        // 📱 NATIVE: Guardar usando Filesystem
+        try {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = async () => {
+            const base64Data = (reader.result as string).split(',')[1];
+            try {
+              await Filesystem.writeFile({
+                path: `Download/${filename}`,
+                data: base64Data,
+                directory: Directory.External,
+                recursive: true
+              });
+              console.log('Archivo guardado en External/Download:', filename);
+              scheduleNotification('Descarga Completada', `Guardado en Descargas/${filename}`);
+            } catch (e) {
+              console.warn('Fallback a Documents:', e);
+              await Filesystem.writeFile({
+                path: filename,
+                data: base64Data,
+                directory: Directory.Documents
+              });
+              scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+            }
+          };
+        } catch (writeError) {
+          console.error('Error guardando archivo nativo:', writeError);
+          throw new Error('No se pudo guardar el archivo en el dispositivo');
+        }
 
-      document.body.removeChild(link)
-
-      window.URL.revokeObjectURL(urlObject)
+      } else {
+        // 🌐 WEB
+        const urlObject = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = urlObject
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        setTimeout(() => window.URL.revokeObjectURL(urlObject), 1000)
+      }
 
       scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
       addToHistory({
