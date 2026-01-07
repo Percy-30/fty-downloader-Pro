@@ -493,9 +493,9 @@ export default function YoutubeDownloader() {
           reader.readAsDataURL(blob);
           reader.onloadend = async () => {
             const base64Data = (reader.result as string).split(',')[1];
-            // Definir carpetas personalizadas en Documents
-            const baseFolder = 'FTYdownloaderPro/download';
-            const typeFolder = isAudio ? 'Audio' : 'Video';
+            // Definir carpetas personalizadas dentro de Download (carpeta pública)
+            const baseFolder = 'Download/FTYdownloaderPro/download';
+            const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
             const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
 
             let savedUri = '';

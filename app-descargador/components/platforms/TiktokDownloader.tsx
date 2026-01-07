@@ -132,9 +132,9 @@ export default function TiktokDownloader() {
           reader.onloadend = async () => {
             const base64Data = (reader.result as string).split(',')[1];
             try {
-              // Definir carpetas personalizadas en Documents
-              const baseFolder = 'FTYdownloaderPro/download';
-              const typeFolder = 'Video';
+              // Definir carpetas personalizadas dentro de Download (carpeta pública)
+              const baseFolder = 'Download/FTYdownloaderPro/download';
+              const typeFolder = 'FTYdownloaderPro Video';
               const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
               let savedUri = '';
 
