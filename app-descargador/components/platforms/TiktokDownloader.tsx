@@ -132,43 +132,45 @@ export default function TiktokDownloader() {
           reader.onloadend = async () => {
             const base64Data = (reader.result as string).split(',')[1];
             try {
-              // 1. Cache
-              const tempResult = await Filesystem.writeFile({
-                path: filename,
-                data: base64Data,
-                directory: Directory.Cache
-              });
-              console.log('[DEBUG-PATH] TK 1. Cache:', tempResult.uri);
+              // Definir carpetas personalizadas en Documents
+              const baseFolder = 'FTYdownloaderPro/download';
+              const typeFolder = 'Video';
+              const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+              let savedUri = '';
 
-              // 2. Galería con Album
-              await Media.saveVideo({
-                path: tempResult.uri,
-                album: 'FTYdownloader Video'
-              } as any);
-
-              scheduleNotification('Descarga Completada', `Guardado en Galería`);
-
-              // 3. Limpiar
               try {
-                await Filesystem.deleteFile({ path: filename, directory: Directory.Cache });
-              } catch (e) { }
-
-            } catch (e) {
-              console.warn('Fallback a Documents:', e);
-              try {
-                const docResult = await Filesystem.writeFile({
-                  path: filename,
+                const result = await Filesystem.writeFile({
+                  path: finalPath,
                   data: base64Data,
-                  directory: Directory.Documents
+                  directory: Directory.Documents,
+                  recursive: true
                 });
-                scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
-              } catch (docError: any) {
+                savedUri = result.uri;
+                console.log('[DEBUG-PATH] TK Guardado en:', savedUri);
+                scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+              } catch (writeErr: any) {
                 await Dialog.alert({
-                  title: 'Error de Guardado',
-                  message: `No se pudo guardar en Galería ni Documentos.\nError: ${docError.message}`
+                  title: 'Error Guardando',
+                  message: `No se pudo crear carpeta.\n${writeErr.message}`
                 });
-                throw docError;
+                throw writeErr;
               }
+
+              addToHistory({
+                title: filename,
+                platform: 'tiktok',
+                thumbnail: '', // Tiktok thumb difícil sin API
+                originalUrl: url,
+                status: 'completed',
+                format: 'HD',
+                fileSize: formatBytes(blob.size), // Guardar tamaño
+                duration: undefined,
+                filePath: savedUri, // URI REAL
+                mimeType: 'video/mp4'
+              })
+            } catch (writeError) {
+              console.error('Error guardando archivo nativo:', writeError);
+              throw new Error('No se pudo guardar el archivo en el dispositivo');
             }
           };
         } catch (writeError) {
@@ -186,24 +188,36 @@ export default function TiktokDownloader() {
         link.click()
         document.body.removeChild(link)
         setTimeout(() => window.URL.revokeObjectURL(urlObject), 1000)
+
+        // Web History
+        addToHistory({
+          title: filename,
+          platform: 'tiktok',
+          thumbnail: '',
+          originalUrl: url,
+          status: 'completed',
+          format: 'HD',
+          fileSize: formatBytes(blob.size),
+          duration: undefined
+        })
       }
 
-      scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      // scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`) // This notification is now handled inside the native block
       // Ruta final estimada
-      const finalPath = `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`;
+      // const finalPath = `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`; // This is no longer used directly here
 
-      addToHistory({
-        title: filename,
-        platform: 'tiktok',
-        thumbnail: '', // Tiktok thumb difícil sin API
-        originalUrl: url,
-        status: 'completed',
-        format: 'HD',
-        fileSize: formatBytes(blob.size), // Guardar tamaño
-        duration: undefined,
-        filePath: finalPath,
-        mimeType: 'video/mp4'
-      })
+      // addToHistory({ // This is now handled inside the native block
+      //   title: filename,
+      //   platform: 'tiktok',
+      //   thumbnail: '', // Tiktok thumb difícil sin API
+      //   originalUrl: url,
+      //   status: 'completed',
+      //   format: 'HD',
+      //   fileSize: formatBytes(blob.size), // Guardar tamaño
+      //   duration: undefined,
+      //   filePath: finalPath,
+      //   mimeType: 'video/mp4'
+      // })
     } catch (error) {
       console.error('Error en descarga:', error)
       setError('Error al descargar el archivo: ' + (error instanceof Error ? error.message : 'Error desconocido'))

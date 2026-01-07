@@ -493,66 +493,61 @@ export default function YoutubeDownloader() {
           reader.readAsDataURL(blob);
           reader.onloadend = async () => {
             const base64Data = (reader.result as string).split(',')[1];
+            // Definir carpetas personalizadas en Documents
+            const baseFolder = 'FTYdownloaderPro/download';
+            const typeFolder = isAudio ? 'Audio' : 'Video';
+            const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+
+            let savedUri = '';
+
             try {
-              if (isAudio) {
-                // 🎵 AUDIO: Guardar en Documents/FTYdownloader Audio
-                const audioDir = 'FTYdownloader Audio';
-                const audioPath = `${audioDir}/${filename}`;
+              // 1. Guardar archivo fisicamente en la ruta solicitada
+              const result = await Filesystem.writeFile({
+                path: finalPath,
+                data: base64Data,
+                directory: Directory.Documents,
+                recursive: true
+              });
+              savedUri = result.uri;
+              console.log('[DEBUG-PATH] Guardado EXITO en:', savedUri);
 
+              // 2. Intentar indexar en Galería (solo videos)
+              if (!isAudio) {
                 try {
-                  // Intentar guardar en carpeta organizada
-                  await Filesystem.writeFile({
-                    path: audioPath,
-                    data: base64Data,
-                    directory: Directory.Documents,
-                    recursive: true
-                  });
-                  console.log('Audio guardado en:', audioPath);
-                  scheduleNotification('Descarga Completada', `Guardado en Music/${filename}`);
-                } catch (subDirErr) {
-                  // Fallback a raíz de Documents
-                  console.warn('No se pudo crear carpeta Audio, guardando en raíz', subDirErr);
-                  await Filesystem.writeFile({
-                    path: filename,
-                    data: base64Data,
-                    directory: Directory.Documents
-                  });
-                  scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+                  // Nota: Media.saveVideo suele mover el archivo.
+                  // Si queremos mantener la estructura personalizada, mejor confiamos en que
+                  // Android escanee Documents eventualmente, o usamos un plugin de scanner.
+                  // Por ahora, solo guardamos ahí.
+                } catch (e) {
+                  console.warn('No se pudo indexar', e);
                 }
-
-              } else {
-                // 🎬 VIDEO: Usar Media Plugin con Album
-                // 1. Cache
-                const tempResult = await Filesystem.writeFile({
-                  path: filename,
-                  data: base64Data,
-                  directory: Directory.Cache
-                });
-
-                // 2. Galería (Album: FTYdownloader Video)
-                await Media.saveVideo({
-                  path: tempResult.uri,
-                  album: 'FTYdownloader Video'
-                } as any);
-
-                console.log('Video guardado en Album FTYdownloader Video');
-                scheduleNotification('Descarga Completada', `Guardado en Galería`);
-
-                // 3. Limpiar
-                try {
-                  await Filesystem.deleteFile({ path: filename, directory: Directory.Cache });
-                } catch (e) { }
               }
 
-            } catch (e) {
-              // Error general (fallback extremo)
-              console.error('Error guardando archivo:', e);
+              scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+
+            } catch (writeErr: any) {
+              console.error('[DEBUG-PATH] Fallo escritura carpetas:', writeErr);
               await Dialog.alert({
-                title: 'Error de Guardado',
-                message: `No se pudo guardar el archivo.\nError: ${(e as Error).message}`
+                title: 'Error Guardando',
+                message: `No se pudo crear la carpeta ${typeFolder}.\n${writeErr.message}`
               });
-              throw e;
+              throw writeErr;
             }
+
+            const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+
+            addToHistory({
+              title: videoInfo?.title || filename,
+              platform: 'youtube',
+              thumbnail: videoInfo?.thumbnail || '',
+              originalUrl: downloadUrl,
+              status: 'completed',
+              format: quality,
+              fileSize: formatBytes(blob.size),
+              duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+              filePath: savedUri, // USAMOS LA URI REAL
+              mimeType: mimeType
+            })
           };
         } catch (writeError: any) {
           console.error('Error guardando archivo nativo:', writeError);
@@ -575,37 +570,23 @@ export default function YoutubeDownloader() {
         link.click()
         document.body.removeChild(link)
         setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+
+        // WEB History Update
+        scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
+        const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+        addToHistory({
+          title: videoInfo?.title || filename,
+          platform: 'youtube',
+          thumbnail: videoInfo?.thumbnail || '',
+          originalUrl: downloadUrl,
+          status: 'completed',
+          format: quality,
+          fileSize: formatBytes(blob.size),
+          duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+          // Web no tiene acceso directo a file system standard
+          mimeType: mimeType
+        })
       }
-
-      if (!isNative) {
-        setTimeout(() => {
-          // Limpieza de blobUrl solo si se creó (web)
-          // No tenemos acceso a blobUrl aquí si fue native, así que este bloque
-          // debería estar dentro del else de arriba o manejarlo distinto.
-          // Simplificación: no hacemos nada aquí porque ya se maneja arriba.
-        }, 1000)
-      }
-
-      scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
-      // Calcular ruta final para historial (aproximada basada en estándares Android)
-      const finalPath = isAudio
-        ? `file:///storage/emulated/0/Documents/FTYdownloader Audio/${filename}`
-        : `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`;
-
-      const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
-
-      addToHistory({
-        title: videoInfo?.title || filename,
-        platform: 'youtube',
-        thumbnail: videoInfo?.thumbnail || '',
-        originalUrl: downloadUrl,
-        status: 'completed',
-        format: quality,
-        fileSize: formatBytes(blob.size),
-        duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
-        filePath: finalPath,
-        mimeType: mimeType
-      })
     } catch (error) {
       console.error('❌ Error en descarga:', error)
 

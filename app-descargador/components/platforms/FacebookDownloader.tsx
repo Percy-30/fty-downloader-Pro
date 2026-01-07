@@ -213,45 +213,53 @@ export default function FacebookDownloader() {
         reader.onloadend = async () => {
           const base64Data = (reader.result as string).split(',')[1];
           try {
-            // 1. Cache
-            const tempResult = await Filesystem.writeFile({
-              path: filename,
-              data: base64Data,
-              directory: Directory.Cache
-            });
-            console.log('[DEBUG-PATH] FB 1. Cache:', tempResult.uri);
+            // Definir carpetas personalizadas en Documents
+            const baseFolder = 'FTYdownloaderPro/download';
+            const typeFolder = 'Video';
+            const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+            let savedUri = '';
 
-            // 2. Galería con Album
-            await Media.saveVideo({
-              path: tempResult.uri,
-              album: 'FTYdownloader Video'
-            } as any);
-            console.log('[DEBUG-PATH] FB 2. Saved to Gallery');
-
-            scheduleNotification('Descarga Completada', `Guardado en Galería`);
-
-            // 3. Limpiar
             try {
-              await Filesystem.deleteFile({ path: filename, directory: Directory.Cache });
-            } catch (e) { }
+              const result = await Filesystem.writeFile({
+                path: finalPath,
+                data: base64Data,
+                directory: Directory.Documents,
+                recursive: true
+              });
+              savedUri = result.uri;
+              console.log('[DEBUG-PATH] FB Guardado en:', savedUri);
+              scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+
+            } catch (writeErr: any) {
+              await Dialog.alert({
+                title: 'Error Guardando',
+                message: `No se pudo crear carpeta.\n${writeErr.message}`
+              });
+              throw writeErr;
+            }
+
+            addToHistory({
+              title: filename,
+              platform: 'facebook',
+              thumbnail: '',
+              originalUrl: url,
+              status: 'completed',
+              format: quality,
+              fileSize: formatBytes(blob.size),
+              duration: undefined,
+              filePath: savedUri, // URI REAL
+              mimeType: 'video/mp4'
+            })
 
           } catch (e) {
-            console.warn('Fallo Media.saveVideo, intentando fallback Documents', e);
-            try {
-              const docResult = await Filesystem.writeFile({
-                path: filename,
-                data: base64Data,
-                directory: Directory.Documents
-              });
-              console.log('[DEBUG-PATH] FB 3. Documents Fallback:', docResult.uri);
-              scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
-            } catch (docError: any) {
-              await Dialog.alert({
-                title: 'Error de Guardado',
-                message: `No se pudo guardar en Galería ni Documentos.\nError: ${docError.message}`
-              });
-              throw docError;
-            }
+            console.error('Error al procesar la descarga nativa:', e);
+            setError(`Error al guardar el archivo: ${e instanceof Error ? e.message : 'Error desconocido'}`);
+          } finally {
+            // Limpieza general
+            setTimeout(() => {
+              setDownloading(null)
+              setDownloadProgress(0)
+            }, 5000)
           }
         };
       } else {
@@ -266,31 +274,26 @@ export default function FacebookDownloader() {
         link.click()
         document.body.removeChild(link)
         setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
+
+        // WEB Notification & History
+        scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+        addToHistory({
+          title: filename,
+          platform: 'facebook',
+          thumbnail: '',
+          originalUrl: url,
+          status: 'completed',
+          format: quality,
+          fileSize: formatBytes(blob.size),
+          duration: undefined,
+        })
       }
 
-      // Limpiar
       // Limpieza general
       setTimeout(() => {
         setDownloading(null)
         setDownloadProgress(0)
       }, 5000)
-
-      scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
-      // Ruta final estimada
-      const finalPath = `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`;
-
-      addToHistory({
-        title: filename, // FB no suele dar título limpio
-        platform: 'facebook',
-        thumbnail: '', // FB difícil sacar thumb sin API
-        originalUrl: url,
-        status: 'completed',
-        format: quality,
-        fileSize: formatBytes(blob.size), // Guardar tamaño
-        duration: undefined,
-        filePath: finalPath,
-        mimeType: 'video/mp4'
-      })
 
     } catch (error) {
       console.error('❌ Error en descarga con proxy:', error)
