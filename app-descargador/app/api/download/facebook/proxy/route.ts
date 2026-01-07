@@ -18,10 +18,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ MANEJAR AUDIO CON MINIATURA (FFmpeg)
+    // ✅ MANEJAR AUDIO CON MINIATURA (Delegar a Backend Python si existe)
     if (isAudio && thumbnailUrl) {
       console.log('🎵 [Facebook Proxy] Procesando audio con miniatura...');
-      return await handleAudioWithThumbnail(url, thumbnailUrl, filename);
+
+      const backendUrl = process.env.BACKEND_URL;
+
+      if (backendUrl) {
+        console.log(`🚀 [Facebook Proxy] Delegando a Backend Python: ${backendUrl}`);
+        return await handleAudioWithExternalBackend(url, thumbnailUrl, filename, backendUrl);
+      } else {
+        console.warn('⚠️ [Facebook Proxy] BACKEND_URL no configurado, usando FFmpeg local (lento)...');
+        return await handleAudioWithThumbnail(url, thumbnailUrl, filename);
+      }
     }
 
     // Headers específicos para Facebook
@@ -142,7 +151,54 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ✅ FUNCIÓN PARA INCRUSTAR MINIATURA EN AUDIO (Copiada del proxy principal)
+// ✅ FUNCIÓN PARA DELEGAR A BACKEND EXTERNO (Python)
+async function handleAudioWithExternalBackend(audioUrl: string, thumbnailUrl: string, filename: string, backendUrl: string) {
+  try {
+    const targetUrl = `${backendUrl.replace(/\/$/, '')}/facebook/proxy-merge`; // Ajustar según estructura real del backend
+
+    console.log('🔗 [Proxy -> Python] Conectando a:', targetUrl);
+
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        audio_url: audioUrl,
+        thumbnail_url: thumbnailUrl,
+        filename: filename
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ [Python Backend] Error ${response.status}:`, errorText);
+      throw new Error(`Backend Error: ${response.status} - ${errorText}`);
+    }
+
+    console.log('✅ [Python Backend] Respuesta recibida, iniciando stream...');
+
+    // Pasar headers del backend al cliente
+    const responseHeaders = new Headers();
+    responseHeaders.set('Content-Type', response.headers.get('Content-Type') || 'audio/mp4');
+    responseHeaders.set('Content-Disposition', response.headers.get('Content-Disposition') || `attachment; filename="${filename}"`);
+    responseHeaders.set('Content-Length', response.headers.get('Content-Length') || '');
+
+    // Stream directo sin cargar en memoria
+    return new NextResponse(response.body, {
+      status: 200,
+      headers: responseHeaders
+    });
+
+  } catch (error: any) {
+    console.error('💥 [Proxy -> Python] Falló la delegación:', error);
+    // Fallback silencioso a local si falla? O error?
+    // Por ahora lanzamos error para que se note
+    return NextResponse.json({ error: 'External Audio Processing Failed' }, { status: 502 });
+  }
+}
+
+// ✅ FUNCIÓN PARA INCRUSTAR MINIATURA EN AUDIO (Copiada del proxy principal - Fallback Local)
 async function handleAudioWithThumbnail(audioUrl: string, thumbnailUrl: string, filename: string) {
   try {
     console.log('🎨 [Facebook Proxy] Incrustando miniatura con FFmpeg...');
