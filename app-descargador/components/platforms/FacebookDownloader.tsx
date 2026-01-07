@@ -159,6 +159,7 @@ export default function FacebookDownloader() {
       }, 500)
 
       // Llamar al proxy de Facebook
+      const isAudio = quality === 'audio'; // ✅ Definir isAudio
       const response = await fetch('/api/download/facebook/proxy', {
         method: 'POST',
         headers: {
@@ -166,7 +167,9 @@ export default function FacebookDownloader() {
         },
         body: JSON.stringify({
           url: downloadUrl,
-          filename: filename
+          filename: filename,
+          isAudio: isAudio, // ✅ Identificar si es audio
+          thumbnailUrl: videoInfo?.thumbnail // ✅ Enviar miniatura
         })
       })
 

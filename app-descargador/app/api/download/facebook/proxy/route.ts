@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, filename } = await request.json();
+    const { url, filename, isAudio, thumbnailUrl } = await request.json();
 
     console.log('🔧 [Facebook Proxy] Solicitud recibida:', {
       url: url?.substring(0, 100) + '...',
-      filename
+      filename,
+      isAudio,
+      hasThumbnail: !!thumbnailUrl
     });
 
     if (!url || !url.startsWith('http')) {
@@ -14,6 +16,12 @@ export async function POST(request: NextRequest) {
         { error: 'URL de Facebook inválida' },
         { status: 400 }
       );
+    }
+
+    // ✅ MANEJAR AUDIO CON MINIATURA (FFmpeg)
+    if (isAudio && thumbnailUrl) {
+      console.log('🎵 [Facebook Proxy] Procesando audio con miniatura...');
+      return await handleAudioWithThumbnail(url, thumbnailUrl, filename);
     }
 
     // Headers específicos para Facebook
@@ -55,7 +63,7 @@ export async function POST(request: NextRequest) {
       // Verificar que sea un archivo de video/audio
       const contentType = response.headers.get('content-type') || '';
       const contentLength = response.headers.get('content-length');
-      
+
       console.log('📦 [Facebook Proxy] Headers recibidos:', {
         contentType,
         contentLength,
@@ -64,11 +72,11 @@ export async function POST(request: NextRequest) {
 
       // Validar tipos de contenido aceptados
       const validContentTypes = [
-        'video/mp4', 'video/mp4', 'audio/mp4', 'audio/m4a', 
+        'video/mp4', 'video/mp4', 'audio/mp4', 'audio/m4a',
         'application/octet-stream', 'binary/octet-stream'
       ];
-      
-      const isValidContentType = validContentTypes.some(type => 
+
+      const isValidContentType = validContentTypes.some(type =>
         contentType.includes(type)
       );
 
@@ -78,7 +86,7 @@ export async function POST(request: NextRequest) {
       }
 
       const arrayBuffer = await response.arrayBuffer();
-      
+
       if (arrayBuffer.byteLength === 0) {
         throw new Error('El archivo recibido está vacío');
       }
@@ -111,7 +119,7 @@ export async function POST(request: NextRequest) {
 
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       if (fetchError.name === 'AbortError') {
         console.error('⏰ [Facebook Proxy] Timeout en descarga');
         return NextResponse.json(
@@ -119,17 +127,84 @@ export async function POST(request: NextRequest) {
           { status: 408 }
         );
       }
-      
+
       console.error('❌ [Facebook Proxy] Error de fetch:', fetchError);
       throw fetchError;
     }
 
   } catch (error: any) {
     console.error('💥 [Facebook Proxy] Error general:', error);
-    
+
     return NextResponse.json(
       { error: 'Error interno del servidor: ' + error.message },
       { status: 500 }
     );
+  }
+}
+
+// ✅ FUNCIÓN PARA INCRUSTAR MINIATURA EN AUDIO (Copiada del proxy principal)
+async function handleAudioWithThumbnail(audioUrl: string, thumbnailUrl: string, filename: string) {
+  try {
+    console.log('🎨 [Facebook Proxy] Incrustando miniatura con FFmpeg...');
+    const ffmpeg = require('fluent-ffmpeg');
+    const ffmpegPath = require('ffmpeg-static');
+
+    if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
+
+    const { PassThrough } = require('stream');
+    const outputStream = new PassThrough();
+
+    const ffmpegPromise = new Promise<void>((resolve, reject) => {
+      ffmpeg()
+        .input(audioUrl)
+        .input(thumbnailUrl)
+        .outputOptions([
+          '-map 0:0',
+          '-map 1:0',
+          '-c copy',
+          '-id3v2_version 3',
+          '-metadata:s:v title="Album cover"',
+          '-metadata:s:v comment="Cover (front)"'
+        ])
+        .format('mp3') // Forzamos MP3
+        .on('error', (err: Error) => {
+          console.error('❌ [FFmpeg/Audio] Error:', err.message);
+          reject(err);
+        })
+        .on('end', () => {
+          console.log('✅ [FFmpeg/Audio] Finished!');
+          resolve();
+        })
+        .pipe(outputStream, { end: true });
+    });
+
+    // Ajustar nombre archivo a .mp3
+    let finalFilename = filename.replace(/\.(m4a|webm|mp4)$/, '.mp3');
+    if (!finalFilename.endsWith('.mp3')) finalFilename += '.mp3';
+
+    const responseHeaders = new Headers();
+    responseHeaders.set('Content-Type', 'audio/mpeg');
+    responseHeaders.set('Content-Disposition', `attachment; filename="${finalFilename}"`);
+
+    // Stream response
+    const webStream = new ReadableStream({
+      start(controller) {
+        outputStream.on('data', (chunk: any) => controller.enqueue(chunk));
+        outputStream.on('end', () => controller.close());
+        outputStream.on('error', (err: any) => controller.error(err));
+      }
+    });
+
+    // Manejar errores de fondo
+    ffmpegPromise.catch(err => console.error('BG Error:', err));
+
+    return new NextResponse(webStream, {
+      status: 200,
+      headers: responseHeaders
+    });
+
+  } catch (error: any) {
+    console.error('💥 [Facebook Proxy] Error embedding thumbnail:', error);
+    return NextResponse.json({ error: 'Thumbnail embed failed' }, { status: 500 });
   }
 }
