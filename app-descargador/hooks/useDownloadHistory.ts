@@ -5,9 +5,11 @@ export interface HistoryItem {
     title: string;
     platform: 'facebook' | 'youtube' | 'tiktok';
     thumbnail?: string;
+    originalUrl?: string;
     date: number;
     status: 'completed' | 'failed';
     format?: string;
+    read?: boolean;
 }
 
 const HISTORY_KEY = 'fty_download_history';
@@ -83,10 +85,23 @@ export function useDownloadHistory() {
         }
     };
 
+    const markAllAsRead = () => {
+        setHistory(prev => {
+            const updated = prev.map(item => ({ ...item, read: true }));
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+            window.dispatchEvent(new Event('history-updated'));
+            return updated;
+        });
+    };
+
+    const unreadCount = history.filter(item => !item.read).length;
+
     return {
         history,
+        unreadCount,
         addToHistory,
         clearHistory,
-        deleteItem
+        deleteItem,
+        markAllAsRead
     };
 }

@@ -8,16 +8,29 @@ interface HistoryModalProps {
     history: HistoryItem[];
     onClear: () => void;
     onDelete: (id: string) => void;
+    onOpen: () => void;
 }
 
-export default function HistoryModal({ isOpen, onClose, history, onClear, onDelete }: HistoryModalProps) {
+export default function HistoryModal({ isOpen, onClose, history, onClear, onDelete, onOpen }: HistoryModalProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
+    useEffect(() => {
+        if (isOpen) {
+            onOpen();
+        }
+    }, [isOpen]);
+
     if (!mounted || !isOpen) return null;
+
+    const handleItemClick = (item: HistoryItem) => {
+        if (item.originalUrl) {
+            window.open(item.originalUrl, '_blank');
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -46,7 +59,16 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
                         </div>
                     ) : (
                         history.map((item) => (
-                            <div key={item.id} className="flex gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 relative group">
+                            <div
+                                key={item.id}
+                                className="flex gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 relative group cursor-pointer hover:bg-gray-100 transition-colors"
+                                onClick={() => handleItemClick(item)}
+                            >
+                                {/* Indicador de no leído */}
+                                {!item.read && (
+                                    <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full"></span>
+                                )}
+
                                 {/* Icono Plataforma */}
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${item.platform === 'youtube' ? 'bg-red-100 text-red-600' :
                                         item.platform === 'facebook' ? 'bg-blue-100 text-blue-600' :
@@ -78,19 +100,6 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
                                         )}
                                     </div>
                                 </div>
-
-                                {/* Status Icon */}
-                                <div className="absolute top-3 right-3">
-                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                </div>
-
-                                {/* Delete Button (visible on hover/active) */}
-                                {/* <button 
-                  onClick={() => onDelete(item.id)}
-                  className="absolute right-2 bottom-2 text-red-500 p-1 hover:bg-red-50 rounded"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button> */}
                             </div>
                         ))
                     )}

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { usePlatform } from '@/hooks/usePlatform'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useDownloadHistory } from '@/hooks/useDownloadHistory'
+import { Filesystem } from '@capacitor/filesystem'
 
 interface VideoFormat {
   quality: string
@@ -104,6 +105,14 @@ export default function TiktokDownloader() {
   const handleDownload = async (downloadUrl: string, quality: string, fileExt: string = 'mp4') => {
     try {
       setDownloading(quality)
+
+      if (isNative) {
+        try {
+          const status = await Filesystem.checkPermissions();
+          if (status.publicStorage !== 'granted') await Filesystem.requestPermissions();
+        } catch (e) { console.error('Storage perm error', e); }
+      }
+
       const filename = `tiktok_${quality}_${Date.now()}.${fileExt}`
 
       // Fetch siempre, incluso para URLs externas
@@ -130,7 +139,8 @@ export default function TiktokDownloader() {
         platform: 'tiktok',
         thumbnail: videoInfo?.thumbnail,
         status: 'completed',
-        format: quality
+        format: quality,
+        originalUrl: url
       })
     } catch (error) {
       console.error('Error en descarga:', error)
@@ -148,6 +158,13 @@ export default function TiktokDownloader() {
 
     try {
       setDownloading(quality)
+
+      if (isNative) {
+        try {
+          const status = await Filesystem.checkPermissions();
+          if (status.publicStorage !== 'granted') await Filesystem.requestPermissions();
+        } catch (e) { console.error('Storage perm error', e); }
+      }
 
       // Usar el endpoint GET para descarga directa
       const downloadUrl = `/api/download/tiktok?url=${encodeURIComponent(url)}&quality=${quality}`
@@ -174,7 +191,8 @@ export default function TiktokDownloader() {
         platform: 'tiktok',
         thumbnail: videoInfo?.thumbnail,
         status: 'completed',
-        format: quality
+        format: quality,
+        originalUrl: url
       })
 
     } catch (error) {

@@ -7,7 +7,7 @@ import { useDownloadHistory } from '@/hooks/useDownloadHistory'
 
 export default function AppHeader() {
     const [isHistoryOpen, setIsHistoryOpen] = useState(false)
-    const { history, clearHistory, deleteItem } = useDownloadHistory()
+    const { history, unreadCount, markAllAsRead, clearHistory, deleteItem } = useDownloadHistory()
 
     return (
         <>
@@ -22,8 +22,10 @@ export default function AppHeader() {
                     aria-label="Ver Historial"
                 >
                     <Clock className="w-6 h-6" />
-                    {history.length > 0 && (
-                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                    {unreadCount > 0 && (
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </div>
                     )}
                 </button>
             </div>
@@ -34,6 +36,7 @@ export default function AppHeader() {
                 history={history}
                 onClear={clearHistory}
                 onDelete={deleteItem}
+                onOpen={markAllAsRead}
             />
         </>
     )

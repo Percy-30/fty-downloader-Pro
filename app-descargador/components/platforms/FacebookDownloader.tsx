@@ -6,6 +6,7 @@ import { getFacebookInfo, FacebookVideoInfo } from '@/lib/platforms/facebook';
 import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
+import { Filesystem } from '@capacitor/filesystem';
 
 interface VideoFormat {
   quality: string
@@ -131,6 +132,18 @@ export default function FacebookDownloader() {
         filename
       })
 
+      if (isNative) {
+        try {
+          const status = await Filesystem.checkPermissions();
+          if (status.publicStorage !== 'granted') {
+            const request = await Filesystem.requestPermissions();
+            if (request.publicStorage !== 'granted') throw new Error('Permiso denegado');
+          }
+        } catch (e) {
+          console.error('Error storage permissions:', e);
+        }
+      }
+
       // Simular progreso inicial
       const progressInterval = setInterval(() => {
         setDownloadProgress(prev => {
@@ -213,7 +226,8 @@ export default function FacebookDownloader() {
         platform: 'facebook',
         thumbnail: videoInfo?.thumbnail,
         status: 'completed',
-        format: quality
+        format: quality,
+        originalUrl: url
       })
 
     } catch (error) {

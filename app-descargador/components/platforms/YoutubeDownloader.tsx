@@ -6,6 +6,7 @@ import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 interface VideoFormat {
   quality: string
@@ -422,6 +423,23 @@ export default function YoutubeDownloader() {
         throw new Error(`URL de descarga inválida: ${downloadUrl}. Por favor, intenta con otra calidad.`)
       }
 
+      // ✅ SOLICITAR PERMISOS DE ALMACENAMIENTO (Android)
+      if (isNative) {
+        try {
+          // Solicitar permiso de escritura en almacenamiento público
+          const status = await Filesystem.checkPermissions();
+          if (status.publicStorage !== 'granted') {
+            const request = await Filesystem.requestPermissions();
+            if (request.publicStorage !== 'granted') {
+              throw new Error('Permiso de almacenamiento denegado. No se puede guardar el video.');
+            }
+          }
+        } catch (e) {
+          console.error('Error verificando permisos de almacenamiento:', e);
+          // Continuamos, algunos Android nuevos no requieren esto explícitamente para Downloads
+        }
+      }
+
       const progressInterval = setInterval(() => {
         setDownloadProgress(prev => {
           if (prev >= 90) {
@@ -488,7 +506,8 @@ export default function YoutubeDownloader() {
         platform: 'youtube',
         thumbnail: videoInfo?.thumbnail,
         status: 'completed',
-        format: quality
+        format: quality,
+        originalUrl: downloadUrl || url
       })
 
     } catch (error) {
