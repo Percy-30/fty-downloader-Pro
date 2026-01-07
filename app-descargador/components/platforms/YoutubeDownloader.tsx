@@ -492,17 +492,30 @@ export default function YoutubeDownloader() {
           reader.onloadend = async () => {
             const base64Data = (reader.result as string).split(',')[1];
             try {
-              const result = await Filesystem.writeFile({
-                path: `Download/${filename}`, // Guardar en carpeta Download
+              // 1. Guardar en Cache temporalmente
+              const tempResult = await Filesystem.writeFile({
+                path: filename,
                 data: base64Data,
-                directory: Directory.External, // External = Almacenamiento compartido
-                recursive: true
+                directory: Directory.Cache
               });
-              console.log('Archivo guardado en:', result.uri);
-              scheduleNotification('Descarga Completada', `Guardado en Descargas/${filename}`);
+
+              // 2. Mover a Galería usando Media Plugin
+              await Media.saveVideo({ path: tempResult.uri });
+
+              console.log('Video guardado en Galería:', filename);
+              scheduleNotification('Descarga Completada', `Guardado en Galería`);
+
+              // 3. Limpiar temporal
+              try {
+                await Filesystem.deleteFile({
+                  path: filename,
+                  directory: Directory.Cache
+                });
+              } catch (cleanupErr) { console.warn('No se pudo borrar cache', cleanupErr); }
+
             } catch (e) {
-              // Fallback a Documents si External falla (Android 11+)
-              console.warn('Fallo escritura en External, intentando Documents:', e);
+              console.warn('Fallo Media.saveVideo, intentando fallback Documents:', e);
+              // Fallback: Guardar en Documents como antes
               await Filesystem.writeFile({
                 path: filename,
                 data: base64Data,

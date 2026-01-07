@@ -7,7 +7,8 @@ import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Filesystem, Directory } from '@capacitor/filesystem'
+import { Media } from '@capacitor-community/media';
 
 interface VideoFormat {
   quality: string
@@ -211,15 +212,25 @@ export default function FacebookDownloader() {
         reader.onloadend = async () => {
           const base64Data = (reader.result as string).split(',')[1];
           try {
-            await Filesystem.writeFile({
-              path: `Download/${filename}`,
+            // 1. Cache
+            const tempResult = await Filesystem.writeFile({
+              path: filename,
               data: base64Data,
-              directory: Directory.External,
-              recursive: true
+              directory: Directory.Cache
             });
-            scheduleNotification('Descarga Completada', `Guardado en Descargas/${filename}`);
+            // 2. Galería
+            await Media.saveVideo({ path: tempResult.uri });
+
+            console.log('Video guardado en Galería:', filename);
+            scheduleNotification('Descarga Completada', `Guardado en Galería`);
+
+            // 3. Limpiar
+            try {
+              await Filesystem.deleteFile({ path: filename, directory: Directory.Cache });
+            } catch (e) { }
+
           } catch (e) {
-            console.warn('Fallo escritura External, usando Documents', e);
+            console.warn('Fallo Media.saveVideo, intentando fallback Documents', e);
             await Filesystem.writeFile({
               path: filename,
               data: base64Data,
