@@ -70,7 +70,7 @@ export default function Home() {
     return (
 
 
-      <div className="min-h-screen bg-gray-50 pb-safe pt-28"> {/* pt-28 para dar espacio a Header + TopNav */}
+      <div className="min-h-screen bg-gray-50 pb-safe pt-36"> {/* pt-36 para dar MÁS espacio a Header + TopNav */}
         <AppHeader />
         <TopNav activePlatform={activePlatform} onPlatformChange={handlePlatformChange} />
 
