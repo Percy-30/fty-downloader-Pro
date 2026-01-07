@@ -18,7 +18,7 @@ import { usePlatform } from '@/hooks/usePlatform'
 import TopNav from '@/components/AppLayout/TopNav'
 import AppHeader from '@/components/AppLayout/AppHeader'
 import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { FEATURES } from '@/lib/featureFlags'
 
 export default function Home() {
@@ -27,11 +27,13 @@ export default function Home() {
   const defaultPlatform: 'facebook' | 'youtube' | 'tiktok' = FEATURES.YOUTUBE_ENABLED ? 'facebook' : 'facebook'
   const [activePlatform, setActivePlatform] = useState<'facebook' | 'youtube' | 'tiktok'>(defaultPlatform)
   const { showInterstitial } = useAdMobInterstitial()
+  const hasShownInitialAd = useRef(false) // Control para evitar bucles de anuncios
 
   // 📺 ANUNCIO AL INICIAR APP (App Open Ad simulado con Interstitial)
   useEffect(() => {
-    if (isNative) {
+    if (isNative && !hasShownInitialAd.current) {
       // App Open Ad (solo al iniciar)
+      hasShownInitialAd.current = true
       const timer = setTimeout(() => {
         showInterstitial()
       }, 3000)
@@ -70,7 +72,7 @@ export default function Home() {
     return (
 
 
-      <div className="min-h-screen bg-gray-50 pb-safe pt-36"> {/* pt-36 para dar MÁS espacio a Header + TopNav */}
+      <div className="min-h-screen bg-gray-50 pb-safe pt-44"> {/* pt-44 para dar espacio SEGURO a Header + TopNav */}
         <AppHeader />
         <TopNav activePlatform={activePlatform} onPlatformChange={handlePlatformChange} />
 

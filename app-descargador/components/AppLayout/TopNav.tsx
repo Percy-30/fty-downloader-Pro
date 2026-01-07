@@ -52,7 +52,7 @@ export default function TopNav({ activePlatform, onPlatformChange }: TopNavProps
     const gridClass = tabs.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
 
     return (
-        <div className="bg-white shadow-sm pt-1 pb-1 px-1 fixed top-14 left-0 right-0 z-30">
+        <div className="bg-white shadow-sm pt-1 pb-1 px-1 fixed top-20 left-0 right-0 z-30">
             <div className={`grid ${gridClass} gap-1`}>
                 {tabs.map((tab) => (
                     <button
