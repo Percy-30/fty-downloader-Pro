@@ -276,15 +276,20 @@ export default function FacebookDownloader() {
       }, 5000)
 
       scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      // Ruta final estimada
+      const finalPath = `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`;
+
       addToHistory({
-        title: videoInfo?.title || filename,
+        title: filename, // FB no suele dar título limpio
         platform: 'facebook',
-        thumbnail: videoInfo?.thumbnail,
+        thumbnail: '', // FB difícil sacar thumb sin API
+        originalUrl: url,
         status: 'completed',
         format: quality,
-        originalUrl: url,
         fileSize: formatBytes(blob.size), // Guardar tamaño
-        duration: undefined
+        duration: undefined,
+        filePath: finalPath,
+        mimeType: 'video/mp4'
       })
 
     } catch (error) {

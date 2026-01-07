@@ -1,6 +1,8 @@
 import { X, Trash2, Clock, CheckCircle } from 'lucide-react';
 import { HistoryItem } from '@/hooks/useDownloadHistory';
 import { useEffect, useState } from 'react';
+import { FileOpener } from '@capacitor-community/file-opener';
+import { Dialog } from '@capacitor/dialog';
 
 interface HistoryModalProps {
     isOpen: boolean;
@@ -26,8 +28,23 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
 
     if (!mounted || !isOpen) return null;
 
-    const handleItemClick = (item: HistoryItem) => {
-        if (item.originalUrl) {
+    const handleItemClick = async (item: HistoryItem) => {
+        if (item.filePath && item.mimeType) {
+            try {
+                await FileOpener.open({
+                    filePath: item.filePath,
+                    contentType: item.mimeType
+                });
+            } catch (e) {
+                console.warn('Error abriendo archivo local:', e);
+                // Fallback: Intentar abrir la URL original si falla lo local
+                if (item.originalUrl) window.open(item.originalUrl, '_blank');
+                else await Dialog.alert({
+                    title: 'No se puede abrir',
+                    message: 'El archivo no se encuentra en el dispositivo.'
+                });
+            }
+        } else if (item.originalUrl) {
             window.open(item.originalUrl, '_blank');
         }
     };
@@ -71,8 +88,8 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
 
                                 {/* Icono Plataforma */}
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${item.platform === 'youtube' ? 'bg-red-100 text-red-600' :
-                                        item.platform === 'facebook' ? 'bg-blue-100 text-blue-600' :
-                                            'bg-black text-white'
+                                    item.platform === 'facebook' ? 'bg-blue-100 text-blue-600' :
+                                        'bg-black text-white'
                                     }`}>
                                     {item.platform === 'youtube' && (
                                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>

@@ -587,17 +587,25 @@ export default function YoutubeDownloader() {
       }
 
       scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
+      // Calcular ruta final para historial (aproximada basada en estándares Android)
+      const finalPath = isAudio
+        ? `file:///storage/emulated/0/Documents/FTYdownloader Audio/${filename}`
+        : `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`;
+
+      const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+
       addToHistory({
         title: videoInfo?.title || filename,
         platform: 'youtube',
-        thumbnail: videoInfo?.thumbnail,
+        thumbnail: videoInfo?.thumbnail || '',
+        originalUrl: downloadUrl,
         status: 'completed',
         format: quality,
-        originalUrl: downloadUrl || url,
-        fileSize: formatBytes(blob.size), // Guardar tamaño formateado
-        duration: videoInfo?.duration ? String(videoInfo.duration) : undefined // Convertir a string para evitar error TS
+        fileSize: formatBytes(blob.size),
+        duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+        filePath: finalPath,
+        mimeType: mimeType
       })
-
     } catch (error) {
       console.error('❌ Error en descarga:', error)
 

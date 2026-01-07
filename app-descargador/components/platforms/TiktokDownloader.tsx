@@ -189,15 +189,20 @@ export default function TiktokDownloader() {
       }
 
       scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
+      // Ruta final estimada
+      const finalPath = `file:///storage/emulated/0/Movies/FTYdownloader Video/${filename}`;
+
       addToHistory({
-        title: videoInfo?.title || filename,
+        title: filename,
         platform: 'tiktok',
-        thumbnail: videoInfo?.thumbnail,
-        status: 'completed',
-        format: quality,
+        thumbnail: '', // Tiktok thumb difícil sin API
         originalUrl: url,
+        status: 'completed',
+        format: 'HD',
         fileSize: formatBytes(blob.size), // Guardar tamaño
-        duration: undefined
+        duration: undefined,
+        filePath: finalPath,
+        mimeType: 'video/mp4'
       })
     } catch (error) {
       console.error('Error en descarga:', error)

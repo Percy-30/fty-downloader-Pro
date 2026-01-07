@@ -12,6 +12,8 @@ export interface HistoryItem {
     read?: boolean;
     fileSize?: string; // "14MB"
     duration?: string; // "04:20"
+    filePath?: string; // "file:///storage/..."
+    mimeType?: string; // "video/mp4"
 }
 
 const HISTORY_KEY = 'fty_download_history';
