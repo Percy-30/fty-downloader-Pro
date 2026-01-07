@@ -505,7 +505,7 @@ export default function YoutubeDownloader() {
               const result = await Filesystem.writeFile({
                 path: finalPath,
                 data: base64Data,
-                directory: Directory.Documents,
+                directory: Directory.ExternalStorage, // ⚠️ Changed from Documents
                 recursive: true
               });
               savedUri = result.uri;
