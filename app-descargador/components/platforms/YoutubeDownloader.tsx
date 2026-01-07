@@ -546,7 +546,9 @@ export default function YoutubeDownloader() {
         thumbnail: videoInfo?.thumbnail,
         status: 'completed',
         format: quality,
-        originalUrl: downloadUrl || url
+        originalUrl: downloadUrl || url,
+        fileSize: formatBytes(blob.size), // Guardar tamaño formateado
+        duration: videoInfo?.duration ? String(videoInfo.duration) : undefined // Convertir a string para evitar error TS
       })
 
     } catch (error) {

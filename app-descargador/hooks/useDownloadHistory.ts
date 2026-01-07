@@ -10,6 +10,8 @@ export interface HistoryItem {
     status: 'completed' | 'failed';
     format?: string;
     read?: boolean;
+    fileSize?: string; // "14MB"
+    duration?: string; // "04:20"
 }
 
 const HISTORY_KEY = 'fty_download_history';

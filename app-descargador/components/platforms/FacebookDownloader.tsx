@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { getFacebookInfo, FacebookVideoInfo } from '@/lib/platforms/facebook';
+import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
@@ -255,7 +256,9 @@ export default function FacebookDownloader() {
         thumbnail: videoInfo?.thumbnail,
         status: 'completed',
         format: quality,
-        originalUrl: url
+        originalUrl: url,
+        fileSize: formatBytes(blob.size), // Guardar tamaño
+        duration: undefined
       })
 
     } catch (error) {
