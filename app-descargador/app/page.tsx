@@ -20,6 +20,8 @@ import AppHeader from '@/components/AppLayout/AppHeader'
 import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial'
 import { useEffect, useRef } from 'react'
 import { FEATURES } from '@/lib/featureFlags'
+import { LocalNotifications } from '@capacitor/local-notifications'
+import { Filesystem } from '@capacitor/filesystem'
 
 export default function Home() {
   const { isNative } = usePlatform()
@@ -30,13 +32,35 @@ export default function Home() {
   const hasShownInitialAd = useRef(false) // Control para evitar bucles de anuncios
 
   // 📺 ANUNCIO AL INICIAR APP (App Open Ad simulado con Interstitial)
+  // 🔐 SOLICITAR PERMISOS AL INICIAR (Request Permissions on init)
   useEffect(() => {
     if (isNative && !hasShownInitialAd.current) {
-      // App Open Ad (solo al iniciar)
+      // 1. Marcar inicio
       hasShownInitialAd.current = true
+
+      // 2. Solicitar permisos CRÍTICOS (Notificaciones + Almacenamiento)
+      const requestPermissions = async () => {
+        try {
+          console.log('🔐 Solicitando permisos de notificación...')
+          await LocalNotifications.requestPermissions();
+
+          console.log('🔐 Solicitando permisos de almacenamiento...')
+          // Solicitar Filesystem permissions explícitamente
+          const fsStatus = await Filesystem.requestPermissions();
+          console.log('📂 Estado permisos Filesystem:', fsStatus);
+
+        } catch (e) {
+          console.error('Error solicitando permisos al inicio:', e)
+        }
+      }
+
+      // Ejecutar solicitud de permisos INMEDIATAMENTE
+      requestPermissions();
+
+      // 3. Mostrar anuncio después de unos segundos (para no interrumpir permisos)
       const timer = setTimeout(() => {
         showInterstitial()
-      }, 3000)
+      }, 4000) // Un poco más de delay para dar tiempo al usuario a aceptar permisos
 
       return () => {
         clearTimeout(timer)
