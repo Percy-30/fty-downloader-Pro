@@ -7,6 +7,8 @@ import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Media } from '@capacitor-community/media';
+import { Dialog } from '@capacitor/dialog';
 
 interface VideoFormat {
   quality: string
@@ -516,16 +518,28 @@ export default function YoutubeDownloader() {
             } catch (e) {
               console.warn('Fallo Media.saveVideo, intentando fallback Documents:', e);
               // Fallback: Guardar en Documents como antes
-              await Filesystem.writeFile({
-                path: filename,
-                data: base64Data,
-                directory: Directory.Documents
-              });
-              scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+              try {
+                await Filesystem.writeFile({
+                  path: filename,
+                  data: base64Data,
+                  directory: Directory.Documents
+                });
+                scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+              } catch (docError: any) {
+                await Dialog.alert({
+                  title: 'Error de Guardado',
+                  message: `No se pudo guardar en Galería ni Documentos.\nError: ${docError.message}`
+                });
+                throw docError;
+              }
             }
           };
-        } catch (writeError) {
+        } catch (writeError: any) {
           console.error('Error guardando archivo nativo:', writeError);
+          await Dialog.alert({
+            title: 'Error Crítico',
+            message: `Fallo al iniciar guardado: ${writeError.message}`
+          });
           throw new Error('No se pudo guardar el archivo en el dispositivo');
         }
 
