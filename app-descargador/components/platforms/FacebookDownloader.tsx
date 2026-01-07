@@ -221,8 +221,11 @@ export default function FacebookDownloader() {
             });
             console.log('[DEBUG-PATH] FB 1. Cache:', tempResult.uri);
 
-            // 2. Galería
-            await Media.saveVideo({ path: tempResult.uri });
+            // 2. Galería con Album
+            await Media.saveVideo({
+              path: tempResult.uri,
+              album: 'FTYdownloader Video'
+            } as any);
             console.log('[DEBUG-PATH] FB 2. Saved to Gallery');
 
             scheduleNotification('Descarga Completada', `Guardado en Galería`);

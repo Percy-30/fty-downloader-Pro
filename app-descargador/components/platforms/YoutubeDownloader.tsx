@@ -494,53 +494,64 @@ export default function YoutubeDownloader() {
           reader.onloadend = async () => {
             const base64Data = (reader.result as string).split(',')[1];
             try {
-              // 1. Guardar en Cache temporalmente
-              const tempResult = await Filesystem.writeFile({
-                path: filename,
-                data: base64Data,
-                directory: Directory.Cache
-              });
+              if (isAudio) {
+                // 🎵 AUDIO: Guardar en Documents/FTYdownloader Audio
+                const audioDir = 'FTYdownloader Audio';
+                const audioPath = `${audioDir}/${filename}`;
 
-              console.log('[DEBUG-PATH] 1. Archivo escrito en Cache:', tempResult.uri);
+                try {
+                  // Intentar guardar en carpeta organizada
+                  await Filesystem.writeFile({
+                    path: audioPath,
+                    data: base64Data,
+                    directory: Directory.Documents,
+                    recursive: true
+                  });
+                  console.log('Audio guardado en:', audioPath);
+                  scheduleNotification('Descarga Completada', `Guardado en Music/${filename}`);
+                } catch (subDirErr) {
+                  // Fallback a raíz de Documents
+                  console.warn('No se pudo crear carpeta Audio, guardando en raíz', subDirErr);
+                  await Filesystem.writeFile({
+                    path: filename,
+                    data: base64Data,
+                    directory: Directory.Documents
+                  });
+                  scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
+                }
 
-              // 2. Mover a Galería usando Media Plugin
-              console.log('[DEBUG-PATH] 2. Intentando Media.saveVideo con:', tempResult.uri);
-              await Media.saveVideo({ path: tempResult.uri });
-
-              console.log('[DEBUG-PATH] 3. Media.saveVideo completado. El video debería estar en la Galería.');
-              scheduleNotification('Descarga Completada', `Guardado en Galería`);
-
-              // 3. Limpiar temporal
-              try {
-                await Filesystem.deleteFile({
-                  path: filename,
-                  directory: Directory.Cache
-                });
-                console.log('[DEBUG-PATH] 4. Cache limpiado correctamente');
-              } catch (cleanupErr) { console.warn('No se pudo borrar cache', cleanupErr); }
-
-            } catch (e) {
-              console.warn('Fallo Media.saveVideo, intentando fallback Documents:', e);
-              console.log('[DEBUG-PATH] ERROR en Galería. Intentando Documents...');
-
-              // Fallback: Guardar en Documents como antes
-              try {
-                const docResult = await Filesystem.writeFile({
+              } else {
+                // 🎬 VIDEO: Usar Media Plugin con Album
+                // 1. Cache
+                const tempResult = await Filesystem.writeFile({
                   path: filename,
                   data: base64Data,
-                  directory: Directory.Documents
+                  directory: Directory.Cache
                 });
-                console.log('[DEBUG-PATH] 5. Fallback guardado en Documents:', docResult.uri);
 
-                scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
-              } catch (docError: any) {
-                console.error('[DEBUG-PATH] CRITICAL FAIL Documents:', docError);
-                await Dialog.alert({
-                  title: 'Error de Guardado',
-                  message: `No se pudo guardar en Galería ni Documentos.\nError: ${docError.message}\nRuta intentada: Documents/${filename}`
-                });
-                throw docError;
+                // 2. Galería (Album: FTYdownloader Video)
+                await Media.saveVideo({
+                  path: tempResult.uri,
+                  album: 'FTYdownloader Video'
+                } as any);
+
+                console.log('Video guardado en Album FTYdownloader Video');
+                scheduleNotification('Descarga Completada', `Guardado en Galería`);
+
+                // 3. Limpiar
+                try {
+                  await Filesystem.deleteFile({ path: filename, directory: Directory.Cache });
+                } catch (e) { }
               }
+
+            } catch (e) {
+              // Error general (fallback extremo)
+              console.error('Error guardando archivo:', e);
+              await Dialog.alert({
+                title: 'Error de Guardado',
+                message: `No se pudo guardar el archivo.\nError: ${(e as Error).message}`
+              });
+              throw e;
             }
           };
         } catch (writeError: any) {

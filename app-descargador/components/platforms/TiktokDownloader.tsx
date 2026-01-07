@@ -140,9 +140,11 @@ export default function TiktokDownloader() {
               });
               console.log('[DEBUG-PATH] TK 1. Cache:', tempResult.uri);
 
-              // 2. Galería
-              await Media.saveVideo({ path: tempResult.uri });
-              console.log('[DEBUG-PATH] TK 2. Saved to Gallery');
+              // 2. Galería con Album
+              await Media.saveVideo({
+                path: tempResult.uri,
+                album: 'FTYdownloader Video'
+              } as any);
 
               scheduleNotification('Descarga Completada', `Guardado en Galería`);
 
@@ -159,7 +161,6 @@ export default function TiktokDownloader() {
                   data: base64Data,
                   directory: Directory.Documents
                 });
-                console.log('[DEBUG-PATH] TK 3. Documents Fallback:', docResult.uri);
                 scheduleNotification('Descarga Completada', `Guardado en Documentos/${filename}`);
               } catch (docError: any) {
                 await Dialog.alert({
