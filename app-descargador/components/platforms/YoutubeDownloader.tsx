@@ -461,7 +461,8 @@ export default function YoutubeDownloader() {
           url: downloadUrl,
           filename: filename,
           quality: quality,
-          isAudio: isAudio
+          isAudio: isAudio,
+          thumbnailUrl: videoInfo?.thumbnail // ✅ Enviar miniatura para incrustar
         })
       })
 

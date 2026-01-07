@@ -31,7 +31,7 @@ function isValidDownloadUrl(url: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, filename, quality, isAudio, isCombined = false, video_url, audio_url } = await request.json()
+    const { url, filename, quality, isAudio, isCombined = false, video_url, audio_url, thumbnailUrl } = await request.json()
 
     console.log('🔧 [Proxy] Solicitud recibida:', {
       url: url?.substring(0, 100),
@@ -40,8 +40,15 @@ export async function POST(request: NextRequest) {
       isAudio,
       isCombined,
       hasVideoUrl: !!video_url,
-      hasAudioUrl: !!audio_url
+      hasAudioUrl: !!audio_url,
+      hasThumbnail: !!thumbnailUrl
     })
+
+    // ✅ MANEJAR AUDIO CON MINIATURA (Nuevo Feature)
+    if (isAudio && url && thumbnailUrl) {
+      console.log('🎵 [Proxy] Procesando audio con miniatura...')
+      return await handleAudioWithThumbnail(url, thumbnailUrl, filename)
+    }
 
     // ✅ MANEJAR COMBINACIÓN DE AUDIO Y VIDEO (nueva estructura)
     if (isCombined && video_url && audio_url) {
@@ -378,6 +385,74 @@ async function handleCombinedDownload(videoUrl: string, audioUrl: string, filena
       details: 'El servidor no pudo procesar la combinación.',
       fallback_url: videoUrl
     }, { status: 500 })
+  }
+}
+
+// ✅ FUNCIÓN PARA INCRUSTAR MINIATURA EN AUDIO
+async function handleAudioWithThumbnail(audioUrl: string, thumbnailUrl: string, filename: string) {
+  try {
+    console.log('🎨 [Proxy] Incrustando miniatura con FFmpeg...')
+    const ffmpeg = require('fluent-ffmpeg');
+    const ffmpegPath = require('ffmpeg-static');
+
+    if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
+
+    const { PassThrough } = require('stream');
+    const outputStream = new PassThrough();
+
+    const ffmpegPromise = new Promise<void>((resolve, reject) => {
+      ffmpeg()
+        .input(audioUrl)
+        .input(thumbnailUrl)
+        .outputOptions([
+          '-map 0:0',
+          '-map 1:0',
+          '-c copy',
+          '-id3v2_version 3',
+          '-metadata:s:v title="Album cover"',
+          '-metadata:s:v comment="Cover (front)"'
+        ])
+        .format('mp3') // Forzamos MP3 para mejor compatibilidad de cover art
+        .on('error', (err: Error) => {
+          console.error('❌ [FFmpeg/Audio] Error:', err.message);
+          reject(err);
+        })
+        .on('end', () => {
+          console.log('✅ [FFmpeg/Audio] Finished!');
+          resolve();
+        })
+        .pipe(outputStream, { end: true });
+    });
+
+    // Ajustar nombre archivo a .mp3
+    let finalFilename = filename.replace(/\.(m4a|webm)$/, '.mp3');
+    if (!finalFilename.endsWith('.mp3')) finalFilename += '.mp3';
+
+    const responseHeaders = new Headers();
+    responseHeaders.set('Content-Type', 'audio/mpeg');
+    responseHeaders.set('Content-Disposition', `attachment; filename="${finalFilename}"`);
+
+    // Stream response
+    const webStream = new ReadableStream({
+      start(controller) {
+        outputStream.on('data', (chunk: any) => controller.enqueue(chunk));
+        outputStream.on('end', () => controller.close());
+        outputStream.on('error', (err: any) => controller.error(err));
+      }
+    });
+
+    // Manejar errores de fondo
+    ffmpegPromise.catch(err => console.error('BG Error:', err));
+
+    return new NextResponse(webStream, {
+      status: 200,
+      headers: responseHeaders
+    });
+
+  } catch (error: any) {
+    console.error('💥 [Proxy] Error embedding thumbnail:', error);
+    // Fallback a descarga normal si falla ffmpeg
+    return NextResponse.json({ error: 'Thumbnail embed failed' }, { status: 500 });
   }
 }
 
