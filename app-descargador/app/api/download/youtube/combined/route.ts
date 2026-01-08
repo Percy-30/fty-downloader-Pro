@@ -131,55 +131,38 @@ export async function POST(request: NextRequest) {
         return await handleFrontendCombination(cleanedUrl, quality, format_type)
       }
 
-      // ✅ MANEJAR STREAMING RESPONSE DEL BACKEND
-      console.log('✅ [YouTube Combined] Backend respondió exitosamente, procesando streaming...')
+      // ✅ MANEJAR STREAMING RESPONSE DEL BACKEND - PIPING DIRECTO
+      console.log('✅ [YouTube Combined] Backend respondió exitosamente, iniciando PIPING DE STREAM...')
 
-      // Obtener metadatos de los headers
-      const contentDisposition = combineResponse.headers.get('Content-Disposition')
-      const filename = contentDisposition?.match(/filename="(.+)"/)?.[1]
-        || `youtube_${quality}_${Date.now()}.mp4`
+      // Preparar headers para el cliente
+      const responseHeaders = new Headers()
 
-      const fileSize = combineResponse.headers.get('Content-Length')
-      const videoItag = combineResponse.headers.get('X-Video-Itag')
-      const audioItag = combineResponse.headers.get('X-Audio-Itag')
+      // Pasar headers críticos del backend al frontend
+      const headersToForward = [
+        'Content-Type',
+        'Content-Length',
+        'Content-Disposition',
+        'X-File-Size',
+        'X-Video-Itag',
+        'X-Audio-Itag'
+      ]
 
-      console.log('📄 [YouTube Combined] Metadatos del archivo:', {
-        filename,
-        fileSize,
-        videoItag,
-        audioItag,
-        contentType: combineResponse.headers.get('Content-Type')
+      headersToForward.forEach(header => {
+        const value = combineResponse.headers.get(header)
+        if (value) responseHeaders.set(header, value)
       })
 
-      // ✅ CONVERTIR STREAM A BASE64
-      try {
-        const arrayBuffer = await combineResponse.arrayBuffer()
-        const buffer = Buffer.from(arrayBuffer)
-        const fileContent = buffer.toString('base64')
-
-        console.log('✅ [YouTube Combined] Archivo convertido a base64:', {
-          size: fileContent.length,
-          originalSize: buffer.length
-        })
-
-        return NextResponse.json({
-          status: 'success',
-          file_content: fileContent,
-          filename: filename,
-          file_size: parseInt(fileSize || '0') || buffer.length,
-          title: `YouTube Video - ${quality}`,
-          combined: true,
-          method: 'backend_combiner_streaming',
-          quality: quality,
-          video_itag: videoItag ? parseInt(videoItag) : itags.video,
-          audio_itag: audioItag ? parseInt(audioItag) : itags.audio,
-          message: 'Video combinado exitosamente por el backend'
-        })
-
-      } catch (streamError: any) {
-        console.error('❌ [YouTube Combined] Error procesando streaming:', streamError)
-        throw new Error(`Error procesando archivo stream: ${streamError.message}`)
+      // Asegurar que el Content-Type sea correcto para descargas
+      if (!responseHeaders.has('Content-Type')) {
+        responseHeaders.set('Content-Type', 'video/mp4')
       }
+
+      // ✅ RETORNAR EL BODY DIRECTAMENTE COMO RESPONSE (PIPING)
+      // Esto evita cargar el archivo en la memoria del servidor Next.js
+      return new Response(combineResponse.body, {
+        status: 200,
+        headers: responseHeaders
+      })
 
     } catch (combineError: any) {
       console.log('⚠️ [YouTube Combined] Combinación backend falló, usando estrategia frontend:', combineError.message)

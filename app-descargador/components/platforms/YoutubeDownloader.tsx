@@ -141,7 +141,7 @@ export default function YoutubeDownloader() {
     return allowedCombinationQualities.includes(quality)
   }
 
-  // ✅ FUNCIÓN MEJORADA PARA DESCARGA COMBINADA CON STREAMING
+  // ✅ FUNCIÓN MEJORADA PARA DESCARGA COMBINADA CON STREAMING BINARIO REAL
   const downloadCombined = async (quality: string) => {
     // ✅ VERIFICAR LÍMITE ANTES DE PROCESAR
     if (!isCombinationAllowed(quality)) {
@@ -150,23 +150,10 @@ export default function YoutubeDownloader() {
     }
 
     try {
-      setDownloading(`combined - ${quality} `)
+      setDownloading(quality)
       setDownloadProgress(0)
 
-      console.log('🎬 Iniciando descarga combinada con streaming...', quality)
-
-      const downloadUrl = originalUrl
-
-      if (!downloadUrl) {
-        throw new Error('No hay URL disponible para descargar. Por favor, busca el video nuevamente.')
-      }
-
-      console.log('🔗 URL para descarga combinada:', downloadUrl)
-
-      // ✅ Notificar al usuario (especialmente en Android)
-      if (isNative) {
-        // Opcional: Toast o Log
-      }
+      console.log('🎬 Iniciando descarga combinada con streaming binario real...', quality)
 
       const response = await fetch('/api/download/youtube/combined', {
         method: 'POST',
@@ -174,157 +161,27 @@ export default function YoutubeDownloader() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          url: downloadUrl,
-          quality: quality,
-          format_type: 'mp4'
+          url: originalUrl,
+          quality: quality
         })
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error en descarga combinada')
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
+        throw new Error(errorData.error || `Error ${response.status}: Ha fallado el servidor de descargas`)
       }
 
-      const data = await response.json()
-      console.log('📦 Respuesta del backend combinado:', {
-        status: data.status,
-        method: data.method,
-        file_size: data.file_size,
-        has_file_content: !!data.file_content
-      })
-
-      const progressInterval = setInterval(() => {
-        setDownloadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval)
-            return 90
-          }
-          return prev + 10
-        })
-      }, 500)
-
-      // ✅ ESTRATEGIA MEJORADA PARA STREAMING
-      if (data.status === 'success') {
-        console.log('✅ Backend procesó exitosamente la combinación')
-
-        // ESTRATEGIA 1: Contenido base64 desde streaming (PRINCIPAL)
-        if (data.file_content) {
-          console.log('🔧 Procesando archivo combinado base64 desde streaming')
-          const filename = data.filename || `youtube_${quality}_${Date.now()}.mp4`
-          await handleBase64Download(data.file_content, filename, quality)
-        }
-
-        // ESTRATEGIA 2: URLs separadas (fallback)
-        else if (data.video_url && data.audio_url) {
-          console.log('🎵 Combinando con URLs separadas (fallback)')
-          const filename = data.filename || `youtube_${quality}_${Date.now()}.mp4`
-          await downloadCombinedWithProxy(data.video_url, data.audio_url, filename, quality)
-        }
-
-        // ESTRATEGIA 3: URL directa (fallback)
-        else if (data.download_url && data.download_url.startsWith('http')) {
-          console.log('📥 Usando URL directa combinada (fallback)')
-          const filename = data.filename || `youtube_${quality}_${Date.now()}.mp4`
-          await downloadThroughBackend(data.download_url, filename, quality, false)
-        }
-
-        else {
-          throw new Error('Backend no proporcionó datos válidos para la combinación')
-        }
-
-      } else {
-        throw new Error(data.message || 'El backend no completó la combinación correctamente')
-      }
-
-      clearInterval(progressInterval)
-      setDownloadProgress(100)
+      const filename = `youtube_${quality}_${Date.now()}.mp4`
+      await downloadStream(response, filename, quality)
 
     } catch (error) {
       console.error('❌ Error en descarga combinada:', error)
-      setError(error instanceof Error ? error.message : 'Error en descarga combinada')
-
-      // ✅ FALLBACK MEJORADO
-      console.log('🔄 Intentando estrategias de fallback...')
-
-      try {
-        // Estrategia de fallback: Descarga normal del formato disponible
-        const { format } = findBestFormatForQuality(quality)
-        if (format && format.url && format.url.startsWith('http')) {
-          console.log('🔄 Fallback: Descarga normal sin combinar')
-          const filename = `youtube_${quality}_${Date.now()}.mp4`
-          await downloadThroughBackend(format.url, filename, quality, false)
-          return
-        }
-
-        throw new Error('No hay formatos disponibles para fallback')
-
-      } catch (fallbackError) {
-        console.error('❌ Todos los fallbacks fallaron:', fallbackError)
-        setError('No se pudo completar la descarga. Por favor, intenta con una calidad diferente.')
-      }
+      setError(error instanceof Error ? error.message : 'Error en la descarga combinada')
     } finally {
-      setDownloading(null)
-      setDownloadProgress(0)
-    }
-  }
-
-  // ✅ FUNCIÓN PARA MANEJAR DESCARGA BASE64 (ACTUALIZADA)
-  const handleBase64Download = async (base64Content: string, filename: string, quality: string) => {
-    try {
-      console.log('🔧 Procesando archivo combinado base64 desde streaming...')
-
-      if (!base64Content) {
-        throw new Error('El contenido base64 está vacío')
-      }
-
-      // Decodificar base64 a blob
-      const byteCharacters = atob(base64Content);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'video/mp4' });
-
-      if (blob.size === 0) {
-        throw new Error('El archivo base64 está vacío')
-      }
-
-      console.log('✅ Archivo base64 procesado:', blob.size, 'bytes')
-
-      // Descargar blob
-      const blobUrl = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = filename
-      link.style.display = 'none'
-
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-
-      // Limpiar URL después de 5 segundos
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
-      console.log('✅ Descarga base64 completada')
-      scheduleNotification('Descarga Completada', `El video ${filename} se ha guardado correctamente.`)
-      addToHistory({
-        title: videoInfo?.title || filename,
-        platform: 'youtube',
-        thumbnail: videoInfo?.thumbnail,
-        status: 'completed',
-        format: quality
-      })
-      addToHistory({
-        title: videoInfo?.title || filename,
-        platform: 'youtube',
-        thumbnail: videoInfo?.thumbnail,
-        status: 'completed',
-        format: quality
-      })
-
-    } catch (error) {
-      console.error('❌ Error procesando base64:', error)
-      throw error
+      setTimeout(() => {
+        setDownloading(null)
+        setDownloadProgress(0)
+      }, 1000)
     }
   }
 
@@ -430,19 +287,12 @@ export default function YoutubeDownloader() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error en descarga simple backend')
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
+        throw new Error(errorData.error || 'Error en descarga simple del servidor')
       }
 
-      const data = await response.json()
-
-      if (data.status === 'success' && data.file_content) {
-        const filename = `youtube_${quality}_${Date.now()}.${fileExt}`
-        await handleBase64Download(data.file_content, filename, quality)
-        setDownloadProgress(100)
-      } else {
-        throw new Error(data.message || 'El backend no proporcionó el archivo correctamente')
-      }
+      const filename = `youtube_${quality}_${Date.now()}.${fileExt}`
+      await downloadStream(response, filename, quality)
 
     } catch (error) {
       console.error('❌ Error en descarga simple backend:', error)
@@ -454,6 +304,56 @@ export default function YoutubeDownloader() {
         setDownloadProgress(0)
       }, 1000)
     }
+  }
+
+
+  // ✅ LECTOR DE STREAM PARA PROGRESO EN TIEMPO REAL
+  const downloadStream = async (response: Response, filename: string, quality: string) => {
+    const contentLength = response.headers.get('Content-Length')
+    const total = contentLength ? parseInt(contentLength, 10) : 0
+    let loaded = 0
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error('No se pudo establecer el flujo de datos')
+
+    const chunks: Uint8Array[] = []
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      chunks.push(value)
+      loaded += value.length
+
+      if (total > 0) {
+        const progress = Math.round((loaded / total) * 100)
+        setDownloadProgress(progress)
+      }
+    }
+
+    const blob = new Blob(chunks as any, { type: (response.headers.get('Content-Type') as string) || 'video/mp4' })
+    const url = URL.createObjectURL(blob)
+
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+
+    setTimeout(() => URL.revokeObjectURL(url), 10000)
+
+    console.log(`✅ Descarga completada: ${filename} (${formatBytes(blob.size)})`)
+    scheduleNotification('Descarga Completada', `${filename} se ha guardado correctamente.`)
+
+    addToHistory({
+      title: videoInfo?.title || filename,
+      platform: 'youtube',
+      thumbnail: videoInfo?.thumbnail || '',
+      status: 'completed',
+      format: quality,
+      fileSize: formatBytes(blob.size)
+    })
   }
 
   // ✅ FUNCIÓN PRINCIPAL DE DESCARGA
@@ -660,7 +560,7 @@ export default function YoutubeDownloader() {
     }
   }
 
-  // ✅ DESCARGA DE AUDIO - AHORA USANDO BACKEND ROBUSTO
+  // ✅ DESCARGA DE AUDIO - USANDO STREAMING ROBUSTO
   const handleAudioDownload = async () => {
     const audioFormat = findBestAudioFormat()
 
@@ -672,7 +572,7 @@ export default function YoutubeDownloader() {
         const ext = audioFormat.format.toLowerCase().includes('mp3') ? 'mp3' : 'm4a'
         const filename = `youtube_audio_${Date.now()}.${ext}`
 
-        console.log('🎵 Iniciando descarga de audio con motor del backend...', audioFormat.itag)
+        console.log('🎵 Iniciando descarga de audio con streaming binario...', audioFormat.itag)
 
         const response = await fetch('/api/download/youtube/combined', {
           method: 'POST',
@@ -682,24 +582,17 @@ export default function YoutubeDownloader() {
           body: JSON.stringify({
             url: originalUrl,
             quality: 'audio',
-            audio_itag: audioFormat.itag, // ENVIAR SOLO AUDIO_ITAG
+            audio_itag: audioFormat.itag,
             format_type: ext
           })
         })
 
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || 'Error en descarga de audio backend')
+          const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
+          throw new Error(errorData.error || 'Error en descarga de audio del servidor')
         }
 
-        const data = await response.json()
-
-        if (data.status === 'success' && data.file_content) {
-          await handleBase64Download(data.file_content, filename, 'audio')
-          setDownloadProgress(100)
-        } else {
-          throw new Error(data.message || 'El backend no proporcionó el audio correctamente')
-        }
+        await downloadStream(response, filename, 'audio')
 
       } catch (error) {
         console.error('❌ Error en descarga de audio backend:', error)
