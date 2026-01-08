@@ -111,20 +111,27 @@ export async function POST(request: NextRequest) {
       clearTimeout(timeoutId)
 
       if (!combineResponse.ok) {
-        const errorText = await combineResponse.text()
+        let errorDetail = 'Error en combinación backend'
+        const contentType = combineResponse.headers.get('Content-Type') || ''
+
+        if (contentType.includes('application/json')) {
+          const errorData = await combineResponse.json().catch(() => ({ error: 'Error al parsear JSON del backend' }))
+          errorDetail = errorData.detail || errorData.error || JSON.stringify(errorData)
+        } else {
+          // Si no es JSON, leemos como texto pero con cuidado
+          const errorText = await combineResponse.text().catch(() => 'Error de respuesta no legible')
+          // Si el texto es muy largo o parece binario (ftypis), no lo mostramos completo
+          if (errorText.includes('ftyp') || errorText.length > 500) {
+            errorDetail = `Error del servidor (${combineResponse.status}): ${combineResponse.statusText}`
+          } else {
+            errorDetail = errorText || `Error ${combineResponse.status}`
+          }
+        }
+
         console.error('❌ [YouTube Combined] Error en combinación backend:', {
           status: combineResponse.status,
-          statusText: combineResponse.statusText,
-          error: errorText
+          detail: errorDetail
         })
-
-        let errorDetail = 'Error en combinación backend'
-        try {
-          const errorData = JSON.parse(errorText)
-          errorDetail = errorData.detail || errorData.error || errorText
-        } catch {
-          errorDetail = errorText
-        }
 
         // Intentar fallback a estrategia frontend
         console.log('🔄 [YouTube Combined] Intentando estrategia frontend como fallback...')

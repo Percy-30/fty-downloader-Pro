@@ -150,7 +150,7 @@ export default function YoutubeDownloader() {
     }
 
     try {
-      setDownloading(quality)
+      setDownloading(`combined-${quality}`)
       setDownloadProgress(0)
 
       console.log('🎬 Iniciando descarga combinada con streaming binario real...', quality)
@@ -167,8 +167,16 @@ export default function YoutubeDownloader() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
-        throw new Error(errorData.error || `Error ${response.status}: Ha fallado el servidor de descargas`)
+        // ✅ MEJORADO: Leer como texto primero para evitar error de JSON si devuelve binario
+        const errorText = await response.text().catch(() => 'Error de red')
+        let errorMsg = `Error ${response.status}: Ha fallado el servidor de descargas`
+        try {
+          const errorData = JSON.parse(errorText)
+          errorMsg = errorData.error || errorMsg
+        } catch {
+          errorMsg = errorText.substring(0, 100) || errorMsg
+        }
+        throw new Error(errorMsg)
       }
 
       const filename = `youtube_${quality}_${Date.now()}.mp4`
@@ -206,8 +214,15 @@ export default function YoutubeDownloader() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error en combinación por proxy')
+        const errorText = await response.text().catch(() => 'Error de red')
+        let errorMsg = 'Error en combinación por proxy'
+        try {
+          const errorData = JSON.parse(errorText)
+          errorMsg = errorData.error || errorMsg
+        } catch {
+          errorMsg = errorText.substring(0, 100) || errorMsg
+        }
+        throw new Error(errorMsg)
       }
 
       const blob = await response.blob()
@@ -267,7 +282,7 @@ export default function YoutubeDownloader() {
     }
 
     try {
-      setDownloading(`simple - ${quality}`)
+      setDownloading(`simple-${quality}`)
       setDownloadProgress(0)
 
       console.log('📥 Iniciando descarga simple con motor del backend...', quality)
@@ -287,8 +302,16 @@ export default function YoutubeDownloader() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
-        throw new Error(errorData.error || 'Error en descarga simple del servidor')
+        // ✅ MEJORADO: Leer como texto primero
+        const errorText = await response.text().catch(() => 'Error de red')
+        let errorMsg = 'Error en descarga simple del servidor'
+        try {
+          const errorData = JSON.parse(errorText)
+          errorMsg = errorData.error || errorMsg
+        } catch {
+          errorMsg = errorText.substring(0, 100) || errorMsg
+        }
+        throw new Error(errorMsg)
       }
 
       const filename = `youtube_${quality}_${Date.now()}.${fileExt}`
@@ -588,8 +611,16 @@ export default function YoutubeDownloader() {
         })
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }))
-          throw new Error(errorData.error || 'Error en descarga de audio del servidor')
+          // ✅ MEJORADO
+          const errorText = await response.text().catch(() => 'Error de red')
+          let errorMsg = 'Error en descarga de audio del servidor'
+          try {
+            const errorData = JSON.parse(errorText)
+            errorMsg = errorData.error || errorMsg
+          } catch {
+            errorMsg = errorText.substring(0, 100) || errorMsg
+          }
+          throw new Error(errorMsg)
         }
 
         await downloadStream(response, filename, 'audio')
@@ -996,7 +1027,7 @@ export default function YoutubeDownloader() {
                   <div className="block md:hidden space-y-2">
                     {predefinedQualities.map((quality) => {
                       const isAvailable = isQualityAvailable(quality.value)
-                      const isDownloading = downloading === quality.value
+                      const isDownloading = downloading === `simple-${quality.value}`
 
                       return (
                         <div key={quality.value} className={`flex items - center gap - 3 border rounded - lg p - 3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} `}>
@@ -1040,7 +1071,7 @@ export default function YoutubeDownloader() {
                       <tbody>
                         {predefinedQualities.map((quality) => {
                           const isAvailable = isQualityAvailable(quality.value)
-                          const isDownloading = downloading === quality.value
+                          const isDownloading = downloading === `simple-${quality.value}`
                           const formatInfo = getFormatInfo(quality.value)
 
                           return (
@@ -1118,7 +1149,7 @@ export default function YoutubeDownloader() {
                   <div className={isNative ? 'block' : 'block md:hidden space-y-2'}>
                     {predefinedQualities.map((quality) => {
                       const isAvailable = isQualityAvailable(quality.value)
-                      const isDownloading = downloading === `combined - ${quality.value} `
+                      const isDownloading = downloading === `combined-${quality.value}`
                       const formatInfo = getFormatInfo(quality.value)
 
                       return (
@@ -1166,7 +1197,7 @@ export default function YoutubeDownloader() {
                       <tbody>
                         {predefinedQualities.map((quality) => {
                           const isAvailable = isQualityAvailable(quality.value)
-                          const isDownloading = downloading === `combined - ${quality.value} `
+                          const isDownloading = downloading === `combined-${quality.value}`
                           const formatInfo = getFormatInfo(quality.value)
 
                           return (
