@@ -16,8 +16,8 @@ const mapQualityToItag = (quality: string) => {
     480: { video: 135, audio: 140 },
     720: { video: 136, audio: 140 },
     1080: { video: 137, audio: 140 },
-    1440: { video: 400, audio: 140 },
-    2160: { video: 401, audio: 140 }
+    1440: { video: 271, audio: 140 },
+    2160: { video: 313, audio: 140 }
   }
 
   return qualityMap[qNum] || qualityMap[1080]

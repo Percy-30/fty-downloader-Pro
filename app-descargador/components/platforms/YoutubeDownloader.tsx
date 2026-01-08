@@ -274,7 +274,7 @@ export default function YoutubeDownloader() {
 
   // ✅ DESCARGA SIMPLE (SIN COMBINAR) - AHORA USANDO BACKEND ROBUSTO
   const handleSimpleDownload = async (quality: string, fileExt: string = 'mp4') => {
-    const { format } = findBestFormatForQuality(quality)
+    const { format } = findBestFormatForQuality(quality, true)
 
     if (!format) {
       setError(`No se encontró la calidad ${quality} disponible`)
@@ -642,7 +642,7 @@ export default function YoutubeDownloader() {
   }
 
   // ✅ FUNCIONES AUXILIARES
-  const findBestFormatForQuality = (qualityLabel: string): {
+  const findBestFormatForQuality = (qualityLabel: string, preferVideoOnly: boolean = false): {
     format: VideoFormat | null,
     hasAudio: boolean,
     hasRecommendedAudio: boolean
@@ -672,12 +672,25 @@ export default function YoutubeDownloader() {
       return { format: null, hasAudio: false, hasRecommendedAudio: false };
     }
 
-    // 1. Exacto + Audio
-    let best = videos.find(f => f.hasAudio && getH(f) === targetHeight);
-    if (best) return { format: best, hasAudio: true, hasRecommendedAudio: false };
+    // 1. Priorizar según preferencia
+    let best = null;
 
-    // 2. Exacto Video (aunque no tenga audio)
-    best = videos.find(f => getH(f) === targetHeight);
+    if (preferVideoOnly) {
+      // Intentar encontrar uno que NO tenga audio (DASH/Video Only)
+      best = videos.find(f => !f.hasAudio && getH(f) === targetHeight);
+      if (best) return { format: best, hasAudio: false, hasRecommendedAudio: !!best.recommended_audio };
+
+      // Si no hay video solo, caer al con audio
+      best = videos.find(f => getH(f) === targetHeight);
+    } else {
+      // Modo normal: Priorizar el que ya tiene audio (Combined)
+      best = videos.find(f => f.hasAudio && getH(f) === targetHeight);
+      if (best) return { format: best, hasAudio: true, hasRecommendedAudio: false };
+
+      // Si no hay con audio, caer al video solo
+      best = videos.find(f => getH(f) === targetHeight);
+    }
+
     if (best) return { format: best, hasAudio: !!best.hasAudio, hasRecommendedAudio: !!best.recommended_audio };
 
     // 3. Fallback por texto (ej: si dice 1080 en el nombre)
@@ -733,18 +746,18 @@ export default function YoutubeDownloader() {
 
 
   const isQualityAvailable = (quality: string): boolean => {
-    const { format } = findBestFormatForQuality(quality)
+    const { format } = findBestFormatForQuality(quality, activeTab === 'simple')
     return format !== null && format.url !== undefined && format.url.startsWith('http')
   }
 
-  const getFormatInfo = (quality: string): {
+  const getFormatInfo = (quality: string, videoOnly: boolean = false): {
     type: string,
     size: string,
     hasAudio: boolean,
     canCombine: boolean,
     combinationAllowed: boolean
   } => {
-    const { format, hasAudio, hasRecommendedAudio } = findBestFormatForQuality(quality)
+    const { format, hasAudio, hasRecommendedAudio } = findBestFormatForQuality(quality, videoOnly)
 
     if (!format) return {
       type: 'No disponible',
@@ -1074,7 +1087,7 @@ export default function YoutubeDownloader() {
                         {predefinedQualities.map((quality) => {
                           const isAvailable = isQualityAvailable(quality.value)
                           const isDownloading = downloading === `simple-${quality.value}`
-                          const formatInfo = getFormatInfo(quality.value)
+                          const formatInfo = getFormatInfo(quality.value, true)
 
                           return (
                             <tr key={quality.value} className={`hover: bg - gray - 50 ${!isAvailable ? 'opacity-50' : ''} `}>
@@ -1152,7 +1165,7 @@ export default function YoutubeDownloader() {
                     {predefinedQualities.map((quality) => {
                       const isAvailable = isQualityAvailable(quality.value)
                       const isDownloading = downloading === `combined-${quality.value}`
-                      const formatInfo = getFormatInfo(quality.value)
+                      const formatInfo = getFormatInfo(quality.value, false)
 
                       return (
                         <div key={quality.value} className={`flex items - center gap - 3 border rounded - lg p - 3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} `}>
@@ -1200,7 +1213,7 @@ export default function YoutubeDownloader() {
                         {predefinedQualities.map((quality) => {
                           const isAvailable = isQualityAvailable(quality.value)
                           const isDownloading = downloading === `combined-${quality.value}`
-                          const formatInfo = getFormatInfo(quality.value)
+                          const formatInfo = getFormatInfo(quality.value, false)
 
                           return (
                             <tr key={quality.value} className={`hover: bg - gray - 50 ${!isAvailable ? 'opacity-50' : ''} `}>
