@@ -21,6 +21,7 @@ interface VideoFormat {
   hasVideo?: boolean
   width?: number
   height?: number
+  itag?: string | number
   recommended_audio?: {
     url: string
     quality: string
@@ -399,25 +400,59 @@ export default function YoutubeDownloader() {
     }
   }
 
-  // ✅ DESCARGA SIMPLE (SIN COMBINAR)
+  // ✅ DESCARGA SIMPLE (SIN COMBINAR) - AHORA USANDO BACKEND ROBUSTO
   const handleSimpleDownload = async (quality: string, fileExt: string = 'mp4') => {
     const { format } = findBestFormatForQuality(quality)
 
-    if (!format || !format.url) {
+    if (!format) {
       setError(`No se encontró la calidad ${quality} disponible`)
       return
     }
 
-    if (!format.url.startsWith('http')) {
-      setError(`URL de descarga inválida para ${quality} `)
-      return
-    }
-
     try {
-      const filename = `youtube_${quality}_simple_${Date.now()}.${fileExt} `
-      await downloadThroughBackend(format.url, filename, quality, false)
+      setDownloading(`simple - ${quality}`)
+      setDownloadProgress(0)
+
+      console.log('📥 Iniciando descarga simple con motor del backend...', quality)
+
+      // ✅ USAR EL MISMO ENDPOINT DE COMBINACIÓN PERO PARA UN SOLO ITAG
+      const response = await fetch('/api/download/youtube/combined', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: originalUrl,
+          quality: quality,
+          video_itag: format.itag, // ENVIAR SOLO VIDEO_ITAG
+          format_type: fileExt
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error en descarga simple backend')
+      }
+
+      const data = await response.json()
+
+      if (data.status === 'success' && data.file_content) {
+        const filename = `youtube_${quality}_${Date.now()}.${fileExt}`
+        await handleBase64Download(data.file_content, filename, quality)
+        setDownloadProgress(100)
+      } else {
+        throw new Error(data.message || 'El backend no proporcionó el archivo correctamente')
+      }
+
     } catch (error) {
-      setError(`Error al descargar ${quality}: ${error instanceof Error ? error.message : 'Error desconocido'} `)
+      console.error('❌ Error en descarga simple backend:', error)
+      setError(error instanceof Error ? error.message : 'Error en descarga simple')
+    } finally {
+      // Pequeno timeout para mostrar el 100%
+      setTimeout(() => {
+        setDownloading(null)
+        setDownloadProgress(0)
+      }, 1000)
     }
   }
 
@@ -625,24 +660,56 @@ export default function YoutubeDownloader() {
     }
   }
 
-  // ✅ DESCARGA DE AUDIO
+  // ✅ DESCARGA DE AUDIO - AHORA USANDO BACKEND ROBUSTO
   const handleAudioDownload = async () => {
-    if (!videoInfo?.formats) {
-      setError('No hay información de video disponible')
-      return
-    }
-
     const audioFormat = findBestAudioFormat()
 
-    if (audioFormat && audioFormat.url) {
-      if (!audioFormat.url.startsWith('http')) {
-        setError('La URL de audio no es válida')
-        return
-      }
+    if (audioFormat) {
+      try {
+        setDownloading('audio')
+        setDownloadProgress(0)
 
-      const ext = audioFormat.format.toLowerCase().includes('mp3') ? 'mp3' : 'm4a'
-      const filename = `youtube_audio_${Date.now()}.${ext} `
-      await downloadThroughBackend(audioFormat.url, filename, undefined, true)
+        const ext = audioFormat.format.toLowerCase().includes('mp3') ? 'mp3' : 'm4a'
+        const filename = `youtube_audio_${Date.now()}.${ext}`
+
+        console.log('🎵 Iniciando descarga de audio con motor del backend...', audioFormat.itag)
+
+        const response = await fetch('/api/download/youtube/combined', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: originalUrl,
+            quality: 'audio',
+            audio_itag: audioFormat.itag, // ENVIAR SOLO AUDIO_ITAG
+            format_type: ext
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Error en descarga de audio backend')
+        }
+
+        const data = await response.json()
+
+        if (data.status === 'success' && data.file_content) {
+          await handleBase64Download(data.file_content, filename, 'audio')
+          setDownloadProgress(100)
+        } else {
+          throw new Error(data.message || 'El backend no proporcionó el audio correctamente')
+        }
+
+      } catch (error) {
+        console.error('❌ Error en descarga de audio backend:', error)
+        setError(error instanceof Error ? error.message : 'Error en descarga de audio')
+      } finally {
+        setTimeout(() => {
+          setDownloading(null)
+          setDownloadProgress(0)
+        }, 1000)
+      }
     } else {
       setError('No se encontró formato de audio disponible')
     }
