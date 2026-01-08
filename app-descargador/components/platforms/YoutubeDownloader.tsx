@@ -297,6 +297,7 @@ export default function YoutubeDownloader() {
           url: originalUrl,
           quality: quality,
           video_itag: format.itag, // ENVIAR SOLO VIDEO_ITAG
+          audio_itag: null,        // DESHABILITAR AUDIO
           format_type: fileExt
         })
       })
@@ -605,6 +606,7 @@ export default function YoutubeDownloader() {
           body: JSON.stringify({
             url: originalUrl,
             quality: 'audio',
+            video_itag: null, // DESHABILITAR VIDEO
             audio_itag: audioFormat.itag,
             format_type: ext
           })

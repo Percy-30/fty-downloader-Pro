@@ -7,19 +7,20 @@ const PYTHON_API_URL = (process.env.PYTHON_API_URL || 'http://localhost:8000').r
 
 // ✅ FUNCIÓN PARA MAPEAR CALIDAD A ITAG
 const mapQualityToItag = (quality: string) => {
-  const qualityMap: { [key: string]: { video: number, audio: number } } = {
-    '144p': { video: 160, audio: 140 },
-    '240p': { video: 133, audio: 140 },
-    '360p': { video: 134, audio: 140 },
-    '480p': { video: 135, audio: 140 },
-    '720p': { video: 136, audio: 140 },
-    '1080p': { video: 137, audio: 140 },
-    '1440p': { video: 400, audio: 140 },
-    '2160p': { video: 401, audio: 140 },
-    '4k': { video: 401, audio: 140 }
+  const qNum = parseInt(quality.match(/\d+/)?.[0] || '1080')
+
+  const qualityMap: { [key: number]: { video: number, audio: number } } = {
+    144: { video: 160, audio: 140 },
+    240: { video: 133, audio: 140 },
+    360: { video: 134, audio: 140 },
+    480: { video: 135, audio: 140 },
+    720: { video: 136, audio: 140 },
+    1080: { video: 137, audio: 140 },
+    1440: { video: 400, audio: 140 },
+    2160: { video: 401, audio: 140 }
   }
 
-  return qualityMap[quality] || qualityMap['1080p'] // Default 1080p
+  return qualityMap[qNum] || qualityMap[1080]
 }
 
 export async function POST(request: NextRequest) {
@@ -77,10 +78,10 @@ export async function POST(request: NextRequest) {
     console.log('🔗 [YouTube Combined] Llamando a endpoint de combinación backend...')
 
     try {
-      // ✅ PRIORIZAR ITAGS ENVIADOS POR EL FRONTEND
+      // ✅ SOLUCIÓN: Solo usar itags de mapa si no se proveen específicos
       const itags = {
-        video: reqVideoItag || mapQualityToItag(quality).video,
-        audio: reqAudioItag || mapQualityToItag(quality).audio
+        video: reqVideoItag !== undefined ? reqVideoItag : mapQualityToItag(quality).video,
+        audio: reqAudioItag !== undefined ? reqAudioItag : mapQualityToItag(quality).audio
       }
 
       console.log('🎯 [YouTube Combined] Itags a utilizar:', {
@@ -135,7 +136,7 @@ export async function POST(request: NextRequest) {
 
         // Intentar fallback a estrategia frontend
         console.log('🔄 [YouTube Combined] Intentando estrategia frontend como fallback...')
-        return await handleFrontendCombination(cleanedUrl, quality, format_type)
+        return await handleFrontendCombination(cleanedUrl, quality, format_type, itags.video, itags.audio)
       }
 
       // ✅ MANEJAR STREAMING RESPONSE DEL BACKEND - PIPING DIRECTO
@@ -175,7 +176,8 @@ export async function POST(request: NextRequest) {
       console.log('⚠️ [YouTube Combined] Combinación backend falló, usando estrategia frontend:', combineError.message)
 
       // ✅ FALLBACK: Estrategia frontend
-      return await handleFrontendCombination(cleanedUrl, quality, format_type)
+      const body = await request.json().catch(() => ({}));
+      return await handleFrontendCombination(cleanedUrl, quality, format_type, body.video_itag, body.audio_itag)
     }
 
   } catch (error: any) {
@@ -191,11 +193,11 @@ export async function POST(request: NextRequest) {
 }
 
 // ✅ FUNCIÓN DE FALLBACK: COMBINACIÓN EN FRONTEND
-async function handleFrontendCombination(url: string, quality: string, format_type: string) {
+async function handleFrontendCombination(url: string, quality: string, format_type: string, videoItag?: number | string, audioItag?: number | string) {
   try {
     console.log('🔄 [YouTube Combined] Usando estrategia frontend...')
 
-    // Obtener información del video primero
+    // Obtener información del video
     const infoResponse = await fetch(`${PYTHON_API_URL}/api/v1/youtube/download`, {
       method: 'POST',
       headers: {
@@ -214,10 +216,11 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
     }
 
     const videoData = await infoResponse.json()
-    console.log('📊 [YouTube Combined] Información del video obtenida:', {
+    console.log('📊 [YouTube Combined] Información del video obtenida para fallback:', {
       title: videoData.title,
       formatsCount: videoData.formats?.length || 0,
-      platform: videoData.platform
+      targetQuality: quality,
+      targetItags: { videoItag, audioItag }
     })
 
     // ✅ ENCONTRAR MEJOR FORMATO DE VIDEO Y AUDIO
@@ -226,81 +229,53 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
       let bestAudio = null
 
       if (!data.formats || !Array.isArray(data.formats)) {
-        console.log('⚠️ [YouTube Combined] No hay formatos disponibles en la respuesta')
         return { bestVideo: null, bestAudio: null }
       }
 
-      console.log(`📋 [YouTube Combined] Total de formatos disponibles: ${data.formats.length}`)
+      // 1. PRIORIDAD: Buscar por ITAG si se proporcionó
+      if (videoItag) {
+        bestVideo = data.formats.find((f: any) => String(f.itag) === String(videoItag) || String(f.format_id) === String(videoItag))
+        if (bestVideo) console.log('🎯 [YouTube Combined] Encontrado video por ITAG exacto:', videoItag)
+      }
 
-      // Buscar mejor video (sin audio) para la calidad solicitada
-      const videoFormats = data.formats.filter((f: any) => {
-        const hasVideo = f.hasVideo !== false && f.has_video !== false
-        const matchesQuality = f.quality?.includes(quality) ||
-          f.resolution?.includes(quality) ||
-          f.quality_label?.includes(quality)
-        const isVideoOnly = !f.hasAudio || f.hasAudio === false ||
-          !f.has_audio || f.has_audio === false
+      if (audioItag) {
+        bestAudio = data.formats.find((f: any) => String(f.itag) === String(audioItag) || String(f.format_id) === String(audioItag))
+        if (bestAudio) console.log('🎯 [YouTube Combined] Encontrado audio por ITAG exacto:', audioItag)
+      }
 
-        return f.url && f.url.startsWith('http') && hasVideo && matchesQuality && isVideoOnly
-      })
+      // 2. FALLBACK: Buscar por calidad (numérico)
+      const targetHeight = parseInt(quality.match(/\d+/)?.[0] || '1080')
 
-      // Buscar mejor audio disponible
-      const audioFormats = data.formats.filter((f: any) => {
-        const hasAudio = f.hasAudio === true || f.has_audio === true
-        const isAudioFormat = f.quality?.includes('audio') ||
-          f.format?.includes('audio') ||
-          f.mimeType?.includes('audio') ||
-          f.quality?.includes('128') ||
-          f.quality?.includes('192') ||
-          f.quality?.includes('256') ||
-          f.quality?.includes('320') ||
-          f.quality?.includes('medium') ||
-          f.quality?.includes('low')
+      if (!bestVideo) {
+        const videoFormats = data.formats.filter((f: any) => {
+          const hasVideo = f.hasVideo !== false && f.has_video !== false
+          const isVideoOnly = !f.hasAudio || f.hasAudio === false || !f.has_audio || f.has_audio === false
 
-        return f.url && f.url.startsWith('http') && hasAudio && isAudioFormat
-      })
+          if (!hasVideo || !isVideoOnly) return false
 
-      // Ordenar por calidad (mayor primero)
-      videoFormats.sort((a: any, b: any) => {
-        const getQualityNum = (format: any) => {
-          if (format.quality_label) {
-            return parseInt(format.quality_label) || 0
-          }
-          if (format.quality) {
-            const match = format.quality.match(/(\d+)p/)
-            return match ? parseInt(match[1]) : 0
-          }
-          return 0
-        }
-        return getQualityNum(b) - getQualityNum(a)
-      })
+          const h = parseInt(f.height || f.resolution?.match(/\d+/)?.[0] || f.quality_label?.match(/\d+/)?.[0] || '0')
+          return h === targetHeight
+        })
 
-      audioFormats.sort((a: any, b: any) => {
-        const getBitrate = (format: any) => {
-          if (format.bitrate) return format.bitrate
-          if (format.quality?.includes('320')) return 320
-          if (format.quality?.includes('256')) return 256
-          if (format.quality?.includes('192')) return 192
-          if (format.quality?.includes('128')) return 128
-          return 0
-        }
-        return getBitrate(b) - getBitrate(a)
-      })
+        videoFormats.sort((a: any, b: any) => (b.contentLength || 0) - (a.contentLength || 0))
+        bestVideo = videoFormats[0] || null
+      }
 
-      bestVideo = videoFormats[0] || null
-      bestAudio = audioFormats[0] || null
+      if (!bestAudio && (audioItag !== null)) { // Solo buscar si no se pidió explícitamente sin audio
+        const audioFormats = data.formats.filter((f: any) => {
+          const hasAudio = f.hasAudio === true || f.has_audio === true
+          const hasVideo = f.hasVideo === true || f.has_video === true
+          return hasAudio && !hasVideo
+        })
 
-      console.log('🎯 [YouTube Combined] Formatos encontrados:', {
-        videoFormats: videoFormats.length,
-        audioFormats: audioFormats.length,
-        bestVideo: bestVideo ? `${bestVideo.quality || bestVideo.quality_label} - ${bestVideo.url?.substring(0, 50)}...` : 'No encontrado',
-        bestAudio: bestAudio ? `${bestAudio.quality} - ${bestAudio.url?.substring(0, 50)}...` : 'No encontrado'
-      })
+        audioFormats.sort((a: any, b: any) => (b.bitrate || 0) - (a.bitrate || 0))
+        bestAudio = audioFormats[0] || null
+      }
 
       return { bestVideo, bestAudio }
     }
 
-    const { bestVideo, bestAudio } = findBestFormats(videoData)
+    let { bestVideo, bestAudio } = findBestFormats(videoData)
 
     // ✅ ESTRATEGIA: SI NO HAY FORMATOS SEPARADOS, USAR EL FORMATO COMBINADO EXISTENTE
     if (!bestVideo && !bestAudio) {
