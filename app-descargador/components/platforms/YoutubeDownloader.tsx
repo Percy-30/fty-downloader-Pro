@@ -19,6 +19,8 @@ interface VideoFormat {
   codec?: string
   hasAudio?: boolean
   hasVideo?: boolean
+  width?: number
+  height?: number
   recommended_audio?: {
     url: string
     quality: string
@@ -645,71 +647,57 @@ export default function YoutubeDownloader() {
   }
 
   // ✅ FUNCIONES AUXILIARES
-  const findBestFormatForQuality = (quality: string): {
+  const findBestFormatForQuality = (qualityLabel: string): {
     format: VideoFormat | null,
     hasAudio: boolean,
     hasRecommendedAudio: boolean
   } => {
-    if (!videoInfo?.formats) {
-      return { format: null, hasAudio: false, hasRecommendedAudio: false }
+    if (!videoInfo?.formats || !Array.isArray(videoInfo.formats) || videoInfo.formats.length === 0) {
+      return { format: null, hasAudio: false, hasRecommendedAudio: false };
     }
 
-    // Filtrar solo formatos con URLs válidas
-    const validFormats = videoInfo.formats.filter(format =>
-      format.url && format.url.startsWith('http')
-    )
+    const targetHeight = parseInt(qualityLabel.match(/\d+/)?.[0] || '0');
 
-    const formatsWithAudio = validFormats.filter(format =>
-      format.hasAudio === true &&
-      !format.quality.toLowerCase().includes('audio only') &&
-      !format.quality.toLowerCase().includes('video only')
-    )
+    const getH = (f: VideoFormat): number => {
+      if (typeof f.height === 'number' && f.height > 0) return f.height;
+      const match = (f.quality || '').match(/(\d+)p/) || (f.resolution || '').match(/(\d+)p/) ||
+        (f.quality || '').match(/(\d+)/) || (f.resolution || '').match(/(\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    };
 
-    let bestFormat = formatsWithAudio.find(f =>
-      f.quality.toLowerCase().includes(quality) ||
-      f.resolution.includes(quality) ||
-      (quality === '1440p' && (f.resolution.includes('1440') || f.quality.toLowerCase().includes('1440'))) ||
-      (quality === '2160p' && (f.resolution.includes('2160') || f.quality.toLowerCase().includes('2160') || f.quality.toLowerCase().includes('4k')))
-    )
+    const isA = (f: VideoFormat) =>
+      (f.hasAudio === true && f.hasVideo === false) ||
+      f.quality?.toLowerCase().includes('audio only') ||
+      f.format?.toLowerCase().includes('mp3') ||
+      f.format?.toLowerCase().includes('m4a');
 
-    if (bestFormat) {
-      return { format: bestFormat, hasAudio: true, hasRecommendedAudio: false }
+    const videos = videoInfo.formats.filter(f => f.url && f.url.startsWith('http') && !isA(f));
+
+    if (videos.length === 0) {
+      return { format: null, hasAudio: false, hasRecommendedAudio: false };
     }
 
-    const videoOnlyFormats = validFormats.filter(format =>
-      !format.quality.toLowerCase().includes('audio only') &&
-      format.hasVideo !== false
-    )
+    // 1. Exacto + Audio
+    let best = videos.find(f => f.hasAudio && getH(f) === targetHeight);
+    if (best) return { format: best, hasAudio: true, hasRecommendedAudio: false };
 
-    bestFormat = videoOnlyFormats.find(f =>
-      f.quality.toLowerCase().includes(quality) ||
-      f.resolution.includes(quality) ||
-      (quality === '1440p' && (f.resolution.includes('1440') || f.quality.toLowerCase().includes('1440'))) ||
-      (quality === '2160p' && (f.resolution.includes('2160') || f.quality.toLowerCase().includes('2160') || f.quality.toLowerCase().includes('4k')))
-    )
+    // 2. Exacto Video (aunque no tenga audio)
+    best = videos.find(f => getH(f) === targetHeight);
+    if (best) return { format: best, hasAudio: !!best.hasAudio, hasRecommendedAudio: !!best.recommended_audio };
 
-    if (!bestFormat) {
-      const qualityOrder = ['2160p', '1440p', '1080p', '720p', '480p', '360p', '240p', '144p']
-      const currentQualityIndex = qualityOrder.indexOf(quality)
+    // 3. Fallback por texto (ej: si dice 1080 en el nombre)
+    best = videos.find(f => (f.quality + f.resolution).toLowerCase().includes(qualityLabel.toLowerCase()));
+    if (best) return { format: best, hasAudio: !!best.hasAudio, hasRecommendedAudio: !!best.recommended_audio };
 
-      if (currentQualityIndex >= 0) {
-        for (let i = currentQualityIndex; i < qualityOrder.length; i++) {
-          bestFormat = videoOnlyFormats.find(f =>
-            f.resolution.includes(qualityOrder[i]) ||
-            f.quality.toLowerCase().includes(qualityOrder[i])
-          )
-          if (bestFormat) break
-        }
-      }
-    }
-
-    const hasRecommendedAudio = bestFormat?.recommended_audio !== undefined
+    // 4. Fallback al más cercano
+    const sorted = [...videos].sort((a, b) => getH(b) - getH(a));
+    best = sorted.find(f => getH(f) <= targetHeight) || sorted[0];
 
     return {
-      format: bestFormat || null,
-      hasAudio: false,
-      hasRecommendedAudio
-    }
+      format: best || null,
+      hasAudio: !!best?.hasAudio,
+      hasRecommendedAudio: !!best?.recommended_audio
+    };
   }
 
   const findBestAudioFormat = (): VideoFormat | null => {
