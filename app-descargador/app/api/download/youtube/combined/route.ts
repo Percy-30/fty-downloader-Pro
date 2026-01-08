@@ -18,16 +18,18 @@ const mapQualityToItag = (quality: string) => {
     '2160p': { video: 401, audio: 140 },
     '4k': { video: 401, audio: 140 }
   }
-  
+
   return qualityMap[quality] || qualityMap['1080p'] // Default 1080p
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, quality = "1080p", format_type = "mp4" } = await request.json()
+    const body = await request.json().catch(() => ({}));
+    const { url, quality = "1080p", format_type = "mp4" } = body;
+    const { video_itag: reqVideoItag, audio_itag: reqAudioItag } = body;
 
     console.log('🎬 [YouTube Combined] Iniciando descarga combinada...')
-    console.log('📋 [YouTube Combined] Parámetros:', { url, quality, format_type })
+    console.log('📋 [YouTube Combined] Parámetros:', { url, quality, format_type, reqVideoItag, reqAudioItag })
     console.log('🔗 [YouTube Combined] Backend URL:', PYTHON_API_URL)
 
     // ✅ VALIDACIÓN MEJORADA DE URL
@@ -73,11 +75,16 @@ export async function POST(request: NextRequest) {
 
     // ✅ ESTRATEGIA PRINCIPAL: USAR BACKEND COMBINER CON STREAMING
     console.log('🔗 [YouTube Combined] Llamando a endpoint de combinación backend...')
-    
+
     try {
-      // ✅ MAPEAR CALIDAD A ITAGS NUMÉRICOS
-      const itags = mapQualityToItag(quality)
-      console.log('🎯 [YouTube Combined] Itags mapeados:', {
+      // ✅ PRIORIZAR ITAGS ENVIADOS POR EL FRONTEND
+      const itags = {
+        video: reqVideoItag || mapQualityToItag(quality).video,
+        audio: reqAudioItag || mapQualityToItag(quality).audio
+      }
+
+      console.log('🎯 [YouTube Combined] Itags a utilizar:', {
+        src: reqVideoItag ? 'frontend' : 'fallback_map',
         quality,
         video_itag: itags.video,
         audio_itag: itags.audio
@@ -92,7 +99,7 @@ export async function POST(request: NextRequest) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           url: cleanedUrl,
           quality: quality,
           video_itag: itags.video,
@@ -110,7 +117,7 @@ export async function POST(request: NextRequest) {
           statusText: combineResponse.statusText,
           error: errorText
         })
-        
+
         let errorDetail = 'Error en combinación backend'
         try {
           const errorData = JSON.parse(errorText)
@@ -118,7 +125,7 @@ export async function POST(request: NextRequest) {
         } catch {
           errorDetail = errorText
         }
-        
+
         // Intentar fallback a estrategia frontend
         console.log('🔄 [YouTube Combined] Intentando estrategia frontend como fallback...')
         return await handleFrontendCombination(cleanedUrl, quality, format_type)
@@ -126,12 +133,12 @@ export async function POST(request: NextRequest) {
 
       // ✅ MANEJAR STREAMING RESPONSE DEL BACKEND
       console.log('✅ [YouTube Combined] Backend respondió exitosamente, procesando streaming...')
-      
+
       // Obtener metadatos de los headers
       const contentDisposition = combineResponse.headers.get('Content-Disposition')
-      const filename = contentDisposition?.match(/filename="(.+)"/)?.[1] 
+      const filename = contentDisposition?.match(/filename="(.+)"/)?.[1]
         || `youtube_${quality}_${Date.now()}.mp4`
-      
+
       const fileSize = combineResponse.headers.get('Content-Length')
       const videoItag = combineResponse.headers.get('X-Video-Itag')
       const audioItag = combineResponse.headers.get('X-Audio-Itag')
@@ -149,7 +156,7 @@ export async function POST(request: NextRequest) {
         const arrayBuffer = await combineResponse.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
         const fileContent = buffer.toString('base64')
-        
+
         console.log('✅ [YouTube Combined] Archivo convertido a base64:', {
           size: fileContent.length,
           originalSize: buffer.length
@@ -176,7 +183,7 @@ export async function POST(request: NextRequest) {
 
     } catch (combineError: any) {
       console.log('⚠️ [YouTube Combined] Combinación backend falló, usando estrategia frontend:', combineError.message)
-      
+
       // ✅ FALLBACK: Estrategia frontend
       return await handleFrontendCombination(cleanedUrl, quality, format_type)
     }
@@ -184,7 +191,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('💥 [YouTube Combined] Error general:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Error en descarga combinada: ' + error.message,
         details: error.toString()
       },
@@ -197,14 +204,14 @@ export async function POST(request: NextRequest) {
 async function handleFrontendCombination(url: string, quality: string, format_type: string) {
   try {
     console.log('🔄 [YouTube Combined] Usando estrategia frontend...')
-    
+
     // Obtener información del video primero
     const infoResponse = await fetch(`${PYTHON_API_URL}/api/v1/youtube/download`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         url: url,
         quality: quality,
         format_type: format_type
@@ -238,28 +245,28 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
       // Buscar mejor video (sin audio) para la calidad solicitada
       const videoFormats = data.formats.filter((f: any) => {
         const hasVideo = f.hasVideo !== false && f.has_video !== false
-        const matchesQuality = f.quality?.includes(quality) || 
-                             f.resolution?.includes(quality) ||
-                             f.quality_label?.includes(quality)
-        const isVideoOnly = !f.hasAudio || f.hasAudio === false || 
-                          !f.has_audio || f.has_audio === false
-        
+        const matchesQuality = f.quality?.includes(quality) ||
+          f.resolution?.includes(quality) ||
+          f.quality_label?.includes(quality)
+        const isVideoOnly = !f.hasAudio || f.hasAudio === false ||
+          !f.has_audio || f.has_audio === false
+
         return f.url && f.url.startsWith('http') && hasVideo && matchesQuality && isVideoOnly
       })
 
       // Buscar mejor audio disponible
       const audioFormats = data.formats.filter((f: any) => {
         const hasAudio = f.hasAudio === true || f.has_audio === true
-        const isAudioFormat = f.quality?.includes('audio') || 
-                            f.format?.includes('audio') || 
-                            f.mimeType?.includes('audio') ||
-                            f.quality?.includes('128') || 
-                            f.quality?.includes('192') || 
-                            f.quality?.includes('256') || 
-                            f.quality?.includes('320') ||
-                            f.quality?.includes('medium') || 
-                            f.quality?.includes('low')
-        
+        const isAudioFormat = f.quality?.includes('audio') ||
+          f.format?.includes('audio') ||
+          f.mimeType?.includes('audio') ||
+          f.quality?.includes('128') ||
+          f.quality?.includes('192') ||
+          f.quality?.includes('256') ||
+          f.quality?.includes('320') ||
+          f.quality?.includes('medium') ||
+          f.quality?.includes('low')
+
         return f.url && f.url.startsWith('http') && hasAudio && isAudioFormat
       })
 
@@ -308,7 +315,7 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
     // ✅ ESTRATEGIA: SI NO HAY FORMATOS SEPARADOS, USAR EL FORMATO COMBINADO EXISTENTE
     if (!bestVideo && !bestAudio) {
       console.log('🔄 [YouTube Combined] No se encontraron formatos separados, usando formato combinado existente')
-      
+
       // Buscar cualquier formato con audio y video
       const combinedFormats = videoData.formats?.filter((f: any) => {
         const hasVideo = f.hasVideo !== false && f.has_video !== false
@@ -331,8 +338,8 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
         return getQualityNum(b) - getQualityNum(a)
       })
 
-      const bestCombined = combinedFormats.find((f: any) => 
-        f.quality?.includes(quality) || 
+      const bestCombined = combinedFormats.find((f: any) =>
+        f.quality?.includes(quality) ||
         f.resolution?.includes(quality) ||
         f.quality_label?.includes(quality)
       ) || combinedFormats[0]
@@ -361,7 +368,7 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
 
     // ✅ ESTRATEGIA FINAL: COMBINACIÓN EN FRONTEND (usando proxy)
     console.log('🔄 [YouTube Combined] Usando combinación por proxy')
-    
+
     if (bestVideo && bestAudio) {
       return NextResponse.json({
         status: 'success',

@@ -758,9 +758,15 @@ export default function YoutubeDownloader() {
     best = videos.find(f => (f.quality + f.resolution).toLowerCase().includes(qualityLabel.toLowerCase()));
     if (best) return { format: best, hasAudio: !!best.hasAudio, hasRecommendedAudio: !!best.recommended_audio };
 
-    // 4. Fallback al más cercano
+    // 4. Fallback al más cercano (con límite de tolerancia para 4K/2K)
     const sorted = [...videos].sort((a, b) => getH(b) - getH(a));
-    best = sorted.find(f => getH(f) <= targetHeight) || sorted[0];
+
+    // Si buscamos algo muy alto (4K/2K), no permitimos caer a algo muy bajo (1080p)
+    if (targetHeight > 1080) {
+      best = sorted.find(f => getH(f) >= targetHeight * 0.85); // Tolerar 15% de diferencia
+    } else {
+      best = sorted.find(f => getH(f) <= targetHeight) || sorted[0];
+    }
 
     return {
       format: best || null,
