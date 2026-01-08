@@ -104,6 +104,19 @@ export default function YoutubeDownloader() {
       }
 
       if (data.status === 'success') {
+        console.log('📦 [DATA DEBUG] Respuesta completa del servidor:', data);
+        console.log(`📊 [DATA DEBUG] Total formatos recibidos: ${data.formats?.length || 0}`);
+
+        if (data.formats?.length > 0) {
+          console.table(data.formats.map((f: any) => ({
+            q: f.quality,
+            res: f.resolution,
+            url: f.url ? 'SI' : 'NO',
+            audio: f.hasAudio,
+            video: f.hasVideo
+          })));
+        }
+
         setVideoInfo(data)
         setOriginalUrl(url);
         setUrl('')
@@ -602,20 +615,9 @@ export default function YoutubeDownloader() {
       }
 
       if (!errorMessage.includes('TIMEOUT') && downloadUrl && downloadUrl.startsWith('http')) {
-        console.log('🔄 Intentando descarga directa...')
-        try {
-          const link = document.createElement('a')
-          link.href = downloadUrl
-          link.download = filename
-          link.target = '_blank'
-          link.rel = 'noopener noreferrer'
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-          console.log('📥 Descarga directa iniciada')
-        } catch (fallbackError) {
-          console.error('❌ Error en descarga directa:', fallbackError)
-        }
+        // ✅ NO HACEMOS DESCARGA DIRECTA PARA YOUTUBE PORQUE DA 403 (IP BINDING)
+        console.warn('⚠️ Se detectó falla en proxy. La descarga directa está deshabilitada para evitar 403 Forbidden de YouTube.')
+        setError('El servidor de YouTube bloqueó la descarga (403). Intenta con otra calidad o espera unos minutos.')
       }
 
       setDownloading(null)
