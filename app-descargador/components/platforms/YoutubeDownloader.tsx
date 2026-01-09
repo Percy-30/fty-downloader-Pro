@@ -787,7 +787,7 @@ export default function YoutubeDownloader() {
       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
         <div
           className="bg-green-600 h-2.5 rounded-full transition-all duration-300 ease-out"
-          style={{ width: `${progress}% ` }}
+          style={{ width: `${progress}%` }}
         ></div>
       </div>
       <div className="text-xs text-gray-600 text-center">
@@ -1087,7 +1087,7 @@ export default function YoutubeDownloader() {
                           const formatInfo = getFormatInfo(quality.value, true)
 
                           return (
-                            <tr key={quality.value} className={`hover: bg - gray - 50 ${!isAvailable ? 'opacity-50' : ''} `}>
+                            <tr key={quality.value} className={`hover:bg-gray-50 ${!isAvailable ? 'opacity-50' : ''}`}>
                               <td className="border border-gray-300 px-4 py-3 text-gray-800 font-medium">
                                 {quality.label}
                                 {!isAvailable && (
