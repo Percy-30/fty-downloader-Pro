@@ -264,14 +264,21 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
         bestVideo = videoFormats[0] || null
       }
 
-      if (!bestAudio && (audioItag !== null)) { // Solo buscar si no se pidió explícitamente sin audio
+      if (!bestAudio && (audioItag !== null && audioItag !== "null")) { // Solo buscar si no se pidió explícitamente sin audio
         const audioFormats = data.formats.filter((f: any) => {
           const hasAudio = f.hasAudio === true || f.has_audio === true
           const hasVideo = f.hasVideo === true || f.has_video === true
-          return hasAudio && !hasVideo
+          const isPureAudio = hasAudio && !hasVideo
+          return isPureAudio || hasAudio // Priorizar puro, pero aceptar combinado si toca
         })
 
-        audioFormats.sort((a: any, b: any) => (b.bitrate || 0) - (a.bitrate || 0))
+        // Ordenar: primero los que NO tienen video
+        audioFormats.sort((a: any, b: any) => {
+          const aV = a.hasVideo || a.has_video ? 1 : 0
+          const bV = b.hasVideo || b.has_video ? 1 : 0
+          if (aV !== bV) return aV - bV // 0 (pure audio) viene antes que 1
+          return (b.bitrate || 0) - (a.bitrate || 0)
+        })
         bestAudio = audioFormats[0] || null
       }
 
@@ -330,12 +337,20 @@ async function handleFrontendCombination(url: string, quality: string, format_ty
       }
     }
 
-    if (!bestVideo) {
+    // ✅ VALIDACIÓN FINAL DE FORMATOS ENCONTRADOS
+    // Si pedimos audio, no necesitamos video
+    const needsVideo = quality !== 'audio'
+
+    if (needsVideo && !bestVideo) {
       throw new Error(`No se encontró formato de video para calidad ${quality}`)
     }
 
+    if (quality === 'audio' && !bestAudio) {
+      throw new Error('No se encontró formato de audio disponible')
+    }
+
     // ✅ ESTRATEGIA FINAL: COMBINACIÓN EN FRONTEND (usando proxy)
-    console.log('🔄 [YouTube Combined] Usando combinación por proxy')
+    console.log('🔄 [YouTube Combined] Usando combinación por proxy o descarga directa')
 
     if (bestVideo && bestAudio) {
       return NextResponse.json({
