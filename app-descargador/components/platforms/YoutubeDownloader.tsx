@@ -608,14 +608,13 @@ export default function YoutubeDownloader() {
 
     try {
       const ext = audioFormat.format.toLowerCase().includes('mp3') ? 'mp3' : 'm4a'
-      const originalUrl = videoInfo?.video_url || url
       console.log('🎵 Descargando audio:', audioFormat.itag)
 
       const response = await fetch('/api/download/youtube/combined', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          url: originalUrl,
+          url: originalUrl, // USAR ESTADO originalUrl
           quality: 'audio',
           video_itag: null,
           audio_itag: audioFormat.itag,
