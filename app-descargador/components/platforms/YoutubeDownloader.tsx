@@ -149,10 +149,16 @@ export default function YoutubeDownloader() {
       return
     }
 
-    try {
-      setDownloading(`combined-${quality}`)
-      setDownloadProgress(0)
+    const { format } = findBestFormatForQuality(quality, false)
+    if (!format) {
+      setError(`No se encontró formato para calidad ${quality}`)
+      return
+    }
 
+    setDownloading(`combined-${quality}`)
+    setDownloadProgress(0)
+
+    try {
       console.log('🎬 Iniciando descarga combinada con streaming binario real...', quality)
 
       const response = await fetch('/api/download/youtube/combined', {
@@ -162,7 +168,9 @@ export default function YoutubeDownloader() {
         },
         body: JSON.stringify({
           url: originalUrl,
-          quality: quality
+          quality: quality,
+          video_itag: format.itag,
+          audio_itag: (format.recommended_audio as any)?.itag || 140
         })
       })
 
@@ -179,8 +187,7 @@ export default function YoutubeDownloader() {
         throw new Error(errorMsg)
       }
 
-      const filename = `youtube_${quality}_${Date.now()}.mp4`
-      await downloadStream(response, filename, quality)
+      await downloadStream(response, `youtube_combined_${quality}_${Date.now()}.mp4`, quality)
 
     } catch (error) {
       console.error('❌ Error en descarga combinada:', error)
@@ -281,10 +288,10 @@ export default function YoutubeDownloader() {
       return
     }
 
-    try {
-      setDownloading(`simple-${quality}`)
-      setDownloadProgress(0)
+    setDownloadProgress(0)
+    setDownloading(`simple-${quality}`)
 
+    try {
       console.log('📥 Iniciando descarga simple con motor del backend...', quality)
 
       // ✅ USAR EL MISMO ENDPOINT DE COMBINACIÓN PERO PARA UN SOLO ITAG
@@ -315,8 +322,7 @@ export default function YoutubeDownloader() {
         throw new Error(errorMsg)
       }
 
-      const filename = `youtube_${quality}_${Date.now()}.${fileExt}`
-      await downloadStream(response, filename, quality)
+      await downloadStream(response, `youtube_simple_${quality}_${Date.now()}.${fileExt}`, quality)
 
     } catch (error) {
       console.error('❌ Error en descarga simple backend:', error)
@@ -333,8 +339,9 @@ export default function YoutubeDownloader() {
 
   // ✅ LECTOR DE STREAM PARA PROGRESO EN TIEMPO REAL
   const downloadStream = async (response: Response, filename: string, quality: string) => {
-    const contentLength = response.headers.get('Content-Length')
-    const total = contentLength ? parseInt(contentLength, 10) : 0
+    // Tracking de progreso
+    const totalStr = response.headers.get('Content-Length') || response.headers.get('X-File-Size')
+    const total = totalStr ? parseInt(totalStr, 10) : 0
     let loaded = 0
 
     const reader = response.body?.getReader()
@@ -590,7 +597,7 @@ export default function YoutubeDownloader() {
 
     if (audioFormat) {
       try {
-        setDownloading('audio')
+        setDownloading(`audio-${audioFormat.itag}`)
         setDownloadProgress(0)
 
         const ext = audioFormat.format.toLowerCase().includes('mp3') ? 'mp3' : 'm4a'
@@ -1043,23 +1050,32 @@ export default function YoutubeDownloader() {
                     {predefinedQualities.map((quality) => {
                       const isAvailable = isQualityAvailable(quality.value)
                       const isDownloading = downloading === `simple-${quality.value}`
+                      const formatInfo = getFormatInfo(quality.value, true)
 
                       return (
-                        <div key={quality.value} className={`flex items - center gap - 3 border rounded - lg p - 3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} `}>
+                        <div key={quality.value} className={`flex items-center gap-3 border rounded-lg p-3 ${isAvailable ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'} `}>
                           <div className="flex-1">
                             <p className="font-semibold text-gray-900">{quality.label}</p>
                             {!isAvailable && <p className="text-xs text-red-500">No disponible</p>}
                           </div>
 
                           {isDownloading ? (
-                            <div className="w-24 text-center">
-                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mx-auto" />
+                            <div className="flex flex-col items-end min-w-[120px]">
+                              <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-blue-500 transition-all duration-300"
+                                  style={{ width: `${downloadProgress}%` }}
+                                />
+                              </div>
+                              <span className="text-[10px] text-blue-600 font-bold mt-1">
+                                {Math.round(downloadProgress)}%
+                              </span>
                             </div>
                           ) : (
                             <button
                               onClick={() => handleSimpleDownload(quality.value, quality.ext)}
                               disabled={!isAvailable || !!downloading}
-                              className={`px - 4 py - 2 rounded - lg font - semibold text - sm whitespace - nowrap ${isAvailable && !downloading
+                              className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !downloading
                                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 } `}

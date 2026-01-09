@@ -152,7 +152,10 @@ export async function POST(request: NextRequest) {
         'Content-Disposition',
         'X-File-Size',
         'X-Video-Itag',
-        'X-Audio-Itag'
+        'X-Audio-Itag',
+        'X-Is-Audio',
+        'X-Is-Video',
+        'Access-Control-Expose-Headers'
       ]
 
       headersToForward.forEach(header => {
