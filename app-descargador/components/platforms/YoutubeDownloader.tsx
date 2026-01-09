@@ -52,11 +52,11 @@ interface DownloadResponse {
 }
 
 const predefinedQualities: { value: string, label: string, ext?: string }[] = [
-  { value: '2160p', label: '2160p (4K)', ext: 'mp4' },
-  { value: '1440p', label: '1440p (2K)', ext: 'mp4' },
-  { value: '1080p', label: '1080p (FHD)', ext: 'mp4' },
-  { value: '720p', label: '720p (HD)', ext: 'mp4' },
-  { value: '480p', label: '480p (SD)', ext: 'mp4' },
+  { label: '2160p (4K)', value: '2160p', ext: 'mp4' },
+  { label: '1440p (2K)', value: '1440p', ext: 'mp4' },
+  { label: '1080p (.mp4)', value: '1080p', ext: 'mp4' },
+  { label: '720p (.mp4)', value: '720p', ext: 'mp4' },
+  { label: '480p (.mp4)', value: '480p', ext: 'mp4' },
   { value: '360p', label: '360p', ext: 'mp4' },
   { value: '240p', label: '240p', ext: 'mp4' },
   { value: '144p', label: '144p', ext: 'mp4' }
@@ -657,8 +657,8 @@ export default function YoutubeDownloader() {
 
     const getH = (f: VideoFormat): number => {
       if (typeof f.height === 'number' && f.height > 0) return f.height;
-      const match = (f.quality || '').match(/(\d+)p/) || (f.resolution || '').match(/(\d+)p/) ||
-        (f.quality || '').match(/(\d+)/) || (f.resolution || '').match(/(\d+)/);
+      const resStr = (f.quality || '') + (f.resolution || '');
+      const match = resStr.match(/(\d+)p/) || resStr.match(/x(\d+)/) || resStr.match(/(\d+)/);
       return match ? parseInt(match[1]) : 0;
     };
 
@@ -1059,7 +1059,7 @@ export default function YoutubeDownloader() {
                               className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap ${isAvailable && !downloading
                                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                } `}
+                                }`}
                             >
                               {isAvailable ? 'Descargar' : 'N/A'}
                             </button>
@@ -1114,10 +1114,10 @@ export default function YoutubeDownloader() {
                                   <button
                                     onClick={() => handleSimpleDownload(quality.value, quality.ext || 'mp4')}
                                     disabled={!isAvailable || downloading !== null}
-                                    className={`py - 2 px - 4 rounded - lg font - semibold transition - colors text - sm flex items - center justify - center w - full ${isAvailable && !downloading
+                                    className={`py-2 px-4 rounded-lg font-semibold transition-colors text-sm flex items-center justify-center w-full ${isAvailable && !downloading
                                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                      } `}
+                                      }`}
                                   >
                                     {isAvailable ? (
                                       <>
