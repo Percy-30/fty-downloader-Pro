@@ -81,9 +81,11 @@ export async function POST(request: NextRequest) {
       // ✅ SOLUCIÓN: Solo usar itags de mapa si no se proveen específicos
       // Si reqAudioItag es NULL explícito, lo mantenemos como null para que el backend no descargue audio
       const itags = {
-        video: reqVideoItag !== undefined ? reqVideoItag : mapQualityToItag(quality).video,
+        video: reqVideoItag !== undefined && reqVideoItag !== null ? reqVideoItag : mapQualityToItag(quality).video,
         audio: reqAudioItag !== undefined ? reqAudioItag : mapQualityToItag(quality).audio
       }
+
+      console.log('🎯 [YouTube Combined] Itags finales calculados:', itags)
 
       console.log('🎯 [YouTube Combined] Itags a utilizar:', {
         src: reqVideoItag ? 'frontend' : 'fallback_map',

@@ -358,7 +358,10 @@ export default function YoutubeDownloader() {
 
       if (total > 0) {
         const progress = Math.round((loaded / total) * 100)
-        setDownloadProgress(progress)
+        setDownloadProgress(Math.min(progress, 99)) // Nunca mostrar 100% hasta que termine el stream
+      } else {
+        // Si no sabemos el total, simular un progreso lento para que el usuario vea actividad
+        setDownloadProgress((prev) => Math.min(prev + 1, 95))
       }
     }
 
