@@ -385,52 +385,83 @@ export default function YoutubeDownloader() {
     if (isNative) {
       // 📱 NATIVE: Guardar usando Filesystem con la misma estructura que Facebook
       try {
+        // 🔥 OPTIMIZACIÓN: Limitar tamaño para evitar OOM
+        const MAX_SIZE = 200 * 1024 * 1024; // 200MB máximo
+        if (blob.size > MAX_SIZE) {
+          await Dialog.alert({
+            title: 'Archivo muy grande',
+            message: `El archivo es demasiado grande (${formatBytes(blob.size)}). Máximo permitido: 200MB en Android.`
+          });
+          setDownloading(null);
+          setDownloadProgress(0);
+          return;
+        }
+
         const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = async () => {
-          const base64Data = (reader.result as string).split(',')[1];
 
-          // Definir carpetas personalizadas dentro de Download (carpeta pública)
-          const baseFolder = 'Download/FTYdownloaderPro/download';
-          const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
-          const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
-          let savedUri = '';
-
-          try {
-            const result = await Filesystem.writeFile({
-              path: finalPath,
-              data: base64Data,
-              directory: Directory.ExternalStorage,
-              recursive: true
-            });
-            savedUri = result.uri;
-            console.log('[DEBUG-PATH] YT Guardado en:', savedUri);
-            scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
-          } catch (writeErr: any) {
-            await Dialog.alert({
-              title: 'Error Guardando',
-              message: `No se pudo crear carpeta.\\n${writeErr.message}`
-            });
-            throw writeErr;
-          }
-
-          const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
-
-          addToHistory({
-            title: videoInfo?.title || filename,
-            platform: 'youtube',
-            thumbnail: videoInfo?.thumbnail || '',
-            originalUrl: originalUrl,
-            status: 'completed',
-            format: quality,
-            fileSize: formatBytes(blob.size),
-            duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
-            filePath: savedUri,
-            mimeType: mimeType
-          })
+        reader.onerror = () => {
+          console.error('Error leyendo archivo');
+          setDownloading(null);
+          setDownloadProgress(0);
         };
+
+        reader.onloadend = async () => {
+          try {
+            const base64Data = (reader.result as string).split(',')[1];
+
+            // Definir carpetas personalizadas dentro de Download (carpeta pública)
+            const baseFolder = 'Download/FTYdownloaderPro/download';
+            const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
+            const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+            let savedUri = '';
+
+            try {
+              const result = await Filesystem.writeFile({
+                path: finalPath,
+                data: base64Data,
+                directory: Directory.ExternalStorage,
+                recursive: true
+              });
+              savedUri = result.uri;
+              console.log('[DEBUG-PATH] YT Guardado en:', savedUri);
+              scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+            } catch (writeErr: any) {
+              await Dialog.alert({
+                title: 'Error Guardando',
+                message: `No se pudo crear carpeta.\n${writeErr.message}`
+              });
+              throw writeErr;
+            }
+
+            const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+
+            addToHistory({
+              title: videoInfo?.title || filename,
+              platform: 'youtube',
+              thumbnail: videoInfo?.thumbnail || '',
+              originalUrl: originalUrl,
+              status: 'completed',
+              format: quality,
+              fileSize: formatBytes(blob.size),
+              duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+              filePath: savedUri,
+              mimeType: mimeType
+            })
+
+            setDownloading(null);
+            setDownloadProgress(0);
+          } catch (saveError) {
+            console.error('Error en proceso de guardado:', saveError);
+            setDownloading(null);
+            setDownloadProgress(0);
+          }
+        };
+
+        reader.readAsDataURL(blob);
       } catch (writeError) {
         console.error('Error guardando archivo nativo:', writeError);
+        setDownloading(null);
+        setDownloadProgress(0);
         throw new Error('No se pudo guardar el archivo en el dispositivo');
       }
     } else {
