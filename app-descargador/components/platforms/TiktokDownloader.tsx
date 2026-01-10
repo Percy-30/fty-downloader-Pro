@@ -131,7 +131,7 @@ export default function TiktokDownloader() {
           console.log(`💾 TikTok: Iniciando guardado por chunks de ${formatBytes(blob.size)}...`);
 
           const baseFolder = 'Download/FTYdownloaderPro/download';
-          const typeFolder = 'FTYdownloaderPro Video'; // TikTok generalmente es video
+          const typeFolder = fileExt === 'mp3' ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
           const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
 
           try {
@@ -195,7 +195,7 @@ export default function TiktokDownloader() {
             fileSize: formatBytes(blob.size),
             duration: undefined,
             filePath: uriResult.uri, // ✅ URI REAL
-            mimeType: 'video/mp4'
+            mimeType: fileExt === 'mp3' ? 'audio/mpeg' : 'video/mp4'
           });
 
           setDownloading(null);
