@@ -6,6 +6,7 @@ import { formatBytes } from '@/lib/utils';
 import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
+import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Media } from '@capacitor-community/media';
 import { Dialog } from '@capacitor/dialog';
@@ -66,6 +67,7 @@ export default function YoutubeDownloader() {
   const { isNative } = usePlatform()
   const { scheduleNotification } = useNotifications()
   const { addToHistory } = useDownloadHistory()
+  const { showInterstitial } = useAdMobInterstitial()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -75,6 +77,14 @@ export default function YoutubeDownloader() {
 
   const [originalUrl, setOriginalUrl] = useState('');
   const [activeTab, setActiveTab] = useState<'simple' | 'combined'>('simple');
+
+  // 🔄 CAMBIAR TAB + ANUNCIO
+  const handleTabChange = async (tab: 'simple' | 'combined') => {
+    if (isNative) {
+      await showInterstitial()
+    }
+    setActiveTab(tab)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -366,28 +376,86 @@ export default function YoutubeDownloader() {
     }
 
     const blob = new Blob(chunks as any, { type: (response.headers.get('Content-Type') as string) || 'video/mp4' })
-    const url = URL.createObjectURL(blob)
 
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    setDownloadProgress(100)
 
-    setTimeout(() => URL.revokeObjectURL(url), 10000)
+    // Detectar si es audio o video
+    const isAudio = filename.toLowerCase().includes('audio') || filename.toLowerCase().includes('.mp3') || filename.toLowerCase().includes('.m4a')
 
-    console.log(`✅ Descarga completada: ${filename} (${formatBytes(blob.size)})`)
-    scheduleNotification('Descarga Completada', `${filename} se ha guardado correctamente.`)
+    if (isNative) {
+      // 📱 NATIVE: Guardar usando Filesystem con la misma estructura que Facebook
+      try {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = async () => {
+          const base64Data = (reader.result as string).split(',')[1];
 
-    addToHistory({
-      title: videoInfo?.title || filename,
-      platform: 'youtube',
-      thumbnail: videoInfo?.thumbnail || '',
-      status: 'completed',
-      format: quality,
-      fileSize: formatBytes(blob.size)
-    })
+          // Definir carpetas personalizadas dentro de Download (carpeta pública)
+          const baseFolder = 'Download/FTYdownloaderPro/download';
+          const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
+          const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+          let savedUri = '';
+
+          try {
+            const result = await Filesystem.writeFile({
+              path: finalPath,
+              data: base64Data,
+              directory: Directory.ExternalStorage,
+              recursive: true
+            });
+            savedUri = result.uri;
+            console.log('[DEBUG-PATH] YT Guardado en:', savedUri);
+            scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+          } catch (writeErr: any) {
+            await Dialog.alert({
+              title: 'Error Guardando',
+              message: `No se pudo crear carpeta.\\n${writeErr.message}`
+            });
+            throw writeErr;
+          }
+
+          const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+
+          addToHistory({
+            title: videoInfo?.title || filename,
+            platform: 'youtube',
+            thumbnail: videoInfo?.thumbnail || '',
+            originalUrl: originalUrl,
+            status: 'completed',
+            format: quality,
+            fileSize: formatBytes(blob.size),
+            duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+            filePath: savedUri,
+            mimeType: mimeType
+          })
+        };
+      } catch (writeError) {
+        console.error('Error guardando archivo nativo:', writeError);
+        throw new Error('No se pudo guardar el archivo en el dispositivo');
+      }
+    } else {
+      // 🌐 WEB: Método clásico
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(url), 10000)
+
+      console.log(`✅ Descarga completada: ${filename} (${formatBytes(blob.size)})`)
+      scheduleNotification('Descarga Completada', `${filename} se ha guardado correctamente.`)
+
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'youtube',
+        thumbnail: videoInfo?.thumbnail || '',
+        status: 'completed',
+        format: quality,
+        fileSize: formatBytes(blob.size)
+      })
+    }
   }
 
   // ✅ FUNCIÓN PRINCIPAL DE DESCARGA
@@ -1001,13 +1069,13 @@ export default function YoutubeDownloader() {
               <div className="flex space-x-2 mb-6 border-b">
                 <TabButton
                   active={activeTab === 'simple'}
-                  onClick={() => setActiveTab('simple')}
+                  onClick={() => handleTabChange('simple')}
                 >
                   🎬 Solo Video (Sin Combinar)
                 </TabButton>
                 <TabButton
                   active={activeTab === 'combined'}
-                  onClick={() => setActiveTab('combined')}
+                  onClick={() => handleTabChange('combined')}
                 >
                   🎵 Video con Audio (Combinado)
                 </TabButton>
