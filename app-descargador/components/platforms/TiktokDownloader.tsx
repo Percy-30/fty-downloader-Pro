@@ -49,6 +49,7 @@ export default function TiktokDownloader() {
   const [error, setError] = useState<string | null>(null)
   const [videoInfo, setVideoInfo] = useState<DownloadResponse | null>(null)
   const [downloading, setDownloading] = useState<string | null>(null)
+  const [downloadProgress, setDownloadProgress] = useState(0)
 
 
 
@@ -110,47 +111,90 @@ export default function TiktokDownloader() {
       setDownloading(quality)
 
       if (isNative) {
+        // 📱 NATIVE: Usar Chunked Write para TikTok
         try {
-          const status = await Filesystem.checkPermissions();
-          if (status.publicStorage !== 'granted') await Filesystem.requestPermissions();
-        } catch (e) { console.error('Storage perm error', e); }
-      }
+          console.log(`💾 TikTok: Iniciando guardado por chunks de ${formatBytes(blob.size)}...`);
 
-      const filename = `tiktok_${quality}_${Date.now()}.${fileExt}`
+          const baseFolder = 'Download/FTYdownloaderPro/download';
+          const typeFolder = 'FTYdownloaderPro Video'; // TikTok generalmente es video
+          const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
 
-      // Fetch siempre, incluso para URLs externas
-      const response = await fetch(downloadUrl)
-      if (!response.ok) throw new Error('Error al descargar el archivo')
+          try {
+            await Filesystem.mkdir({
+              path: `${baseFolder}/${typeFolder}`,
+              directory: Directory.ExternalStorage,
+              recursive: true
+            });
+          } catch (e) { }
 
-      const blob = await response.blob()
+          // Helper
+          const blobToBase64 = (blob: Blob): Promise<string> => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const res = reader.result as string;
+                resolve(res.split(',')[1]);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+          };
 
-      if (isNative) {
-        // 📱 NATIVE: Usar descarga del navegador (NO crashea con archivos grandes)
-        console.log(`💾 Guardando archivo de ${formatBytes(blob.size)}...`);
+          const CHUNK_SIZE = 1024 * 1024 * 5;
+          const totalChunks = Math.ceil(blob.size / CHUNK_SIZE);
 
-        const urlObject = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = urlObject;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(urlObject), 10000);
+          try {
+            await Filesystem.deleteFile({ path: finalPath, directory: Directory.ExternalStorage });
+          } catch (e) { }
 
-        scheduleNotification('Descarga Completada', `${filename} guardado`);
+          for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, blob.size);
+            const chunk = blob.slice(start, end);
+            const base64Chunk = await blobToBase64(chunk);
 
-        addToHistory({
-          title: filename,
-          platform: 'tiktok',
-          thumbnail: '', // Tiktok thumb difícil sin API
-          originalUrl: url,
-          status: 'completed',
-          format: 'HD',
-          fileSize: formatBytes(blob.size), // Guardar tamaño
-          duration: undefined,
-          filePath: '', // No hay path local específico
-          mimeType: 'video/mp4'
-        })
+            if (i === 0) {
+              await Filesystem.writeFile({ path: finalPath, data: base64Chunk, directory: Directory.ExternalStorage });
+            } else {
+              await Filesystem.appendFile({ path: finalPath, data: base64Chunk, directory: Directory.ExternalStorage });
+            }
+
+            // Actualizar progreso (simulado o basado en chunks)
+            const progress = Math.round(((i + 1) / totalChunks) * 100);
+            setDownloadProgress(progress);
+            if (i % 5 === 0) console.log(`💾 TK Chunk ${i + 1}/${totalChunks}`);
+          }
+
+          const uriResult = await Filesystem.getUri({ path: finalPath, directory: Directory.ExternalStorage });
+
+          console.log('✅ TK Guardado en:', uriResult.uri);
+          scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+
+          addToHistory({
+            title: videoInfo?.title || filename,
+            platform: 'tiktok',
+            thumbnail: videoInfo?.thumbnail || '',
+            originalUrl: url,
+            status: 'completed',
+            format: 'HD',
+            fileSize: formatBytes(blob.size),
+            duration: undefined,
+            filePath: uriResult.uri, // ✅ URI REAL
+            mimeType: 'video/mp4'
+          });
+
+          setDownloading(null);
+          setDownloadProgress(0);
+
+        } catch (error: any) {
+          console.error('Error guardando TK nativo:', error);
+          await Dialog.alert({
+            title: 'Error al Guardar',
+            message: `No se pudo guardar el archivo.\n${error.message}`
+          });
+          setDownloading(null);
+          setDownloadProgress(0);
+        }
 
       } else {
         // 🌐 WEB
@@ -265,6 +309,20 @@ export default function TiktokDownloader() {
     }
     return `${count} vistas`
   }
+
+  const ProgressBar = ({ progress, quality }: { progress: number, quality: string }) => (
+    <div className="w-full">
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+        <div
+          className="bg-black h-2.5 rounded-full transition-all duration-300 ease-out"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+      <div className="text-xs text-gray-600 text-center">
+        {progress < 100 ? `Descargando ${quality}: ${progress}%` : '✅ Descarga completada'}
+      </div>
+    </div>
+  )
 
 
 
@@ -434,8 +492,8 @@ export default function TiktokDownloader() {
                       </div>
 
                       {isDownloading ? (
-                        <div className="w-24 text-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mx-auto" />
+                        <div className="w-full min-w-[120px]">
+                          <ProgressBar progress={downloadProgress} quality={quality.value} />
                         </div>
                       ) : (
                         <button
@@ -507,10 +565,9 @@ export default function TiktokDownloader() {
                                 }`}
                             >
                               {isDownloading ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-                                  Descargando...
-                                </>
+                                <div className="w-full">
+                                  <ProgressBar progress={downloadProgress} quality={quality.value} />
+                                </div>
                               ) : isAvailable ? (
                                 <>
                                   <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
