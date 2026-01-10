@@ -125,58 +125,32 @@ export default function TiktokDownloader() {
       const blob = await response.blob()
 
       if (isNative) {
-        // 📱 NATIVE: Guardar usando Filesystem
-        try {
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = async () => {
-            const base64Data = (reader.result as string).split(',')[1];
-            try {
-              // Definir carpetas personalizadas dentro de Download (carpeta pública)
-              const baseFolder = 'Download/FTYdownloaderPro/download';
-              const typeFolder = 'FTYdownloaderPro Video';
-              const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
-              let savedUri = '';
+        // 📱 NATIVE: Usar descarga del navegador (NO crashea con archivos grandes)
+        console.log(`💾 Guardando archivo de ${formatBytes(blob.size)}...`);
 
-              try {
-                const result = await Filesystem.writeFile({
-                  path: finalPath,
-                  data: base64Data,
-                  directory: Directory.ExternalStorage, // ⚠️ Changed from Documents
-                  recursive: true
-                });
-                savedUri = result.uri;
-                console.log('[DEBUG-PATH] TK Guardado en:', savedUri);
-                scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
-              } catch (writeErr: any) {
-                await Dialog.alert({
-                  title: 'Error Guardando',
-                  message: `No se pudo crear carpeta.\n${writeErr.message}`
-                });
-                throw writeErr;
-              }
+        const urlObject = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = urlObject;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(urlObject), 10000);
 
-              addToHistory({
-                title: filename,
-                platform: 'tiktok',
-                thumbnail: '', // Tiktok thumb difícil sin API
-                originalUrl: url,
-                status: 'completed',
-                format: 'HD',
-                fileSize: formatBytes(blob.size), // Guardar tamaño
-                duration: undefined,
-                filePath: savedUri, // URI REAL
-                mimeType: 'video/mp4'
-              })
-            } catch (writeError) {
-              console.error('Error guardando archivo nativo:', writeError);
-              throw new Error('No se pudo guardar el archivo en el dispositivo');
-            }
-          };
-        } catch (writeError) {
-          console.error('Error guardando archivo nativo:', writeError);
-          throw new Error('No se pudo guardar el archivo en el dispositivo');
-        }
+        scheduleNotification('Descarga Completada', `${filename} guardado`);
+
+        addToHistory({
+          title: filename,
+          platform: 'tiktok',
+          thumbnail: '', // Tiktok thumb difícil sin API
+          originalUrl: url,
+          status: 'completed',
+          format: 'HD',
+          fileSize: formatBytes(blob.size), // Guardar tamaño
+          duration: undefined,
+          filePath: '', // No hay path local específico
+          mimeType: 'video/mp4'
+        })
 
       } else {
         // 🌐 WEB

@@ -210,61 +210,39 @@ export default function FacebookDownloader() {
 
       // Crear y descargar el archivo
       if (isNative) {
-        // 📱 NATIVE
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = async () => {
-          const base64Data = (reader.result as string).split(',')[1];
-          try {
-            // Definir carpetas personalizadas dentro de Download (carpeta pública)
-            const baseFolder = 'Download/FTYdownloaderPro/download';
-            const typeFolder = 'FTYdownloaderPro Video';
-            const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
-            let savedUri = '';
+        // 📱 NATIVE: Usar descarga del navegador (NO crashea con archivos grandes)
+        console.log(`💾 Guardando archivo de ${formatBytes(blob.size)}...`);
 
-            try {
-              const result = await Filesystem.writeFile({
-                path: finalPath,
-                data: base64Data,
-                directory: Directory.ExternalStorage, // ⚠️ Changed from Documents
-                recursive: true
-              });
-              savedUri = result.uri;
-              console.log('[DEBUG-PATH] FB Guardado en:', savedUri);
-              scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
 
-            } catch (writeErr: any) {
-              await Dialog.alert({
-                title: 'Error Guardando',
-                message: `No se pudo crear carpeta.\n${writeErr.message}`
-              });
-              throw writeErr;
-            }
+        scheduleNotification('Descarga Completada', `${filename} guardado`);
 
-            addToHistory({
-              title: filename,
-              platform: 'facebook',
-              thumbnail: '',
-              originalUrl: url,
-              status: 'completed',
-              format: quality,
-              fileSize: formatBytes(blob.size),
-              duration: undefined,
-              filePath: savedUri, // URI REAL
-              mimeType: 'video/mp4'
-            })
+        addToHistory({
+          title: filename,
+          platform: 'facebook',
+          thumbnail: '',
+          originalUrl: url,
+          status: 'completed',
+          format: quality,
+          fileSize: formatBytes(blob.size),
+          duration: undefined,
+          filePath: '', // No hay path local específico
+          mimeType: 'video/mp4'
+        });
 
-          } catch (e) {
-            console.error('Error al procesar la descarga nativa:', e);
-            setError(`Error al guardar el archivo: ${e instanceof Error ? e.message : 'Error desconocido'}`);
-          } finally {
-            // Limpieza general
-            setTimeout(() => {
-              setDownloading(null)
-              setDownloadProgress(0)
-            }, 5000)
-          }
-        };
+        // Limpieza
+        setTimeout(() => {
+          setDownloading(null);
+          setDownloadProgress(0);
+        }, 5000);
+
       } else {
         // 🌐 WEB
         const blobUrl = URL.createObjectURL(blob)
