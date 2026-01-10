@@ -1305,8 +1305,16 @@ export default function YoutubeDownloader() {
                           </div>
 
                           {isDownloading ? (
-                            <div className="w-24 text-center">
-                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600 mx-auto" />
+                            <div className="flex flex-col items-end min-w-[120px]">
+                              <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-green-500 transition-all duration-300"
+                                  style={{ width: `${downloadProgress}%` }}
+                                />
+                              </div>
+                              <span className="text-[10px] text-green-600 font-bold mt-1">
+                                {Math.round(downloadProgress)}%
+                              </span>
                             </div>
                           ) : (
                             <button
