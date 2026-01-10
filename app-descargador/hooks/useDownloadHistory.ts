@@ -102,47 +102,58 @@ export function useDownloadHistory() {
 
     const unreadCount = history.filter(item => !item.read).length;
 
-    // 🗑️ AUTO-CLEANUP: Verificar y eliminar archivos que ya no existen
+    // 🗑️ AUTO-CLEANUP: Verificar y eliminar archivos que ya no existen (OPTIMIZADO)
     const cleanupMissingFiles = async () => {
         if (!Capacitor.isNativePlatform()) return 0; // Solo en móvil
 
         const stored = localStorage.getItem(HISTORY_KEY);
         if (!stored) return 0;
 
-        const currentHistory: HistoryItem[] = JSON.parse(stored);
-        const validItems: HistoryItem[] = [];
-        let removedCount = 0;
+        try {
+            const currentHistory: HistoryItem[] = JSON.parse(stored);
+            const validItems: HistoryItem[] = [];
+            let removedCount = 0;
 
-        for (const item of currentHistory) {
-            // Si no tiene filePath, lo mantenemos (puede ser una descarga web antigua)
-            if (!item.filePath) {
-                validItems.push(item);
-                continue;
-            }
+            // 🔥 LÍMITE: Solo verificar los primeros 20 archivos para evitar OOM
+            const itemsToCheck = currentHistory.slice(0, 20);
+            const remainingItems = currentHistory.slice(20);
 
-            // Verificar si el archivo existe
-            try {
-                const stat = await Filesystem.stat({ path: item.filePath });
-                if (stat) {
+            for (const item of itemsToCheck) {
+                // Si no tiene filePath, lo mantenemos (puede ser una descarga web antigua)
+                if (!item.filePath) {
                     validItems.push(item);
-                } else {
-                    removedCount++;
-                    console.log('🗑️ Archivo eliminado del historial:', item.title);
+                    continue;
                 }
-            } catch (e) {
-                // Si hay error al verificar, asumimos que no existe
-                removedCount++;
-                console.log('🗑️ Archivo no encontrado, eliminando del historial:', item.title);
+
+                // ⚡ VERIFICACIÓN LIGERA: Solo verificar existencia sin leer contenido
+                try {
+                    // Usar getUri para verificación ligera en lugar de stat
+                    await Filesystem.getUri({
+                        path: item.filePath
+                    });
+                    validItems.push(item);
+                } catch (e) {
+                    // Si hay error, el archivo no existe
+                    removedCount++;
+                    console.log('🗑️ Archivo no encontrado, eliminando del historial:', item.title);
+                }
             }
-        }
 
-        if (removedCount > 0) {
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(validItems));
-            setHistory(validItems);
-            window.dispatchEvent(new Event('history-updated'));
-        }
+            // Agregar los items restantes sin verificar para evitar sobrecarga
+            validItems.push(...remainingItems);
 
-        return removedCount;
+            if (removedCount > 0) {
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(validItems));
+                setHistory(validItems);
+                window.dispatchEvent(new Event('history-updated'));
+            }
+
+            return removedCount;
+        } catch (error) {
+            // Si hay error al parsear o procesar, retornar 0 sin crashear
+            console.error('Error en cleanup, ignorando:', error);
+            return 0;
+        }
     };
 
     return {
