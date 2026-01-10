@@ -384,33 +384,115 @@ export default function YoutubeDownloader() {
     const isAudio = filename.toLowerCase().includes('audio') || filename.toLowerCase().includes('.mp3') || filename.toLowerCase().includes('.m4a')
 
     if (isNative) {
-      // 📱 NATIVE: Usar descarga del navegador (NO crashea con archivos grandes)
-      console.log(`💾 Guardando archivo de ${formatBytes(blob.size)}...`);
+      // 📱 NATIVE: Guardar usando Filesystem en chunks para evitar OOM y mantener ruta personalizada
+      try {
+        console.log(`💾 Iniciando guardado por chunks de ${formatBytes(blob.size)}...`);
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
+        // 1. Definir ruta y crear directorios
+        const baseFolder = 'Download/FTYdownloaderPro/download';
+        const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
+        const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
 
-      scheduleNotification('Descarga Completada', `${filename} guardado`);
+        try {
+          await Filesystem.mkdir({
+            path: `${baseFolder}/${typeFolder}`,
+            directory: Directory.ExternalStorage,
+            recursive: true
+          });
+        } catch (e) {
+          // Ignorar si ya existe
+        }
 
-      addToHistory({
-        title: videoInfo?.title || filename,
-        platform: 'youtube',
-        thumbnail: videoInfo?.thumbnail || '',
-        originalUrl: originalUrl,
-        status: 'completed',
-        format: quality,
-        fileSize: formatBytes(blob.size),
-        duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
-      });
+        // 2. Función helper para convertir chunk a base64
+        const blobToBase64 = (blob: Blob): Promise<string> => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const res = reader.result as string;
+              resolve(res.split(',')[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        };
 
-      setDownloading(null);
-      setDownloadProgress(0);
+        // 3. Escribir archivo por chunks (5MB)
+        const CHUNK_SIZE = 1024 * 1024 * 5;
+        const totalChunks = Math.ceil(blob.size / CHUNK_SIZE);
+
+        // Eliminar archivo si existe
+        try {
+          await Filesystem.deleteFile({
+            path: finalPath,
+            directory: Directory.ExternalStorage
+          });
+        } catch (e) { }
+
+        // Loop de escritura
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * CHUNK_SIZE;
+          const end = Math.min(start + CHUNK_SIZE, blob.size);
+          const chunk = blob.slice(start, end);
+          const base64Chunk = await blobToBase64(chunk);
+
+          if (i === 0) {
+            // Primer chunk: Crear archivo
+            await Filesystem.writeFile({
+              path: finalPath,
+              data: base64Chunk,
+              directory: Directory.ExternalStorage
+            });
+          } else {
+            // Siguientes chunks: Append
+            await Filesystem.appendFile({
+              path: finalPath,
+              data: base64Chunk,
+              directory: Directory.ExternalStorage
+            });
+          }
+
+          // Log progreso interno
+          if (i % 5 === 0 || i === totalChunks - 1) {
+            console.log(`💾 Guardando chunk ${i + 1}/${totalChunks}`);
+          }
+        }
+
+        // 4. Obtener URI final
+        const uriResult = await Filesystem.getUri({
+          path: finalPath,
+          directory: Directory.ExternalStorage
+        });
+
+        const savedUri = uriResult.uri;
+        console.log('✅ Archivo guardado correctamente en:', savedUri);
+
+        scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+
+        addToHistory({
+          title: videoInfo?.title || filename,
+          platform: 'youtube',
+          thumbnail: videoInfo?.thumbnail || '',
+          originalUrl: originalUrl,
+          status: 'completed',
+          format: quality,
+          fileSize: formatBytes(blob.size),
+          duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+          filePath: savedUri, // URI REAL para reproducción
+          mimeType: isAudio ? 'audio/mpeg' : 'video/mp4'
+        });
+
+        setDownloading(null);
+        setDownloadProgress(0);
+      } catch (error: any) {
+        console.error('Error en guardado por chunks:', error);
+        setDownloading(null);
+        setDownloadProgress(0);
+
+        await Dialog.alert({
+          title: 'Error al Guardar',
+          message: `No se pudo guardar el archivo. ${error.message || 'Error desconocido'}`
+        });
+      }
     } else {
       // 🌐 WEB: Método clásico
       const url = URL.createObjectURL(blob)
