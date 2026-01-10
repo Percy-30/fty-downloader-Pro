@@ -119,9 +119,24 @@ export default function TiktokDownloader() {
 
       const filename = `tiktok_${quality}_${Date.now()}.${fileExt}`
 
-      // Fetch siempre, incluso para URLs externas
-      const response = await fetch(downloadUrl)
-      if (!response.ok) throw new Error('Error al descargar el archivo')
+      // Usar Proxy para evitar CORS
+      console.log('🚀 Usando Proxy para descarga de TikTok...');
+      const response = await fetch('/api/download/tiktok/proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: downloadUrl,
+          filename: filename,
+          isAudio: fileExt === 'mp3'
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Error Proxy: ${errText || response.statusText}`);
+      }
 
       const blob = await response.blob()
 
