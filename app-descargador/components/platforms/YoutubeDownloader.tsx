@@ -7,9 +7,11 @@ import { usePlatform } from '@/hooks/usePlatform';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDownloadHistory } from '@/hooks/useDownloadHistory';
 import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial';
+import { useAdMobRewarded } from '@/hooks/useAdMobRewarded';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Media } from '@capacitor-community/media';
 import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast';
 
 interface VideoFormat {
   quality: string
@@ -68,6 +70,7 @@ export default function YoutubeDownloader() {
   const { scheduleNotification } = useNotifications()
   const { addToHistory } = useDownloadHistory()
   const { showInterstitial } = useAdMobInterstitial()
+  const { showRewarded } = useAdMobRewarded()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
