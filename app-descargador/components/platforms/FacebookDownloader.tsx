@@ -10,6 +10,8 @@ import { useDownloadHistory } from '@/hooks/useDownloadHistory';
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { Media } from '@capacitor-community/media'
 import { Dialog } from '@capacitor/dialog';
+import { Toast } from '@capacitor/toast';
+import { useAdMobRewarded } from '@/hooks/useAdMobRewarded';
 
 interface VideoFormat {
   quality: string
@@ -35,6 +37,7 @@ export default function FacebookDownloader() {
   const { isNative } = usePlatform()
   const { scheduleNotification } = useNotifications()
   const { addToHistory } = useDownloadHistory()
+  const { showRewarded } = useAdMobRewarded()
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -71,58 +74,64 @@ export default function FacebookDownloader() {
 
   // ✅ FUNCIÓN PARA DESCARGAR VIDEO CON PROXY
   const handleVideoDownload = async (qualityId: string, qualityValue: string, fileExt: string = 'mp4') => {
-    try {
-      setDownloading(qualityId)
-      setDownloadProgress(0)
+    // 📺 ANUNCIO BONIFICADO
+    showRewarded(async () => {
+      try {
+        setDownloading(qualityId)
+        setDownloadProgress(0)
 
-      console.log('🎬 Iniciando descarga con proxy...', qualityValue)
+        console.log('🎬 Iniciando descarga con proxy...', qualityValue)
 
-      // Encontrar el formato específico
-      const format = findFormatForQuality(qualityValue)
+        // Encontrar el formato específico
+        const format = findFormatForQuality(qualityValue)
 
-      if (!format || !format.url) {
-        setError(`No se encontró la calidad ${qualityValue} disponible`)
-        return
+        if (!format || !format.url) {
+          setError(`No se encontró la calidad ${qualityValue} disponible`)
+          return
+        }
+
+        const filename = `facebook_${qualityValue.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`
+
+        // Usar proxy para descarga
+        await downloadWithProxy(format.url, filename, qualityValue)
+
+      } catch (error) {
+        console.error('❌ Error en descarga de video:', error)
+        setError(`Error al descargar ${qualityValue}: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+      } finally {
+        setDownloading(null)
+        setDownloadProgress(0)
       }
-
-      const filename = `facebook_${qualityValue.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`
-
-      // Usar proxy para descarga
-      await downloadWithProxy(format.url, filename, qualityValue)
-
-    } catch (error) {
-      console.error('❌ Error en descarga de video:', error)
-      setError(`Error al descargar ${qualityValue}: ${error instanceof Error ? error.message : 'Error desconocido'}`)
-    } finally {
-      setDownloading(null)
-      setDownloadProgress(0)
-    }
+    });
   }
 
   // ✅ FUNCIÓN PARA DESCARGAR AUDIO CON PROXY
   const handleAudioDownload = async () => {
-    try {
-      setDownloading('audio-only')
-      setDownloadProgress(0)
+    // 📺 ANUNCIO BONIFICADO - Audio también paga 😉
+    showRewarded(async () => {
+      try {
+        setDownloading('audio-only')
+        setDownloadProgress(0)
 
-      console.log('🎵 Iniciando descarga de audio con proxy...')
+        console.log('🎵 Iniciando descarga de audio con proxy...')
 
-      // Buscar formato de audio
-      const audioFormat = findBestAudioFormat()
-      if (audioFormat && audioFormat.url) {
-        const filename = `facebook_audio_${Date.now()}.m4a`
-        await downloadWithProxy(audioFormat.url, filename, 'audio')
-      } else {
-        throw new Error('No se encontró formato de audio disponible')
+        // Buscar formato de audio
+        const audioFormat = findBestAudioFormat()
+        if (audioFormat && audioFormat.url) {
+          const filename = `facebook_audio_${Date.now()}.m4a`
+          await downloadWithProxy(audioFormat.url, filename, 'audio')
+        } else {
+          throw new Error('No se encontró formato de audio disponible')
+        }
+
+      } catch (error) {
+        console.error('❌ Error en descarga de audio:', error)
+        setError(`Error al descargar audio: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+      } finally {
+        setDownloading(null)
+        setDownloadProgress(0)
       }
-
-    } catch (error) {
-      console.error('❌ Error en descarga de audio:', error)
-      setError(`Error al descargar audio: ${error instanceof Error ? error.message : 'Error desconocido'}`)
-    } finally {
-      setDownloading(null)
-      setDownloadProgress(0)
-    }
+    });
   }
 
   // ✅ FUNCIÓN PRINCIPAL QUE USA EL PROXY (SIN NUEVAS PESTAÑAS)
@@ -267,6 +276,14 @@ export default function FacebookDownloader() {
 
           console.log('✅ FB Guardado en:', uriResult.uri);
           scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+
+          if (isNative) {
+            await Toast.show({
+              text: '✅ Descarga completada correctamente',
+              duration: 'short',
+              position: 'bottom'
+            });
+          }
 
           addToHistory({
             title: videoInfo?.title || filename,
