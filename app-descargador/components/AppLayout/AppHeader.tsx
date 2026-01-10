@@ -7,7 +7,7 @@ import { useDownloadHistory } from '@/hooks/useDownloadHistory'
 
 export default function AppHeader() {
     const [isHistoryOpen, setIsHistoryOpen] = useState(false)
-    const { history, unreadCount, markAllAsRead, clearHistory, deleteItem, cleanupMissingFiles } = useDownloadHistory()
+    const { history, unreadCount, markAllAsRead, clearHistory, deleteItem } = useDownloadHistory()
 
     return (
         <>
@@ -37,7 +37,6 @@ export default function AppHeader() {
                 onClear={clearHistory}
                 onDelete={deleteItem}
                 onOpen={markAllAsRead}
-                cleanupMissingFiles={cleanupMissingFiles}
             />
         </>
     )

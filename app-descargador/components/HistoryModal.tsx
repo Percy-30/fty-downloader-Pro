@@ -11,12 +11,10 @@ interface HistoryModalProps {
     onClear: () => void;
     onDelete: (id: string) => void;
     onOpen: () => void;
-    cleanupMissingFiles?: () => Promise<number>;
 }
 
-export default function HistoryModal({ isOpen, onClose, history, onClear, onDelete, onOpen, cleanupMissingFiles }: HistoryModalProps) {
+export default function HistoryModal({ isOpen, onClose, history, onClear, onDelete, onOpen }: HistoryModalProps) {
     const [mounted, setMounted] = useState(false);
-    const [cleanupMessage, setCleanupMessage] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -25,18 +23,8 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
     useEffect(() => {
         if (isOpen) {
             onOpen();
-
-            // 🗑️ AUTO-CLEANUP al abrir el historial
-            if (cleanupMissingFiles) {
-                cleanupMissingFiles().then((removedCount) => {
-                    if (removedCount > 0) {
-                        setCleanupMessage(`🗑️ Se eliminaron ${removedCount} archivo(s) que ya no existen`);
-                        setTimeout(() => setCleanupMessage(null), 3000);
-                    }
-                });
-            }
         }
-    }, [isOpen, onOpen, cleanupMissingFiles]);
+    }, [isOpen, onOpen]);
 
     if (!mounted || !isOpen) return null;
 
@@ -78,13 +66,6 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
                         <X className="w-5 h-5" />
                     </button>
                 </div>
-
-                {/* 🗑️ Cleanup Message Notification */}
-                {cleanupMessage && (
-                    <div className="mx-4 mt-2 p-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 text-center animate-in fade-in">
-                        {cleanupMessage}
-                    </div>
-                )}
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -138,8 +119,8 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
 
                                     {/* Badge de plataforma sobre la thumbnail */}
                                     <div className={`absolute bottom-1 right-1 w-6 h-6 rounded flex items-center justify-center shadow-sm ${item.platform === 'youtube' ? 'bg-red-600' :
-                                            item.platform === 'facebook' ? 'bg-blue-600' :
-                                                'bg-black'
+                                        item.platform === 'facebook' ? 'bg-blue-600' :
+                                            'bg-black'
                                         }`}>
                                         {item.platform === 'youtube' && (
                                             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>

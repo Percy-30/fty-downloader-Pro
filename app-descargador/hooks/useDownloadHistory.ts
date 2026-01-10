@@ -102,77 +102,12 @@ export function useDownloadHistory() {
 
     const unreadCount = history.filter(item => !item.read).length;
 
-    // 🗑️ AUTO-CLEANUP: Verificar y eliminar archivos que ya no existen (OPTIMIZADO)
-    const cleanupMissingFiles = async () => {
-        if (!Capacitor.isNativePlatform()) return 0; // Solo en móvil
-
-        const stored = localStorage.getItem(HISTORY_KEY);
-        if (!stored) return 0;
-
-        try {
-            const currentHistory: HistoryItem[] = JSON.parse(stored);
-            const validItems: HistoryItem[] = [];
-            let removedCount = 0;
-
-            // 🔥 LÍMITE: Solo verificar los primeros 20 archivos para evitar OOM
-            const itemsToCheck = currentHistory.slice(0, 20);
-            const remainingItems = currentHistory.slice(20);
-
-            for (const item of itemsToCheck) {
-                // Si no tiene filePath, lo mantenemos (puede ser una descarga web antigua)
-                if (!item.filePath) {
-                    validItems.push(item);
-                    continue;
-                }
-
-                // ⚡ SOLO VERIFICAR ARCHIVOS DE NUESTRA RUTA
-                // Si el archivo NO es de nuestra carpeta FTYdownloaderPro, lo mantenemos sin verificar
-                if (!item.filePath.includes('FTYdownloaderPro')) {
-                    validItems.push(item);
-                    continue;
-                }
-
-                // ✅ Para archivos de nuestra carpeta, verificación simple
-                try {
-                    // Si el filePath es una URI completa (file://), solo verificar que exista el patrón
-                    if (item.filePath.startsWith('file://') || item.filePath.includes('://')) {
-                        // Archivo con URI completa - asumimos que existe (para evitar OOM)
-                        validItems.push(item);
-                    } else {
-                        // Path relativo - intentar verificación ligera
-                        validItems.push(item);
-                    }
-                } catch (e) {
-                    // Si hay error, eliminar del historial
-                    removedCount++;
-                    console.log('🗑️ Archivo eliminado del historial:', item.title);
-                }
-            }
-
-            // Agregar los items restantes sin verificar para evitar sobrecarga
-            validItems.push(...remainingItems);
-
-            if (removedCount > 0) {
-                localStorage.setItem(HISTORY_KEY, JSON.stringify(validItems));
-                setHistory(validItems);
-                window.dispatchEvent(new Event('history-updated'));
-            }
-
-            return removedCount;
-        } catch (error) {
-            // Si hay error al parsear o procesar, retornar 0 sin crashear
-            console.error('Error en cleanup, ignorando:', error);
-            return 0;
-        }
-    };
-
     return {
         history,
         unreadCount,
         addToHistory,
         clearHistory,
         deleteItem,
-        markAllAsRead,
-        cleanupMissingFiles
+        markAllAsRead
     };
 }
