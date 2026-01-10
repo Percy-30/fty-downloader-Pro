@@ -291,6 +291,11 @@ export default function YoutubeDownloader() {
 
   // ✅ DESCARGA SIMPLE (SIN COMBINAR) - AHORA USANDO BACKEND ROBUSTO
   const handleSimpleDownload = async (quality: string, fileExt: string = 'mp4') => {
+    // 📺 ANUNCIO INTERSTICIAL (Normal) para descargas simples
+    if (isNative) {
+      await showInterstitial();
+    }
+
     const { format } = findBestFormatForQuality(quality, true)
 
     if (!format) {
@@ -518,208 +523,211 @@ export default function YoutubeDownloader() {
     }
   }
 
-  // ✅ FUNCIÓN PRINCIPAL DE DESCARGA
+  // ✅ FUNCIÓN PRINCIPAL DE DESCARGA (Backend - Combinado)
   const downloadThroughBackend = async (
     downloadUrl: string,
     filename: string,
     quality?: string,
     isAudio: boolean = false
   ) => {
-    try {
-      setDownloading(quality || (isAudio ? 'audio' : 'video'))
-      setDownloadProgress(0)
+    // 📺 ANUNCIO BONIFICADO para descargas combinadas (Backend)
+    showRewarded(async () => {
+      try {
+        setDownloading(quality || (isAudio ? 'audio' : 'video'))
+        setDownloadProgress(0)
 
-      console.log('⬇️ Iniciando descarga...', { quality, filename, isAudio, downloadUrl: downloadUrl?.substring(0, 100) })
+        console.log('⬇️ Iniciando descarga...', { quality, filename, isAudio, downloadUrl: downloadUrl?.substring(0, 100) })
 
-      // ✅ VERIFICACIÓN CRÍTICA: Asegurar que la URL sea válida
-      if (!downloadUrl || !downloadUrl.startsWith('http')) {
-        console.error('❌ URL inválida para descarga:', downloadUrl)
-        throw new Error(`URL de descarga inválida: ${downloadUrl}. Por favor, intenta con otra calidad.`)
-      }
+        // ✅ VERIFICACIÓN CRÍTICA: Asegurar que la URL sea válida
+        if (!downloadUrl || !downloadUrl.startsWith('http')) {
+          console.error('❌ URL inválida para descarga:', downloadUrl)
+          throw new Error(`URL de descarga inválida: ${downloadUrl}. Por favor, intenta con otra calidad.`)
+        }
 
-      // ✅ SOLICITAR PERMISOS DE ALMACENAMIENTO (Android)
-      if (isNative) {
-        try {
-          // Solicitar permiso de escritura en almacenamiento público
-          const status = await Filesystem.checkPermissions();
-          if (status.publicStorage !== 'granted') {
-            const request = await Filesystem.requestPermissions();
-            if (request.publicStorage !== 'granted') {
-              throw new Error('Permiso de almacenamiento denegado. No se puede guardar el video.');
+        // ✅ SOLICITAR PERMISOS DE ALMACENAMIENTO (Android)
+        if (isNative) {
+          try {
+            // Solicitar permiso de escritura en almacenamiento público
+            const status = await Filesystem.checkPermissions();
+            if (status.publicStorage !== 'granted') {
+              const request = await Filesystem.requestPermissions();
+              if (request.publicStorage !== 'granted') {
+                throw new Error('Permiso de almacenamiento denegado. No se puede guardar el video.');
+              }
             }
+          } catch (e) {
+            console.error('Error verificando permisos de almacenamiento:', e);
+            // Continuamos, algunos Android nuevos no requieren esto explícitamente para Downloads
           }
-        } catch (e) {
-          console.error('Error verificando permisos de almacenamiento:', e);
-          // Continuamos, algunos Android nuevos no requieren esto explícitamente para Downloads
-        }
-      }
-
-      const progressInterval = setInterval(() => {
-        setDownloadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval)
-            return 90
-          }
-          return prev + 10
-        })
-      }, 800)
-
-      const response = await fetch('/api/download/proxy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: downloadUrl,
-          filename: filename,
-          quality: quality,
-          isAudio: isAudio,
-          thumbnailUrl: videoInfo?.thumbnail // ✅ Enviar miniatura para incrustar
-        })
-      })
-
-      clearInterval(progressInterval)
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-
-        if (response.status === 408) {
-          throw new Error(`TIMEOUT: ${errorData.error || 'El servidor tardó demasiado en responder'} `)
         }
 
-        throw new Error(errorData.error || `Error ${response.status} `)
-      }
+        const progressInterval = setInterval(() => {
+          setDownloadProgress(prev => {
+            if (prev >= 90) {
+              clearInterval(progressInterval)
+              return 90
+            }
+            return prev + 10
+          })
+        }, 800)
 
-      const blob = await response.blob()
+        const response = await fetch('/api/download/proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: downloadUrl,
+            filename: filename,
+            quality: quality,
+            isAudio: isAudio,
+            thumbnailUrl: videoInfo?.thumbnail // ✅ Enviar miniatura para incrustar
+          })
+        })
 
-      if (blob.size === 0) {
-        throw new Error('El archivo recibido está vacío')
-      }
+        clearInterval(progressInterval)
 
-      console.log('✅ Descarga exitosa:', blob.size, 'bytes')
-      setDownloadProgress(100)
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
 
-      if (isNative) {
-        // 📱 NATIVE: Guardar usando Filesystem
-        try {
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = async () => {
-            const base64Data = (reader.result as string).split(',')[1];
-            // Definir carpetas personalizadas dentro de Download (carpeta pública)
-            const baseFolder = 'Download/FTYdownloaderPro/download';
-            const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
-            const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+          if (response.status === 408) {
+            throw new Error(`TIMEOUT: ${errorData.error || 'El servidor tardó demasiado en responder'} `)
+          }
 
-            let savedUri = '';
+          throw new Error(errorData.error || `Error ${response.status} `)
+        }
 
-            try {
-              // 1. Guardar archivo fisicamente en la ruta solicitada
-              const result = await Filesystem.writeFile({
-                path: finalPath,
-                data: base64Data,
-                directory: Directory.ExternalStorage, // ⚠️ Changed from Documents
-                recursive: true
-              });
-              savedUri = result.uri;
-              console.log('[DEBUG-PATH] Guardado EXITO en:', savedUri);
+        const blob = await response.blob()
 
-              // 2. Intentar indexar en Galería (solo videos)
-              if (!isAudio) {
-                try {
-                  // Nota: Media.saveVideo suele mover el archivo.
-                  // Si queremos mantener la estructura personalizada, mejor confiamos en que
-                  // Android escanee Documents eventualmente, o usamos un plugin de scanner.
-                  // Por ahora, solo guardamos ahí.
-                } catch (e) {
-                  console.warn('No se pudo indexar', e);
+        if (blob.size === 0) {
+          throw new Error('El archivo recibido está vacío')
+        }
+
+        console.log('✅ Descarga exitosa:', blob.size, 'bytes')
+        setDownloadProgress(100)
+
+        if (isNative) {
+          // 📱 NATIVE: Guardar usando Filesystem
+          try {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = async () => {
+              const base64Data = (reader.result as string).split(',')[1];
+              // Definir carpetas personalizadas dentro de Download (carpeta pública)
+              const baseFolder = 'Download/FTYdownloaderPro/download';
+              const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
+              const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
+
+              let savedUri = '';
+
+              try {
+                // 1. Guardar archivo fisicamente en la ruta solicitada
+                const result = await Filesystem.writeFile({
+                  path: finalPath,
+                  data: base64Data,
+                  directory: Directory.ExternalStorage, // ⚠️ Changed from Documents
+                  recursive: true
+                });
+                savedUri = result.uri;
+                console.log('[DEBUG-PATH] Guardado EXITO en:', savedUri);
+
+                // 2. Intentar indexar en Galería (solo videos)
+                if (!isAudio) {
+                  try {
+                    // Nota: Media.saveVideo suele mover el archivo.
+                    // Si queremos mantener la estructura personalizada, mejor confiamos en que
+                    // Android escanee Documents eventualmente, o usamos un plugin de scanner.
+                    // Por ahora, solo guardamos ahí.
+                  } catch (e) {
+                    console.warn('No se pudo indexar', e);
+                  }
                 }
+
+                scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+
+              } catch (writeErr: any) {
+                console.error('[DEBUG-PATH] Fallo escritura carpetas:', writeErr);
+                await Dialog.alert({
+                  title: 'Error Guardando',
+                  message: `No se pudo crear la carpeta ${typeFolder}.\n${writeErr.message}`
+                });
+                throw writeErr;
               }
 
-              scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
+              const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
 
-            } catch (writeErr: any) {
-              console.error('[DEBUG-PATH] Fallo escritura carpetas:', writeErr);
-              await Dialog.alert({
-                title: 'Error Guardando',
-                message: `No se pudo crear la carpeta ${typeFolder}.\n${writeErr.message}`
-              });
-              throw writeErr;
-            }
+              addToHistory({
+                title: videoInfo?.title || filename,
+                platform: 'youtube',
+                thumbnail: videoInfo?.thumbnail || '',
+                originalUrl: downloadUrl,
+                status: 'completed',
+                format: quality,
+                fileSize: formatBytes(blob.size),
+                duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+                filePath: savedUri, // USAMOS LA URI REAL
+                mimeType: mimeType
+              })
+            };
+          } catch (writeError: any) {
+            console.error('Error guardando archivo nativo:', writeError);
+            await Dialog.alert({
+              title: 'Error Crítico',
+              message: `Fallo al iniciar guardado: ${writeError.message}`
+            });
+            throw new Error('No se pudo guardar el archivo en el dispositivo');
+          }
 
-            const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+        } else {
+          // 🌐 WEB: Método clásico
+          const blobUrl = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = blobUrl
+          link.download = filename
+          link.style.display = 'none'
 
-            addToHistory({
-              title: videoInfo?.title || filename,
-              platform: 'youtube',
-              thumbnail: videoInfo?.thumbnail || '',
-              originalUrl: downloadUrl,
-              status: 'completed',
-              format: quality,
-              fileSize: formatBytes(blob.size),
-              duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
-              filePath: savedUri, // USAMOS LA URI REAL
-              mimeType: mimeType
-            })
-          };
-        } catch (writeError: any) {
-          console.error('Error guardando archivo nativo:', writeError);
-          await Dialog.alert({
-            title: 'Error Crítico',
-            message: `Fallo al iniciar guardado: ${writeError.message}`
-          });
-          throw new Error('No se pudo guardar el archivo en el dispositivo');
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+
+          // WEB History Update
+          scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
+          const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
+          addToHistory({
+            title: videoInfo?.title || filename,
+            platform: 'youtube',
+            thumbnail: videoInfo?.thumbnail || '',
+            originalUrl: downloadUrl,
+            status: 'completed',
+            format: quality,
+            fileSize: formatBytes(blob.size),
+            duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+            // Web no tiene acceso directo a file system standard
+            mimeType: mimeType
+          })
+        }
+      } catch (error) {
+        console.error('❌ Error en descarga:', error)
+
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+
+        if (errorMessage.includes('TIMEOUT') && quality && ['1440p', '2160p', '1080p'].includes(quality)) {
+          setError(`⚠️ ${errorMessage} Recomendamos intentar con 720p o 480p.`)
+        } else {
+          setError(errorMessage)
         }
 
-      } else {
-        // 🌐 WEB: Método clásico
-        const blobUrl = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = blobUrl
-        link.download = filename
-        link.style.display = 'none'
+        if (!errorMessage.includes('TIMEOUT') && downloadUrl && downloadUrl.startsWith('http')) {
+          // ✅ NO HACEMOS DESCARGA DIRECTA PARA YOUTUBE PORQUE DA 403 (IP BINDING)
+          console.warn('⚠️ Se detectó falla en proxy. La descarga directa está deshabilitada para evitar 403 Forbidden de YouTube.')
+          setError('El servidor de YouTube bloqueó la descarga (403). Intenta con otra calidad o espera unos minutos.')
+        }
 
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
-
-        // WEB History Update
-        scheduleNotification('Descarga Completada', `${filename} se ha descargado correctamente.`)
-        const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
-        addToHistory({
-          title: videoInfo?.title || filename,
-          platform: 'youtube',
-          thumbnail: videoInfo?.thumbnail || '',
-          originalUrl: downloadUrl,
-          status: 'completed',
-          format: quality,
-          fileSize: formatBytes(blob.size),
-          duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
-          // Web no tiene acceso directo a file system standard
-          mimeType: mimeType
-        })
+        setDownloading(null)
+        setDownloadProgress(0)
       }
-    } catch (error) {
-      console.error('❌ Error en descarga:', error)
-
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-
-      if (errorMessage.includes('TIMEOUT') && quality && ['1440p', '2160p', '1080p'].includes(quality)) {
-        setError(`⚠️ ${errorMessage} Recomendamos intentar con 720p o 480p.`)
-      } else {
-        setError(errorMessage)
-      }
-
-      if (!errorMessage.includes('TIMEOUT') && downloadUrl && downloadUrl.startsWith('http')) {
-        // ✅ NO HACEMOS DESCARGA DIRECTA PARA YOUTUBE PORQUE DA 403 (IP BINDING)
-        console.warn('⚠️ Se detectó falla en proxy. La descarga directa está deshabilitada para evitar 403 Forbidden de YouTube.')
-        setError('El servidor de YouTube bloqueó la descarga (403). Intenta con otra calidad o espera unos minutos.')
-      }
-
-      setDownloading(null)
-      setDownloadProgress(0)
-    }
+    });
   }
 
   // ✅ DESCARGA DE AUDIO - USANDO STREAMING ROBUSTO
