@@ -169,7 +169,7 @@ export default function FacebookDownloader() {
           url: downloadUrl,
           filename: filename,
           isAudio: isAudio, // ✅ Identificar si es audio
-          thumbnailUrl: videoInfo?.thumbnail // ✅ Enviar miniatura
+          thumbnailUrl: isAudio ? null : videoInfo?.thumbnail // ⚠️ No enviar thumb en audio para evitar timeout en proxy
         })
       })
 
