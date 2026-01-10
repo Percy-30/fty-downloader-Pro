@@ -62,9 +62,9 @@ export function useAdMobRewarded() {
         loadRewarded();
 
         return () => {
-            loadedListener.remove();
-            failedToLoadListener.remove();
-            dismissedListener.remove();
+            loadedListener.then(h => h.remove());
+            failedToLoadListener.then(h => h.remove());
+            dismissedListener.then(h => h.remove());
         };
     }, [isNative, loadRewarded]);
 
@@ -77,10 +77,10 @@ export function useAdMobRewarded() {
 
         if (isLoaded) {
             // Listener temporal para la recompensa específica de esta llamada
-            const rewardListener = AdMob.addListener(RewardAdPluginEvents.Rewarded, (rewardItem) => {
+            const rewardListenerPromise = AdMob.addListener(RewardAdPluginEvents.Rewarded, (rewardItem) => {
                 console.log('🎁 Usuario recompensado:', rewardItem);
                 onReward();
-                rewardListener.remove();
+                rewardListenerPromise.then(h => h.remove());
             });
 
             try {
@@ -89,7 +89,7 @@ export function useAdMobRewarded() {
                 console.error('Error mostrando Rewarded:', e);
                 // Si falla al mostrar, podemos decidir si dejarlo pasar o no. 
                 // Generalmente mejor no bloquear al usuario si falla el anuncio.
-                rewardListener.remove();
+                rewardListenerPromise.then(h => h.remove());
                 onReward();
             }
         } else {
