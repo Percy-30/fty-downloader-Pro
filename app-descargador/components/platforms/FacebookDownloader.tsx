@@ -377,13 +377,34 @@ export default function FacebookDownloader() {
       format.url && format.url.startsWith('http')
     )
 
+    // Log para depuración
+    console.log('🔍 Buscando formato de audio entre:', validFormats.map(f => ({ q: f.quality, f: f.format, a: f.hasAudio, v: f.hasVideo })));
+
+    // 1. Intentar encontrar explícitamente audio only
     const audioFormats = validFormats.filter(format =>
-      format.quality.toLowerCase().includes('audio') ||
-      format.format.toLowerCase().includes('m4a') ||
-      (!format.hasVideo && format.hasAudio)
+      format.quality?.toLowerCase().includes('audio') ||
+      format.format?.toLowerCase().includes('audio') ||
+      format.resolution?.toLowerCase().includes('audio') ||
+      (format.hasAudio === true && format.hasVideo === false)
     )
 
-    return audioFormats[0] || null
+    if (audioFormats.length > 0) {
+      console.log('✅ Formato de audio encontrado:', audioFormats[0]);
+      return audioFormats[0];
+    }
+
+    // 2. Si no hay "solo audio", buscar cualquiera que parezca ser m4a/mp3 en el format note
+    const fallbackAudio = validFormats.find(format =>
+      format.format?.toLowerCase().includes('m4a') ||
+      format.format?.toLowerCase().includes('mp3')
+    );
+
+    if (fallbackAudio) {
+      console.log('⚠️ Usando fallback audio:', fallbackAudio);
+      return fallbackAudio;
+    }
+
+    return null
   }
 
 
