@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Capacitor } from '@capacitor/core';
 
 export interface HistoryItem {
     id: string;
