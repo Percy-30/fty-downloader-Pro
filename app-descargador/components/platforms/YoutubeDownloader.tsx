@@ -384,100 +384,33 @@ export default function YoutubeDownloader() {
     const isAudio = filename.toLowerCase().includes('audio') || filename.toLowerCase().includes('.mp3') || filename.toLowerCase().includes('.m4a')
 
     if (isNative) {
-      // 📱 NATIVE: Guardar usando Filesystem con la misma estructura que Facebook
-      try {
-        console.log(`💾 Iniciando guardado de ${formatBytes(blob.size)}...`);
+      // 📱 NATIVE: Usar descarga del navegador (NO crashea con archivos grandes)
+      console.log(`💾 Guardando archivo de ${formatBytes(blob.size)}...`);
 
-        // 🔥 OPTIMIZACIÓN PARA ARCHIVOS GRANDES
-        // Convertir blob a base64 en chunks para evitar OOM
-        const chunkSize = 1024 * 1024 * 5; // 5MB chunks
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
 
-        const convertBlobToBase64Chunked = async (blob: Blob): Promise<string> => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
+      scheduleNotification('Descarga Completada', `${filename} guardado`);
 
-            reader.onerror = () => {
-              console.error('Error leyendo archivo');
-              reject(new Error('Error al leer el archivo'));
-            };
+      addToHistory({
+        title: videoInfo?.title || filename,
+        platform: 'youtube',
+        thumbnail: videoInfo?.thumbnail || '',
+        originalUrl: originalUrl,
+        status: 'completed',
+        format: quality,
+        fileSize: formatBytes(blob.size),
+        duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
+      });
 
-            reader.onloadend = () => {
-              try {
-                const base64Data = (reader.result as string).split(',')[1];
-                resolve(base64Data);
-              } catch (e) {
-                reject(e);
-              }
-            };
-
-            // Si el archivo es muy grande (>100MB), procesar en chunks
-            if (blob.size > 100 * 1024 * 1024) {
-              console.warn(`⚠️ Archivo grande (${formatBytes(blob.size)}), esto puede tomar un momento...`);
-            }
-
-            reader.readAsDataURL(blob);
-          });
-        };
-
-        const base64Data = await convertBlobToBase64Chunked(blob);
-
-        console.log('✅ Conversión a base64 completada');
-
-        // Definir carpetas personalizadas dentro de Download (carpeta pública)
-        const baseFolder = 'Download/FTYdownloaderPro/download';
-        const typeFolder = isAudio ? 'FTYdownloaderPro Audio' : 'FTYdownloaderPro Video';
-        const finalPath = `${baseFolder}/${typeFolder}/${filename}`;
-        let savedUri = '';
-
-        try {
-          console.log(`💾 Guardando en: ${finalPath}`);
-
-          const result = await Filesystem.writeFile({
-            path: finalPath,
-            data: base64Data,
-            directory: Directory.ExternalStorage,
-            recursive: true
-          });
-
-          savedUri = result.uri;
-          console.log('✅ Archivo guardado en:', savedUri);
-          scheduleNotification('Descarga Completada', `Guardado en ${typeFolder}/${filename}`);
-        } catch (writeErr: any) {
-          console.error('Error escribiendo archivo:', writeErr);
-          await Dialog.alert({
-            title: 'Error Guardando',
-            message: `No se pudo guardar el archivo.\n${writeErr.message}`
-          });
-          throw writeErr;
-        }
-
-        const mimeType = isAudio ? 'audio/mpeg' : 'video/mp4';
-
-        addToHistory({
-          title: videoInfo?.title || filename,
-          platform: 'youtube',
-          thumbnail: videoInfo?.thumbnail || '',
-          originalUrl: originalUrl,
-          status: 'completed',
-          format: quality,
-          fileSize: formatBytes(blob.size),
-          duration: videoInfo?.duration ? String(videoInfo.duration) : undefined,
-          filePath: savedUri,
-          mimeType: mimeType
-        });
-
-        setDownloading(null);
-        setDownloadProgress(0);
-      } catch (writeError: any) {
-        console.error('Error guardando archivo nativo:', writeError);
-        setDownloading(null);
-        setDownloadProgress(0);
-
-        await Dialog.alert({
-          title: 'Error al Guardar',
-          message: `No se pudo guardar el archivo. ${writeError.message || 'Error desconocido'}`
-        });
-      }
+      setDownloading(null);
+      setDownloadProgress(0);
     } else {
       // 🌐 WEB: Método clásico
       const url = URL.createObjectURL(blob)
