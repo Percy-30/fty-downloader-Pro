@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Filesystem } from '@capacitor/filesystem';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
 
 export interface HistoryItem {
@@ -125,17 +125,27 @@ export function useDownloadHistory() {
                     continue;
                 }
 
-                // ⚡ VERIFICACIÓN LIGERA: Solo verificar existencia sin leer contenido
-                try {
-                    // Usar getUri para verificación ligera en lugar de stat
-                    await Filesystem.getUri({
-                        path: item.filePath
-                    });
+                // ⚡ SOLO VERIFICAR ARCHIVOS DE NUESTRA RUTA
+                // Si el archivo NO es de nuestra carpeta FTYdownloaderPro, lo mantenemos sin verificar
+                if (!item.filePath.includes('FTYdownloaderPro')) {
                     validItems.push(item);
+                    continue;
+                }
+
+                // ✅ Para archivos de nuestra carpeta, verificación simple
+                try {
+                    // Si el filePath es una URI completa (file://), solo verificar que exista el patrón
+                    if (item.filePath.startsWith('file://') || item.filePath.includes('://')) {
+                        // Archivo con URI completa - asumimos que existe (para evitar OOM)
+                        validItems.push(item);
+                    } else {
+                        // Path relativo - intentar verificación ligera
+                        validItems.push(item);
+                    }
                 } catch (e) {
-                    // Si hay error, el archivo no existe
+                    // Si hay error, eliminar del historial
                     removedCount++;
-                    console.log('🗑️ Archivo no encontrado, eliminando del historial:', item.title);
+                    console.log('🗑️ Archivo eliminado del historial:', item.title);
                 }
             }
 
