@@ -111,6 +111,21 @@ export default function TiktokDownloader() {
       setDownloading(quality)
 
       if (isNative) {
+        try {
+          const status = await Filesystem.checkPermissions();
+          if (status.publicStorage !== 'granted') await Filesystem.requestPermissions();
+        } catch (e) { console.error('Storage perm error', e); }
+      }
+
+      const filename = `tiktok_${quality}_${Date.now()}.${fileExt}`
+
+      // Fetch siempre, incluso para URLs externas
+      const response = await fetch(downloadUrl)
+      if (!response.ok) throw new Error('Error al descargar el archivo')
+
+      const blob = await response.blob()
+
+      if (isNative) {
         // 📱 NATIVE: Usar Chunked Write para TikTok
         try {
           console.log(`💾 TikTok: Iniciando guardado por chunks de ${formatBytes(blob.size)}...`);
