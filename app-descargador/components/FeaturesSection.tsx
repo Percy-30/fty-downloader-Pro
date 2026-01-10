@@ -1,27 +1,27 @@
 const features = [
   {
-    title: 'Rápido',
-    description: 'Descargas instantáneas sin esperas ni límites'
+    title: 'Velocidad Extrema',
+    description: 'Nuestros servidores optimizados garantizan descargas ultrarrápidas. Olvídate de las esperas; obtén tus videos en segundos, sin importar el tamaño.'
   },
   {
-    title: 'Seguro',
-    description: 'Sin registro, sin software malicioso, 100% seguro'
+    title: '100% Seguro y Privado',
+    description: 'No guardamos historial de tus descargas ni requerimos registro. Tu privacidad es nuestra prioridad; todo el procesamiento se realiza de forma anónima.'
   },
   {
-    title: 'Responsive',
-    description: 'Diseño perfecto para móviles y tablets'
+    title: 'Compatible con Móviles',
+    description: 'Diseño responsive que funciona perfectamente en iPhone, Android, tablets y PC. Disfruta de la misma experiencia fluida en cualquier dispositivo.'
   },
   {
-    title: 'Multi-formato',
-    description: 'MP4, WEBM, MP3 y más formatos disponibles'
+    title: 'Soporte Multi-formato',
+    description: 'Convierte y descarga en múltiples formatos: MP4 HD, MP3 de alta calidad (320kbps), M4A y WEBM. Adaptamos el contenido a tus necesidades.'
   },
   {
-    title: 'Siempre Online',
-    description: 'Servicio disponible 24/7 sin interrupciones'
+    title: 'Disponibilidad 24/7',
+    description: 'Nuestra infraestructura en la nube asegura un tiempo de actividad del 99.9%. Descarga tus videos favoritos en cualquier momento, día y noche.'
   },
   {
-    title: 'Gratuito',
-    description: 'Completamente gratis, sin costos ocultos'
+    title: 'Totalmente Gratuito',
+    description: 'Disfruta de todas las funciones premium sin pagar un centavo. FTY Downloader se mantiene gracias a anuncios no intrusivos, para ser siempre gratis para ti.'
   }
 ]
 

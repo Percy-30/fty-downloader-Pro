@@ -8,6 +8,7 @@ import FacebookDownloader from '@/components/platforms/FacebookDownloader'
 import YoutubeDownloader from '@/components/platforms/YoutubeDownloader'
 import TiktokDownloader from '@/components/platforms/TiktokDownloader'
 import FeaturesSection from '@/components/FeaturesSection'
+import SEOContentSection from '@/components/SEOContentSection'
 import BlogPreview from '@/components/blog/BlogPreview'
 import HeroSection from '@/components/HeroSection'
 import BannerAds from '@/components/Layout/BannerAds'
@@ -202,6 +203,11 @@ export default function Home() {
           <div className="max-w-4xl mx-auto mb-16">
             <BannerAds />
           </div>
+
+          {/* 5. SEO Content Section (NUEVO PARA ADSENSE) */}
+          <section className="mb-16">
+            <SEOContentSection />
+          </section>
 
           {/* 4. Features Section */}
           <FeaturesSection />
