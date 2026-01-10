@@ -404,7 +404,16 @@ export default function FacebookDownloader() {
       return fallbackAudio;
     }
 
-    return null
+    // 3. Fallback FINAL: Usar el formato mp4 más pequeño disponible (peor es nada) - probablemente sea 240p o SD
+    // Ordenar por tamaño aproximado si es posible, o simplemente tomar el último
+    console.log('⚠️ Usando Last Resort (formato más pequeño) para audio');
+    const sortedByRes = [...validFormats].sort((a, b) => {
+      const resA = parseInt(a.resolution?.split('x')[0] || '1000');
+      const resB = parseInt(b.resolution?.split('x')[0] || '1000');
+      return resA - resB;
+    });
+
+    return sortedByRes[0] || validFormats[validFormats.length - 1] || null;
   }
 
 
