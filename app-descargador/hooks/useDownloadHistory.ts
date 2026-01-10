@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Filesystem } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 export interface HistoryItem {
     id: string;
@@ -100,12 +102,56 @@ export function useDownloadHistory() {
 
     const unreadCount = history.filter(item => !item.read).length;
 
+    // 🗑️ AUTO-CLEANUP: Verificar y eliminar archivos que ya no existen
+    const cleanupMissingFiles = async () => {
+        if (!Capacitor.isNativePlatform()) return 0; // Solo en móvil
+
+        const stored = localStorage.getItem(HISTORY_KEY);
+        if (!stored) return 0;
+
+        const currentHistory: HistoryItem[] = JSON.parse(stored);
+        const validItems: HistoryItem[] = [];
+        let removedCount = 0;
+
+        for (const item of currentHistory) {
+            // Si no tiene filePath, lo mantenemos (puede ser una descarga web antigua)
+            if (!item.filePath) {
+                validItems.push(item);
+                continue;
+            }
+
+            // Verificar si el archivo existe
+            try {
+                const stat = await Filesystem.stat({ path: item.filePath });
+                if (stat) {
+                    validItems.push(item);
+                } else {
+                    removedCount++;
+                    console.log('🗑️ Archivo eliminado del historial:', item.title);
+                }
+            } catch (e) {
+                // Si hay error al verificar, asumimos que no existe
+                removedCount++;
+                console.log('🗑️ Archivo no encontrado, eliminando del historial:', item.title);
+            }
+        }
+
+        if (removedCount > 0) {
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(validItems));
+            setHistory(validItems);
+            window.dispatchEvent(new Event('history-updated'));
+        }
+
+        return removedCount;
+    };
+
     return {
         history,
         unreadCount,
         addToHistory,
         clearHistory,
         deleteItem,
-        markAllAsRead
+        markAllAsRead,
+        cleanupMissingFiles
     };
 }
