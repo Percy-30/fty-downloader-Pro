@@ -386,12 +386,38 @@ export default function YoutubeDownloader() {
       // 📱 NATIVE: Guardar usando Filesystem con la misma estructura que Facebook
       try {
         // 🔥 OPTIMIZACIÓN: Limitar tamaño para evitar OOM
-        const MAX_SIZE = 200 * 1024 * 1024; // 200MB máximo
+        // Base64 aumenta tamaño ~33%, entonces 80MB blob → ~210MB en memoria total
+        const MAX_SIZE = 80 * 1024 * 1024; // 80MB máximo para evitar OOM
+
         if (blob.size > MAX_SIZE) {
+          console.warn(`Archivo muy grande (${formatBytes(blob.size)}), usando descarga de navegador...`);
+
+          // Para archivos grandes, usar descarga del navegador (no guarda en carpeta custom)
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
+
           await Dialog.alert({
-            title: 'Archivo muy grande',
-            message: `El archivo es demasiado grande (${formatBytes(blob.size)}). Máximo permitido: 200MB en Android.`
+            title: 'Archivo Grande',
+            message: `Archivo de ${formatBytes(blob.size)} guardado en carpeta "Descargas" del navegador.\n\nPara archivos tan grandes, recomendamos usar calidades más bajas (720p o menos) para que se guarden en la carpeta de la app.`
           });
+
+          scheduleNotification('Descarga Completada', `${filename} guardado en Descargas`);
+
+          addToHistory({
+            title: videoInfo?.title || filename,
+            platform: 'youtube',
+            thumbnail: videoInfo?.thumbnail || '',
+            status: 'completed',
+            format: quality,
+            fileSize: formatBytes(blob.size)
+          });
+
           setDownloading(null);
           setDownloadProgress(0);
           return;
