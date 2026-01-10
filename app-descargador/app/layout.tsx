@@ -66,9 +66,20 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
     },
   },
   icons: {
-    icon: '/icon.png',
+    icon: [
+      { url: '/icon.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icons/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
     shortcut: '/favicon.ico',
-    apple: '/icons/icon-192.png',
+    apple: [
+      { url: '/icons/icon-192.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/icons/icon-192.png',
+      },
+    ],
   },
 }
 
