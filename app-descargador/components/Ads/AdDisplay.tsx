@@ -13,9 +13,11 @@ export default function AdDisplay({ adSlot, width = 300, height = 600 }: AdProps
     <>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', width, height }}
+        style={{ display: 'block' }}
         data-ad-client="ca-pub-5414009811868137"
         data-ad-slot={adSlot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
       ></ins>
       <Script
         id="adsense-display"

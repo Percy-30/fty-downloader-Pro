@@ -57,6 +57,11 @@ export default function ToolsPage() {
           <div className="mt-8">
             {renderPlatform()}
           </div>
+          <div className="mt-8 pt-8 border-t border-gray-100 flex flex-wrap justify-center gap-4">
+            <a href="/tools/facebook" className="text-sm font-medium text-blue-600 hover:underline">Ver Guía Facebook HD →</a>
+            <a href="/tools/tiktok" className="text-sm font-medium text-pink-600 hover:underline">Ver Guía TikTok Sin Logo →</a>
+            <a href="/tools/youtube" className="text-sm font-medium text-red-600 hover:underline">Ver Guía YouTube 4K →</a>
+          </div>
         </div>
       </div>
 
@@ -97,7 +102,7 @@ export default function ToolsPage() {
       {/* Aviso legal */}
       <div className="max-w-4xl mx-auto mt-12 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <p className="text-sm text-yellow-800 text-center">
-          <strong>Aviso Legal:</strong> FTYDownloader Pro está diseñado para descargar contenido personal 
+          <strong>Aviso Legal:</strong> FTYDownloader Pro está diseñado para descargar contenido personal
           o con los permisos adecuados. Respetamos los derechos de autor y promovemos el uso responsable.
         </p>
       </div>

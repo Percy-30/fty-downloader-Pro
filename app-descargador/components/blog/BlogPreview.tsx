@@ -3,20 +3,20 @@ import { blogPosts } from '@/lib/content/blog-posts'
 import Image from 'next/image'
 
 export default function BlogPreview() {
-  const featuredPosts = blogPosts.slice(0, 3)
+  const featuredPosts = blogPosts.slice(0, 6)
 
   return (
     <section className="py-12">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Aprende con Nuestros Tutoriales
+          Nuestras Guías y Tutoriales
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Contenido educativo de calidad para ayudarte a mejorar como creador digital.
+          Contenido especializado para que aproveches al máximo tus redes sociales.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8 mb-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
         {featuredPosts.map((post) => (
           <article key={post.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
             {post.image && (
@@ -40,7 +40,7 @@ export default function BlogPreview() {
               <p className="text-gray-600 mb-4 line-clamp-3">
                 {post.excerpt}
               </p>
-              <Link 
+              <Link
                 href={`/blog/${post.slug}`}
                 className="text-blue-600 hover:text-blue-700 font-medium text-sm"
               >
@@ -52,7 +52,7 @@ export default function BlogPreview() {
       </div>
 
       <div className="text-center">
-        <Link 
+        <Link
           href="/blog"
           className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
         >

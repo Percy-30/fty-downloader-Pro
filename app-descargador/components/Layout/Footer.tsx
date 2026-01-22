@@ -7,8 +7,8 @@ export default function Footer() {
     if (typeof window !== 'undefined') {
       // Si estamos en la página principal, hacer scroll
       if (window.location.pathname === '/') {
-        document.getElementById('herramientas')?.scrollIntoView({ 
-          behavior: 'smooth' 
+        document.getElementById('herramientas')?.scrollIntoView({
+          behavior: 'smooth'
         })
       } else {
         // Si estamos en otra página, ir a la página principal con hash
@@ -27,38 +27,35 @@ export default function Footer() {
               Descarga videos de Facebook, YouTube y TikTok gratis y en alta calidad.
             </p>
           </div>
-          
+
           <div>
-            <h4 className="font-semibold mb-4">Navegación</h4>
+            <h4 className="font-semibold mb-4">Herramientas</h4>
+            <ul className="space-y-2 text-sm">
+              <li><Link href="/tools/facebook" className="text-gray-400 hover:text-white transition-colors">Video Facebook</Link></li>
+              <li><Link href="/tools/tiktok" className="text-gray-400 hover:text-white transition-colors">Video TikTok</Link></li>
+              <li><Link href="/tools/youtube" className="text-gray-400 hover:text-white transition-colors">Video YouTube</Link></li>
+              <li><Link href="/tools" className="text-gray-400 hover:text-white transition-colors">Herramientas Pro</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4">Recursos</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-gray-400 hover:text-white transition-colors">Inicio</Link></li>
-              <li><Link href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-              <li>
-                <button 
-                  onClick={scrollToTools}
-                  className="text-gray-400 hover:text-white transition-colors text-left"
-                >
-                  Descargar Videos
-                </button>
-              </li>
+              <li><Link href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog (Guías)</Link></li>
+              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">Nosotros</Link></li>
+              <li><Link href="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ / Ayuda</Link></li>
+              <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contacto</Link></li>
             </ul>
           </div>
-          
+
           <div>
-            <h4 className="font-semibold mb-4">Legal</h4>
+            <h4 className="font-semibold mb-4">Políticas Legales</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/legal/privacidad" className="text-gray-400 hover:text-white transition-colors">Privacidad</Link></li>
-              <li><Link href="/legal/terminos" className="text-gray-400 hover:text-white transition-colors">Términos</Link></li>
+              <li><Link href="/legal/terminos" className="text-gray-400 hover:text-white transition-colors">Términos de Uso</Link></li>
               <li><Link href="/legal/cookies" className="text-gray-400 hover:text-white transition-colors">Cookies</Link></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Soporte</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contacto</Link></li>
-              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">Nosotros</Link></li>
+              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">Descargo de Responsabilidad</Link></li>
             </ul>
           </div>
         </div>

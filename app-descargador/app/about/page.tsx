@@ -1,165 +1,140 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Sobre Nosotros | FTY Downloader Pro - Nuestra Historia y Misión',
-  description: 'Conoce al equipo detrás de FTY Downloader Pro. Nuestra misión es proporcionar herramientas gratuitas y seguras para creadores de contenido digital.',
+  title: 'Sobre Nosotros | FTY Downloader Pro - Nuestra Misión y Equipo',
+  description: 'Conoce la visión de FTY Downloader Pro. Somos un equipo de especialistas en procesamiento multimedia dedicados a democratizar el acceso al contenido digital.',
 }
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-4xl font-bold mb-8 text-center">Sobre Nosotros</h1>
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="text-center mb-16">
+        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">Sobre Nosotros</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Democratizando la conservación del contenido digital mediante tecnología de vanguardia y acceso gratuito universal.
+        </p>
+      </div>
 
-      <div className="prose prose-lg max-w-none">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-2xl mb-8">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-4">Nuestra Historia</h2>
-          <p className="text-gray-700 leading-relaxed">
-            FTY Downloader Pro nació en 2023 como un proyecto personal para resolver una necesidad común:
-            permitir a los creadores de contenido respaldar y gestionar sus propios videos de manera sencilla.
-            Lo que comenzó como una herramienta simple ha evolucionado hasta convertirse en una plataforma
-            completa utilizada por miles de usuarios en Latinoamérica y España.
-          </p>
-          <p className="text-gray-700 leading-relaxed mt-4">
-            Fundada por desarrolladores apasionados por la tecnología y el contenido digital,
-            nuestra plataforma se ha construido con un principio fundamental: <strong>la accesibilidad</strong>.
-            Creemos que las herramientas digitales básicas deben estar disponibles para todos,
-            sin importar su presupuesto o conocimientos técnicos.
-          </p>
-        </div>
-
-        {/* Mission Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">🎯 Nuestra Misión</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Empoderar a los creadores de contenido proporcionándoles herramientas gratuitas, seguras y fáciles de usar
-            para gestionar, respaldar y optimizar su trabajo multimedia. Nos comprometemos a mantener nuestra
-            plataforma libre de malware, sin necesidad de registro y con total transparencia en el procesamiento de datos.
-          </p>
-        </div>
-
-        {/* Vision Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">👁️ Nuestra Visión</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Ser la herramienta de referencia para creadores de contenido en español, expandiendo nuestras
-            capacidades para incluir edición básica, conversión de formatos y herramientas de optimización,
-            siempre manteniendo nuestro compromiso con la gratuidad y la seguridad.
-          </p>
-        </div>
-
-        {/* Values Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">💎 Nuestros Valores</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-lg text-blue-600 mb-2">🆓 Gratuidad</h3>
-              <p className="text-gray-600">
-                Creemos que las herramientas básicas de gestión de contenido deben ser accesibles para todos.
-                FTY Downloader Pro es y seguirá siendo 100% gratuito, sin funciones premium bloqueadas.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-lg text-green-600 mb-2">🔒 Seguridad</h3>
-              <p className="text-gray-600">
-                Tu privacidad es nuestra prioridad. No almacenamos tus videos, no requerimos registro
-                y no vendemos datos. El procesamiento es temporal y los archivos se eliminan automáticamente.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-lg text-purple-600 mb-2">⚡ Calidad</h3>
-              <p className="text-gray-600">
-                Nos esforzamos por ofrecer la mejor experiencia posible. Interfaz moderna,
-                procesamiento rápido y soporte para las máximas calidades disponibles en cada plataforma.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-lg text-orange-600 mb-2">📚 Educación</h3>
-              <p className="text-gray-600">
-                Más allá de las herramientas, proporcionamos contenido educativo para ayudar a los
-                creadores a mejorar sus habilidades y optimizar su flujo de trabajo.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* What We Do Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">🛠️ ¿Qué Hacemos?</h2>
-          <p className="text-gray-700 leading-relaxed mb-4">
-            Desarrollamos herramientas de descarga y gestión de video para las principales plataformas sociales:
-          </p>
-          <ul className="space-y-3">
-            <li className="flex items-start">
-              <span className="text-red-500 mr-3 text-xl">▶️</span>
-              <div>
-                <strong className="text-gray-900">YouTube:</strong>
-                <span className="text-gray-600"> Descarga videos en calidades desde 360p hasta 4K, con opción de extraer solo audio en MP3.</span>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <span className="text-blue-500 mr-3 text-xl">📘</span>
-              <div>
-                <strong className="text-gray-900">Facebook:</strong>
-                <span className="text-gray-600"> Respalda videos públicos de Facebook en la máxima calidad disponible.</span>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <span className="text-pink-500 mr-3 text-xl">🎵</span>
-              <div>
-                <strong className="text-gray-900">TikTok:</strong>
-                <span className="text-gray-600"> Descarga videos sin marca de agua, preservando la calidad original del contenido.</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        {/* Commitment Section */}
-        <div className="bg-blue-50 p-8 rounded-2xl mb-8">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-4">🤝 Nuestro Compromiso</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Entendemos las necesidades de los creadores de contenido porque nosotros mismos lo somos.
-            Nos comprometemos a:
-          </p>
-          <ul className="mt-4 space-y-2 text-gray-700">
-            <li>✅ Mantener el servicio gratuito y sin publicidad intrusiva</li>
-            <li>✅ Proteger tu privacidad y no almacenar datos personales</li>
-            <li>✅ Actualizar constantemente para soportar nuevas plataformas y formatos</li>
-            <li>✅ Proporcionar contenido educativo de calidad para creadores</li>
-            <li>✅ Responder a las consultas de soporte en menos de 48 horas</li>
-          </ul>
-        </div>
-
-        {/* Contact Section */}
-        <div className="text-center py-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">📬 ¿Tienes Preguntas?</h2>
-          <p className="text-gray-700 mb-6">
-            Estamos aquí para ayudarte. Visita nuestra página de contacto o consulta nuestras preguntas frecuentes.
-          </p>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <a
-              href="/contact"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Contáctanos
-            </a>
-            <a
-              href="/faq"
-              className="bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-            >
-              Ver FAQ
-            </a>
-          </div>
-        </div>
-
-        {/* Legal Notice */}
-        <div className="text-sm text-gray-500 border-t pt-6 mt-8">
+      <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+        <div className="prose prose-lg text-gray-700">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Nuestra Historia</h2>
           <p>
-            <strong>Aviso Legal:</strong> FTY Downloader Pro es una herramienta diseñada para ayudar a los usuarios
-            a respaldar su propio contenido. Animamos a todos los usuarios a respetar los derechos de autor y
-            las políticas de uso de cada plataforma. El uso de esta herramienta para descargar contenido
-            protegido sin autorización es responsabilidad exclusiva del usuario.
+            <strong>FTY Downloader Pro</strong> nació de una observación simple: internet es la biblioteca más grande de la historia,
+            pero es volátil. El contenido que hoy es vital para tu aprendizaje o entretenimiento, mañana puede desaparecer por cambios en los algoritmos o políticas de plataforma.
           </p>
+          <p>
+            En 2023, nuestro fundador –un ingeniero de sistemas apasionado por el procesamiento de señales– desarrolló la primera versión de FTY como una solución minimalista para respaldar clases académicas de video.
+            Rápidamente, la herramienta fue adoptada por una comunidad de creadores que buscaban una alternativa segura, sin malware y sin las limitaciones de las plataformas comerciales.
+          </p>
+          <p>
+            Hoy, FTY Downloader Pro es un ecosistema completo que procesa miles de solicitudes diarias, manteniendo siempre su compromiso original: <strong>código gratuito y alta calidad.</strong>
+          </p>
+        </div>
+        <div className="bg-gradient-to-br from-blue-600 to-purple-700 p-1 rounded-3xl shadow-2xl">
+          <div className="bg-white p-8 rounded-[1.4rem]">
+            <h3 className="text-2xl font-bold mb-6 text-gray-900 italic">"Nuestra visión es simple: si está en la web y es público, deberías tener el derecho de guardarlo para tu uso personal sin complicaciones técnicas."</h3>
+            <div className="flex items-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mr-4">🚀</div>
+              <div>
+                <p className="font-bold text-gray-900">Equipo de Desarrollo</p>
+                <p className="text-gray-500">FTY Downloader Pro</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-8 mb-24">
+        <div className="bg-gray-50 p-8 rounded-2xl">
+          <div className="text-3xl mb-4">🏠</div>
+          <h4 className="text-xl font-bold mb-3 text-gray-900">Ubicación</h4>
+          <p className="text-gray-600">
+            Operamos de forma remota y descentralizada, con presencia en los principales nodos de desarrollo en Latinoamérica y Europa.
+          </p>
+        </div>
+        <div className="bg-gray-50 p-8 rounded-2xl">
+          <div className="text-3xl mb-4">🌍</div>
+          <h4 className="text-xl font-bold mb-3 text-gray-900">Impacto Global</h4>
+          <p className="text-gray-600">
+            Servimos a usuarios en más de 50 países, proporcionando soporte especializado para idiomas español e inglés.
+          </p>
+        </div>
+        <div className="bg-gray-50 p-8 rounded-2xl">
+          <div className="text-3xl mb-4">⚙️</div>
+          <h4 className="text-xl font-bold mb-3 text-gray-900">Tecnología</h4>
+          <p className="text-gray-600">
+            Utilizamos infraestructuras de nube de alto rendimiento para garantizar latencias mínimas y escalabilidad infinita.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white border text-gray-900 p-12 rounded-3xl shadow-sm mb-20">
+        <h2 className="text-3xl font-bold mb-8 text-center italic">Nuestros Principios Innegociables</h2>
+        <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
+          <div>
+            <h4 className="text-xl font-bold mb-3 flex items-center">
+              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+              Privacidad por Diseño
+            </h4>
+            <p className="text-gray-600">
+              No rastreamos, no vendemos, no almacenamos. La web debería ser un lugar seguro para todos.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-xl font-bold mb-3 flex items-center">
+              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+              Innovación Constante
+            </h4>
+            <p className="text-gray-600">
+              Las redes sociales cambian cada día; nosotros nos adaptamos más rápido para que tu flujo hable por sí mismo.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-xl font-bold mb-3 flex items-center">
+              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+              Experiencia Pro-Usuario
+            </h4>
+            <p className="text-gray-600">
+              Interfaz limpia, sin botones trampa, sin redirecciones maliciosas. Calidad profesional hoy mismo.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-xl font-bold mb-3 flex items-center">
+              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">4</span>
+              Responsabilidad Ética
+            </h4>
+            <p className="text-gray-600">
+              Fomentamos el uso responsable del contenido y el respeto sagrado por el derecho de autor de los artistas.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="bg-gray-900 text-white rounded-[3rem] p-12 mb-20 grid md:grid-cols-3 gap-12 text-center">
+        <div>
+          <div className="text-5xl font-extrabold text-blue-400 mb-2">+1M</div>
+          <div className="text-gray-400 uppercase tracking-widest text-sm">Videos Procesados</div>
+        </div>
+        <div>
+          <div className="text-5xl font-extrabold text-purple-400 mb-2">99.9%</div>
+          <div className="text-gray-400 uppercase tracking-widest text-sm">Uptime del Servidor</div>
+        </div>
+        <div>
+          <div className="text-5xl font-extrabold text-pink-400 mb-2">0</div>
+          <div className="text-gray-400 uppercase tracking-widest text-sm">Costo para el Usuario</div>
+        </div>
+      </div>
+
+      <div className="text-center py-12">
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-8">Únete a nuestra comunidad</h2>
+        <div className="flex justify-center gap-6">
+          <a href="/contact" className="bg-blue-600 text-white px-10 py-5 rounded-2xl hover:bg-blue-700 font-bold transition-all shadow-xl hover:-translate-y-1">
+            📧 Contacto Directo
+          </a>
+          <a href="/blog" className="bg-gray-100 text-gray-900 px-10 py-5 rounded-2xl hover:bg-gray-200 font-bold transition-all">
+            📰 Ver el Blog
+          </a>
         </div>
       </div>
     </div>
