@@ -1,5 +1,7 @@
 import express from 'express';
 import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
@@ -11,19 +13,29 @@ router.post('/info', async (req, res) => {
     console.log('📥 Procesando YouTube URL:', url);
 
     if (!url || !url.includes('youtube.com') && !url.includes('youtu.be')) {
-      return res.status(400).json({ 
-        error: 'URL de YouTube inválida' 
+      return res.status(400).json({
+        error: 'URL de YouTube inválida'
       });
     }
 
-    // yt-dlp FUNCIONA en Railway
-    const ytProcess = spawn('yt-dlp', [
+    // Preparamos los argumentos para yt-dlp
+    const args = [
       '--dump-json',
       '--no-warnings',
       '--no-check-certificates',
       '--geo-bypass',
+      '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.34 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.34',
       url
-    ]);
+    ];
+
+    // Si existe un archivo de cookies, lo usamos para evitar el bloqueo de "bot"
+    const cookiesPath = path.resolve('cookies.txt');
+    if (fs.existsSync(cookiesPath)) {
+      console.log('🍪 Usando cookies.txt para YouTube');
+      args.splice(args.length - 1, 0, '--cookies', cookiesPath);
+    }
+
+    const ytProcess = spawn('yt-dlp', args);
 
     let output = '';
     let errorOutput = '';
@@ -32,7 +44,7 @@ router.post('/info', async (req, res) => {
     ytProcess.stderr.on('data', (data) => errorOutput += data.toString());
 
     const exitCode = await new Promise((resolve) => {
-      ytProcess.on('close', resolve);
+      ytProcess.on('close', (code) => resolve(code));
     });
 
     if (exitCode !== 0 || !output) {
@@ -43,7 +55,7 @@ router.post('/info', async (req, res) => {
     }
 
     const info = JSON.parse(output);
-    
+
     // Filtrar formatos válidos (igual que tu lógica original)
     const formats = (info.formats || [])
       .filter((f) => f.url && (f.vcodec !== 'none' || f.acodec !== 'none'))

@@ -3,7 +3,7 @@ import { blogPosts } from '@/lib/content/blog-posts'
 import Image from 'next/image'
 
 export default function BlogPreview() {
-  const featuredPosts = blogPosts.slice(0, 6)
+  const featuredPosts = blogPosts.slice(0, 9)
 
   return (
     <section className="py-12">
