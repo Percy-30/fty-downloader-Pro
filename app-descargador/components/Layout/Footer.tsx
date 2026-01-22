@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 pt-8 text-center">
           <p className="text-gray-400">
-            &copy; 2025 FTYDownloader Pro. Herramienta gratuita para descargar videos.
+            &copy; {new Date().getFullYear()} FTYDownloader Pro. Herramienta gratuita para descargar videos.
           </p>
           <p className="text-gray-500 text-sm mt-2">
             Facebook, YouTube, TikTok - No afiliado con estas plataformas.
