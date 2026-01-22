@@ -23,6 +23,7 @@ import { useEffect, useRef } from 'react'
 import { FEATURES } from '@/lib/featureFlags'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { Filesystem } from '@capacitor/filesystem'
+import AdMobBanner from '@/components/AdMobBanner'
 
 export default function Home() {
   const { isNative } = usePlatform()
@@ -122,6 +123,7 @@ export default function Home() {
         </main>
 
         {/* <BottomNav activePlatform={activePlatform} onPlatformChange={setActivePlatform} /> */}
+        <AdMobBanner />
       </div>
     )
   }

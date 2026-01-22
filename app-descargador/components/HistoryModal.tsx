@@ -176,17 +176,17 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
                                         <div className="flex items-center gap-1 shrink-0">
                                             <button
                                                 onClick={(e) => handleShare(e, item)}
-                                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                className="p-1.5 text-blue-700 bg-blue-100 border border-blue-200 hover:bg-blue-600 hover:text-white rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center"
                                                 title="Compartir archivo"
                                             >
-                                                <Share2 className="w-3.5 h-3.5" />
+                                                <Share2 className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={(e) => handleDelete(e, item.id)}
-                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                className="p-1.5 text-red-700 bg-red-100 border border-red-200 hover:bg-red-600 hover:text-white rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center"
                                                 title="Eliminar descarga"
                                             >
-                                                <Trash2 className="w-3.5 h-3.5" />
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
                                     </div>
