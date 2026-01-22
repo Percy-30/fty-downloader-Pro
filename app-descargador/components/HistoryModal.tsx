@@ -1,8 +1,9 @@
-import { X, Trash2, Clock, CheckCircle } from 'lucide-react';
+import { X, Trash2, Clock, CheckCircle, Share2, ExternalLink } from 'lucide-react';
 import { HistoryItem } from '@/hooks/useDownloadHistory';
 import { useEffect, useState } from 'react';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { Dialog } from '@capacitor/dialog';
+import { Share } from '@capacitor/share';
 
 interface HistoryModalProps {
     isOpen: boolean;
@@ -29,15 +30,14 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
     if (!mounted || !isOpen) return null;
 
     const handleItemClick = async (item: HistoryItem) => {
-        if (item.filePath && item.mimeType) {
+        if (item.filePath) {
             try {
                 await FileOpener.open({
                     filePath: item.filePath,
-                    contentType: item.mimeType
+                    contentType: item.mimeType || 'video/mp4'
                 });
             } catch (e) {
                 console.warn('Error abriendo archivo local:', e);
-                // Fallback: Intentar abrir la URL original si falla lo local
                 if (item.originalUrl) window.open(item.originalUrl, '_blank');
                 else await Dialog.alert({
                     title: 'No se puede abrir',
@@ -46,6 +46,41 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
             }
         } else if (item.originalUrl) {
             window.open(item.originalUrl, '_blank');
+        }
+    };
+
+    const handleShare = async (e: React.MouseEvent, item: HistoryItem) => {
+        e.stopPropagation(); // Evitar abrir el archivo
+        try {
+            if (item.filePath) {
+                await Share.share({
+                    title: item.title,
+                    text: `Mira este video de ${item.platform}: ${item.title}`,
+                    url: item.filePath,
+                    dialogTitle: 'Compartir archivo'
+                });
+            } else if (item.originalUrl) {
+                await Share.share({
+                    title: item.title,
+                    url: item.originalUrl
+                });
+            }
+        } catch (error) {
+            console.error('Error al compartir:', error);
+        }
+    };
+
+    const handleDelete = async (e: React.MouseEvent, id: string) => {
+        e.stopPropagation(); // Evitar abrir el archivo
+        const { value } = await Dialog.confirm({
+            title: '¿Eliminar descarga?',
+            message: 'Esto borrará el registro del historial y el archivo de tu dispositivo.',
+            okButtonTitle: 'Eliminar',
+            cancelButtonTitle: 'Cancelar'
+        });
+
+        if (value) {
+            onDelete(id);
         }
     };
 
@@ -136,7 +171,25 @@ export default function HistoryModal({ isOpen, onClose, history, onClear, onDele
 
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-sm font-semibold text-gray-900 truncate pr-6">{item.title}</h3>
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h3 className="text-sm font-semibold text-gray-900 truncate">{item.title}</h3>
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            <button
+                                                onClick={(e) => handleShare(e, item)}
+                                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                title="Compartir archivo"
+                                            >
+                                                <Share2 className="w-3.5 h-3.5" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDelete(e, item.id)}
+                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                title="Eliminar descarga"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div className="flex items-center text-xs text-gray-500 gap-2 mt-1">
                                         <span className="capitalize">{item.platform}</span>
                                         <span>•</span>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Filesystem } from '@capacitor/filesystem';
 
 export interface HistoryItem {
     id: string;
@@ -107,11 +108,25 @@ export function useDownloadHistory() {
         }
     };
 
-    const deleteItem = (id: string) => {
+    const deleteItem = async (id: string) => {
         try {
             const stored = localStorage.getItem(HISTORY_KEY);
             if (stored) {
                 const currentItems: HistoryItem[] = JSON.parse(stored);
+                const itemToDelete = currentItems.find(i => i.id === id);
+
+                // 🔥 Borrar archivo físico si existe
+                if (itemToDelete?.filePath) {
+                    try {
+                        await Filesystem.deleteFile({
+                            path: itemToDelete.filePath
+                        });
+                        console.log('🗑️ Archivo físico eliminado:', itemToDelete.filePath);
+                    } catch (fsError) {
+                        console.warn('No se pudo borrar el archivo físico (tal vez ya no existe):', fsError);
+                    }
+                }
+
                 const updated = currentItems.filter(i => i.id !== id);
                 setHistory(updated);
                 localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
