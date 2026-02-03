@@ -135,7 +135,7 @@ export default function Home() {
       <div className="flex">
         {/* Sidebar Left */}
         <aside className="hidden lg:block w-64 fixed left-0 top-20 h-[calc(100vh-5rem)] z-30 p-4">
-          <EzoicAd placeholderId={102} className="h-full" />
+          <EzoicAd placeholderId={104} className="h-full" />
         </aside>
 
         {/* CONTENIDO PRINCIPAL */}
@@ -143,7 +143,7 @@ export default function Home() {
           {/* 1. Hero Section */}
           <HeroSection />
 
-          {/* Banner Top */}
+          {/* Banner Top (Top of Page) */}
           <div className="max-w-4xl mx-auto mb-8">
             <EzoicAd placeholderId={101} />
           </div>
@@ -158,9 +158,9 @@ export default function Home() {
             <VideoRewardsAds position="left" />
           </div>
 
-          {/* Banner Middle */}
+          {/* Banner Middle (Removing 103 to use as Bottom) */}
           <div className="max-w-4xl mx-auto mb-16">
-            <EzoicAd placeholderId={103} />
+            {/* Espacio para contenido - removido placeholder adicional */}
           </div>
 
           {/* 3. Herramientas - CON ID PARA SCROLL */}
@@ -180,8 +180,11 @@ export default function Home() {
                 <PlatformTabs activePlatform={activePlatform} onPlatformChange={setActivePlatform} />
               </div>
 
-              {/* Platform Content */}
+              {/* Platform Content + Under Title Ad */}
               <div className="max-w-4xl mx-auto">
+                <div className="mb-6">
+                  <EzoicAd placeholderId={102} />
+                </div>
                 {renderPlatform()}
               </div>
 
@@ -199,9 +202,8 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Banner Bottom */}
+          {/* Banner Middle 2 - Removido */}
           <div className="max-w-4xl mx-auto mb-16">
-            <EzoicAd placeholderId={104} />
           </div>
 
           {/* 5. SEO Content Section (NUEVO PARA ADSENSE) */}
@@ -217,9 +219,9 @@ export default function Home() {
             <VideoRewardsAds position="right" />
           </div>
 
-          {/* Banner Final */}
+          {/* Banner Final (Bottom of Page) */}
           <div className="max-w-4xl mx-auto mt-16">
-            <EzoicAd placeholderId={106} />
+            <EzoicAd placeholderId={103} />
           </div>
         </main>
 
