@@ -129,6 +129,8 @@ export default function PrivacyPage() {
           <p className="mb-4">
             Ezoic y sus socios pueden utilizar estos datos en combinación con información recolectada de forma independiente para ofrecer anuncios específicos en diversas plataformas y sitios web. Puede encontrar más información sobre la publicidad basada en intereses y cómo gestionarla <a href="https://www.ezoic.com/privacy-policy/" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">aquí</a>.
           </p>
+          {/* Ezoic Privacy Policy Embed Snippet */}
+          <span id="ezoic-privacy-policy-embed"></span>
         </div>
 
         <h3 className="text-xl font-medium mt-6 mb-3">4.3 Google Analytics</h3>
