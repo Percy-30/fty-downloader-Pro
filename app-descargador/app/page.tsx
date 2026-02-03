@@ -219,7 +219,7 @@ export default function Home() {
 
           {/* Banner Final */}
           <div className="max-w-4xl mx-auto mt-16">
-            <BannerAds />
+            <EzoicAd placeholderId={106} />
           </div>
         </main>
 
