@@ -106,6 +106,31 @@ export default function PrivacyPage() {
           Puedes optar por no recibir publicidad personalizada visitando <a href="https://www.google.com/settings/ads" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Configuración de Anuncios de Google</a>.
         </p>
 
+        <h3 className="text-xl font-medium mt-6 mb-3">4.2 Servicios de Ezoic</h3>
+        <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 text-sm">
+          <p className="font-semibold mb-2">Información sobre los servicios de Ezoic Inc. (“Ezoic”)</p>
+          <p className="mb-4">
+            Este sitio web utiliza los servicios de Ezoic Inc. (“Ezoic”), incluyendo la gestión de publicidad basada en intereses de terceros. Ezoic puede emplear diversas tecnologías en este sitio web, incluyendo herramientas para servir contenido, mostrar anuncios y habilitar la publicidad para los visitantes, las cuales pueden utilizar cookies de origen y de terceros.
+          </p>
+          <p className="mb-4">
+            Una cookie es un pequeño archivo de texto enviado a su dispositivo por un servidor web que permite al sitio web recordar información sobre su actividad de navegación. Las cookies de origen son creadas por el sitio que está visitando, mientras que las cookies de terceros son establecidas por dominios distintos al que está visitando. Ezoic y nuestros socios pueden colocar cookies de terceros, etiquetas, balizas (beacons), píxeles y tecnologías similares para monitorear las interacciones con los anuncios y optimizar la segmentación publicitaria.
+          </p>
+          <p className="mb-4">
+            La siguiente información puede ser recopilada, utilizada y almacenada en una cookie al servir anuncios personalizados:
+          </p>
+          <ul className="list-disc pl-6 mb-4 space-y-1">
+            <li>Dirección IP</li>
+            <li>Tipo y versión del sistema operativo</li>
+            <li>Tipo de dispositivo</li>
+            <li>Preferencias de idioma</li>
+            <li>Tipo de navegador web</li>
+            <li>Correo electrónico (en forma cifrada o hash)</li>
+          </ul>
+          <p className="mb-4">
+            Ezoic y sus socios pueden utilizar estos datos en combinación con información recolectada de forma independiente para ofrecer anuncios específicos en diversas plataformas y sitios web. Puede encontrar más información sobre la publicidad basada en intereses y cómo gestionarla <a href="https://www.ezoic.com/privacy-policy/" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">aquí</a>.
+          </p>
+        </div>
+
         <h3 className="text-xl font-medium mt-6 mb-3">4.2 Google Analytics</h3>
         <p>
           Utilizamos Google Analytics para analizar el uso del sitio web. Esta información nos ayuda a mejorar
