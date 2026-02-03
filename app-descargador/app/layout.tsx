@@ -87,7 +87,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        {/* Meta requerida por AdSense para verificar tu dominio */}
+        {/* Ezoic Privacy Scripts (Must load first) */}
+        <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
+        <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
+
+        {/* Ezoic Header Script */}
+        <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.ezstandalone = window.ezstandalone || {};
+              ezstandalone.cmd = ezstandalone.cmd || [];
+            `
+          }}
+        />
+
+        {/* Meta requerida por AdSense para verificar tu dominio (Mantener por ahora) */}
         <meta name="google-adsense-account" content="ca-pub-5414009811868137" />
 
 

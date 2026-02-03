@@ -32,10 +32,15 @@ const nextConfig = {
       },
     ],
   },
-  // 🚫 ELIMINA COMPLETAMENTE esta sección
-  // async redirects() {
-  //   return []
-  // },
+  async redirects() {
+    return [
+      {
+        source: '/ads.txt',
+        destination: 'https://srv.adstxtmanager.com/19390/ftydownloader.com',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

@@ -11,11 +11,10 @@ import FeaturesSection from '@/components/FeaturesSection'
 import SEOContentSection from '@/components/SEOContentSection'
 import BlogPreview from '@/components/blog/BlogPreview'
 import HeroSection from '@/components/HeroSection'
-import BannerAds from '@/components/Layout/BannerAds'
-import SidebarAds from '@/components/Layout/SidebarAds'
+import AdMobBanner from '@/components/AdMobBanner'
+import EzoicAd from '@/components/EzoicAd'
 import VideoRewardsAds from '@/components/Layout/VideoRewardsAds'
 import { usePlatform } from '@/hooks/usePlatform'
-// import BottomNav from '@/components/AppLayout/BottomNav' // Replaced by TopNav
 import TopNav from '@/components/AppLayout/TopNav'
 import AppHeader from '@/components/AppLayout/AppHeader'
 import { useAdMobInterstitial } from '@/hooks/useAdMobInterstitial'
@@ -23,7 +22,6 @@ import { useEffect, useRef } from 'react'
 import { FEATURES } from '@/lib/featureFlags'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { Filesystem } from '@capacitor/filesystem'
-import AdMobBanner from '@/components/AdMobBanner'
 
 export default function Home() {
   const { isNative } = usePlatform()
@@ -136,8 +134,8 @@ export default function Home() {
       {/* SIDEBARS GLOBALES - FUERA DEL MAIN */}
       <div className="flex">
         {/* Sidebar Left */}
-        <aside className="hidden lg:block w-64 fixed left-0 top-20 h-[calc(100vh-5rem)] z-30">
-          <SidebarAds position="left" />
+        <aside className="hidden lg:block w-64 fixed left-0 top-20 h-[calc(100vh-5rem)] z-30 p-4">
+          <EzoicAd placeholderId={102} className="h-full" />
         </aside>
 
         {/* CONTENIDO PRINCIPAL */}
@@ -147,7 +145,7 @@ export default function Home() {
 
           {/* Banner Top */}
           <div className="max-w-4xl mx-auto mb-8">
-            <BannerAds />
+            <EzoicAd placeholderId={101} />
           </div>
 
           {/* 2. Blog Preview */}
@@ -162,7 +160,7 @@ export default function Home() {
 
           {/* Banner Middle */}
           <div className="max-w-4xl mx-auto mb-16">
-            <BannerAds />
+            <EzoicAd placeholderId={103} />
           </div>
 
           {/* 3. Herramientas - CON ID PARA SCROLL */}
@@ -203,7 +201,7 @@ export default function Home() {
 
           {/* Banner Bottom */}
           <div className="max-w-4xl mx-auto mb-16">
-            <BannerAds />
+            <EzoicAd placeholderId={104} />
           </div>
 
           {/* 5. SEO Content Section (NUEVO PARA ADSENSE) */}
@@ -226,8 +224,8 @@ export default function Home() {
         </main>
 
         {/* Sidebar Right */}
-        <aside className="hidden lg:block w-64 fixed right-0 top-20 h-[calc(100vh-5rem)] z-30">
-          <SidebarAds position="right" />
+        <aside className="hidden lg:block w-64 fixed right-0 top-20 h-[calc(100vh-5rem)] z-30 p-4">
+          <EzoicAd placeholderId={105} className="h-full" />
         </aside>
       </div>
 
