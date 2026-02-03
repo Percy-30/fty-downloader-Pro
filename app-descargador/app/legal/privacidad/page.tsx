@@ -131,7 +131,7 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        <h3 className="text-xl font-medium mt-6 mb-3">4.2 Google Analytics</h3>
+        <h3 className="text-xl font-medium mt-6 mb-3">4.3 Google Analytics</h3>
         <p>
           Utilizamos Google Analytics para analizar el uso del sitio web. Esta información nos ayuda a mejorar
           nuestros servicios. Google Analytics recopila información de forma anónima.
