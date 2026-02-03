@@ -77,34 +77,34 @@ export default function AboutPage() {
               Privacidad por Diseño
             </h4>
             <p className="text-gray-600">
-              No rastreamos, no vendemos, no almacenamos. La web debería ser un lugar seguro para todos.
+              No rastreamos, no vendemos, no almacenamos. La web debería ser un lugar seguro para todos. Aplicamos cifrado SSL en todas las transferencias.
             </p>
           </div>
           <div>
             <h4 className="text-xl font-bold mb-3 flex items-center">
               <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">2</span>
-              Innovación Constante
+              Procesamiento Seguro
             </h4>
             <p className="text-gray-600">
-              Las redes sociales cambian cada día; nosotros nos adaptamos más rápido para que tu flujo hable por sí mismo.
+              Cada enlace es analizado en tiempo real para evitar redirecciones maliciosas. Nuestra tecnología de sandboxing garantiza que el archivo que recibes es limpio.
             </p>
           </div>
           <div>
             <h4 className="text-xl font-bold mb-3 flex items-center">
               <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">3</span>
-              Experiencia Pro-Usuario
+              Innovación Constante
             </h4>
             <p className="text-gray-600">
-              Interfaz limpia, sin botones trampa, sin redirecciones maliciosas. Calidad profesional hoy mismo.
+              Las redes sociales cambian cada día; nosotros nos adaptamos más rápido para que tu flujo de trabajo no se detenga nunca.
             </p>
           </div>
           <div>
             <h4 className="text-xl font-bold mb-3 flex items-center">
               <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">4</span>
-              Responsabilidad Ética
+              Responsabilidad Ética y Legal
             </h4>
             <p className="text-gray-600">
-              Fomentamos el uso responsable del contenido y el respeto sagrado por el derecho de autor de los artistas.
+              Fomentamos el uso responsable del contenido. FTY Downloader Pro es una herramienta para respaldo personal y educación, respetando siempre los términos de servicio de las plataformas originales.
             </p>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { blogPosts } from '@/lib/content/blog-posts'
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://www.ftydownloader.com'
 
-    // Rutas estáticas principales
+    // Rutas estáticas
     const staticRoutes = [
         '',
         '/about',
@@ -12,12 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/faq',
         '/blog',
         '/tools',
-        '/tools/facebook',
-        '/tools/tiktok',
-        '/tools/youtube',
-        '/legal/privacidad',
-        '/legal/terminos',
-        '/legal/cookies',
+        '/privacy-policy',
+        '/terms-of-service',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
@@ -25,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: route === '' ? 1 : 0.8,
     }))
 
-    // Rutas del blog dinámicas
+    // Rutas dinámicas del blog
     const blogRoutes = blogPosts.map((post) => ({
         url: `${baseUrl}/blog/${post.slug}`,
         lastModified: new Date(post.date),

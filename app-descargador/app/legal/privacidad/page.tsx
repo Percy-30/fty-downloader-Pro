@@ -100,9 +100,10 @@ export default function PrivacyPage() {
 
         <h3 className="text-xl font-medium mt-6 mb-3">4.1 Google AdSense</h3>
         <p>
-          Utilizamos Google AdSense para mostrar anuncios. Google puede usar cookies para mostrar anuncios basados
-          en visitas anteriores a este u otros sitios web. Puedes optar por no recibir publicidad personalizada
-          visitando <a href="https://www.google.com/settings/ads" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Configuración de Anuncios de Google</a>.
+          Utilizamos Google AdSense para mostrar anuncios. Google, como proveedor externo, utiliza cookies para mostrar anuncios en nuestro sitio.
+          El uso que hace Google de la cookie de DART le permite mostrar anuncios a nuestros usuarios en función de su visita a nuestro sitio y a otros sitios en Internet.
+          Los usuarios pueden optar por no recibir la cookie de DART a través de la política de privacidad de la red de contenido y de anuncios de Google.
+          Puedes optar por no recibir publicidad personalizada visitando <a href="https://www.google.com/settings/ads" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Configuración de Anuncios de Google</a>.
         </p>
 
         <h3 className="text-xl font-medium mt-6 mb-3">4.2 Google Analytics</h3>
