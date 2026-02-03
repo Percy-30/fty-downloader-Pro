@@ -39,6 +39,11 @@ const nextConfig = {
         destination: 'https://srv.adstxtmanager.com/19390/ftydownloader.com',
         permanent: true,
       },
+      {
+        source: '/privacy-policy',
+        destination: '/legal/privacidad',
+        permanent: true,
+      },
     ]
   },
 }
