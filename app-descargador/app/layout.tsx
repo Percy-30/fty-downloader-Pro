@@ -102,6 +102,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
 
+        {/* Ezoic Site Verification */}
+        <meta name="ezoic-site-verification" content="wStjwIfmHCWL7mcvHPkYWJi6FeTviZ" />
+
         {/* Meta requerida por AdSense para verificar tu dominio (Mantener por ahora) */}
         <meta name="google-adsense-account" content="ca-pub-5414009811868137" />
 
