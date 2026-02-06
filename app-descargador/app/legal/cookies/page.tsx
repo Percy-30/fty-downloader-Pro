@@ -35,7 +35,7 @@ export default function CookiesPage() {
         <ul className="list-disc pl-6 space-y-2">
           <li><strong>Google Analytics:</strong> Para medir el tráfico y el comportamiento de los usuarios en la web de forma agregada.</li>
           <li><strong>Google AdSense:</strong> Para mostrar anuncios relevantes basados en tus intereses y navegación previa.</li>
-          <li><strong>Redes Sociales:</strong> Cookies integradas de Facebook, TikTok y YouTube para permitir la carga correcta de contenidos externos.</li>
+          <li><strong>Redes Sociales:</strong> Cookies integradas de Facebook y TikTok para permitir la carga correcta de contenidos externos.</li>
         </ul>
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">4. ¿Cómo puedes controlar las cookies?</h2>

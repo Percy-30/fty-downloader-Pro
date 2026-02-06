@@ -65,8 +65,8 @@ const rawBlogPosts: BlogPost[] = [
       <p>Facebook utiliza principalmente formatos MP4 para video. Nuestra herramienta detecta automáticamente la mejor calidad disponible.</p>
       
       <h2>Consejos Adicionales</h2>
-      <p>• Los videos de Facebook suelen tener menor calidad que YouTube</p>
-      <p>• Verifica que el video sea público para poder descargarlo</p>
+      <p>• Los videos de Facebook suelen tener calidades optimizadas para dispositivos móviles</p>
+      <p>• Verifica que el video sea público para poder guardarlo</p>
       <p>• Respeta la privacidad y derechos de los creadores</p>
     `,
     date: "2026-11-12",
@@ -187,10 +187,10 @@ const rawBlogPosts: BlogPost[] = [
       <h2>La Importancia de la Optimización</h2>
       <p>Cada red social tiene requisitos diferentes. Optimizar tus videos mejora el engagement.</p>
       
-      <h2>YouTube - El Gigante del Video</h2>
+      <h2>Video en Alta Definición (HD)</h2>
       <ul>
-        <li>Resolución: 1080p mínimo, 4K recomendado</li>
-        <li>Formato: MP4 con H.264</li>
+        <li>Resolución: 1080p mínimo, 1440p recomendado</li>
+        <li>Formato: MP4 con H.264 o H.265</li>
         <li>Relación de aspecto: 16:9</li>
       </ul>
       
@@ -351,9 +351,8 @@ const rawBlogPosts: BlogPost[] = [
     <h2>La Era del 4K en Video</h2>
     <p>El contenido 4K se ha vuelto estándar en plataformas como YouTube. Descargar en esta calidad ofrece una experiencia visual superior.</p>
     
-    <h2>Plataformas que Soportan 4K</h2>
-    <h3>YouTube - Líder en Calidad</h3>
-    <p>YouTube ofrece la mayor variedad de contenido 4K. Muchos creadores suben en 4K incluso si grabaron en menor resolución.</p>
+    <h3>Plataformas de Alta Fidelidad</h3>
+    <p>Existen diversas plataformas de video que ofrecen una gran variedad de contenido en alta resolución. Muchos creadores suben sus trabajos con el máximo detalle para destacar.</p>
     
     <h3>Vimeo - Para Profesionales</h3>
     <p>Vimeo es popular entre profesionales y frecuentemente ofrece contenido en 4K y mayores bitrates.</p>
@@ -394,7 +393,7 @@ const rawBlogPosts: BlogPost[] = [
       <p>AV1 se ha consolidado como el estándar de la industria, ofreciendo una eficiencia de compresión un 30% superior a HEVC. En FTY Downloader Pro, priorizamos estos flujos para ahorrarte espacio sin perder nitidez.</p>
       
       <h3>2. Resoluciones 4K y 8K</h3>
-      <p>Aunque el 1080p sigue siendo la norma, el contenido en 4K es cada vez más accesible en plataformas como YouTube. Nuestra herramienta detecta automáticamente estos perfiles para garantizar la máxima fidelidad cromática.</p>
+      <p>Aunque el 1080p sigue siendo la norma, el contenido en alta resolución es cada vez más accesible en la red. Nuestra herramienta detecta automáticamente estos perfiles para garantizar la máxima fidelidad cromática.</p>
       
       <h2>Consejos para Almacenamiento Eficiente</h2>
       <p>• Utiliza contenedores MKV para videos con múltiples pistas de audio.</p>
@@ -493,15 +492,110 @@ const rawBlogPosts: BlogPost[] = [
     slug: "futuro-descarga-videos-tendencias",
     category: "Tecnología",
     image: "/images/blog/futuro-tecnologia.png"
+  },
+  {
+    id: 16,
+    title: "Estrategias de Monetización en TikTok 2026",
+    excerpt: "Guía completa sobre cómo rentabilizar tu cuenta de TikTok este año utilizando las nuevas herramientas de la plataforma.",
+    content: `
+      <h2>Monetización en la Era del Video Corto</h2>
+      <p>TikTok ha revolucionado la forma en que los creadores generan ingresos. Aquí analizamos las vías más efectivas en 2026.</p>
+      
+      <h3>1. Fondo para Creadores y Programas de Recompensas</h3>
+      <p>El programa de recompensas de TikTok se ha vuelto más exigente pero también más lucrativo para quienes producen contenido original de larga duración (más de 1 minuto).</p>
+      
+      <h3>2. TikTok Shop y Comercio Electrónico</h3>
+      <p>La integración de ventas directas es la tendencia más fuerte. Vender productos propios o mediante marketing de afiliados es fundamental hoy en día.</p>
+      
+      <h3>3. Colaboraciones con Marcas</h3>
+      <p>El mercado de influencers sigue creciendo. Las marcas buscan autenticidad por encima del número de seguidores.</p>
+    `,
+    date: "2026-02-05",
+    readTime: "15 min",
+    slug: "monetizacion-tiktok-estrategias-2026",
+    category: "Negocios",
+    image: "/images/blog/tiktok-monetization.png"
+  },
+  {
+    id: 17,
+    title: "Guía de Facebook Ads para Pequeños Negocios",
+    excerpt: "Aprende a configurar campañas publicitarias efectivas en Facebook sin necesidad de un gran presupuesto.",
+    content: `
+      <h2>Publicidad en Facebook para Emprendedores</h2>
+      <p>Facebook Ads sigue siendo una de las plataformas más potentes para llegar a audiencias específicas. Aprende a dominarla.</p>
+      
+      <h3>Segmentación Precisa</h3>
+      <p>La clave del éxito no es el presupuesto, sino a quién llegas. Utiliza las herramientas de segmentación detallada para encontrar a tu cliente ideal.</p>
+      
+      <h3>Creatividad y Formatos</h3>
+      <p>Los videos cortos (Reels) están obteniendo el mejor costo por clic en 2026. Prioriza este formato en tus campañas.</p>
+    `,
+    date: "2026-02-04",
+    readTime: "12 min",
+    slug: "guia-facebook-ads-negocios",
+    category: "Marketing",
+    image: "/images/blog/facebook-ads-guide.png"
+  },
+  {
+    id: 18,
+    title: "Cómo Editar Reels con CapCut como un Profesional",
+    excerpt: "Tutorial paso a paso para dominar CapCut y crear videos virales para Instagram y TikTok.",
+    content: `
+      <h2>Edición Móvil Pro con CapCut</h2>
+      <p>Ya no necesitas una PC potente para editar videos asombrosos. CapCut ofrece herramientas de nivel profesional en tu móvil.</p>
+      
+      <h3>Transiciones y Efectos de Tendencia</h3>
+      <p>Aprende a usar los efectos de IA para mejorar la calidad de imagen y realizar transiciones fluidas que mantengan la atención del espectador.</p>
+      
+      <h3>Sincronización con Audio</h3>
+      <p>La música es el 50% del éxito de un Reel. Te enseñamos a sincronizar cada corte con el ritmo de la pista elegida.</p>
+    `,
+    date: "2026-02-03",
+    readTime: "10 min",
+    slug: "editar-reels-capcut-pro",
+    category: "Tutoriales",
+    image: "/images/blog/capcut-tutorial.png"
+  },
+  {
+    id: 19,
+    title: "Seguridad en Cuentas de Redes Sociales: Guía Completa",
+    excerpt: "Protege tu contenido y tu identidad digital contra hackeos y accesos no autorizados.",
+    content: `
+      <h2>Blindando tu Identidad Digital</h2>
+      <p>En 2026, la seguridad de tus cuentas es más crítica que nunca, especialmente para creadores de contenido profesionales.</p>
+      
+      <h3>Autenticación de Dos Factores (2FA)</h3>
+      <p>Nunca dependas solo de una contraseña. Utiliza apps de autenticación para asegurar tus accesos.</p>
+      
+      <h3>Gestión de Permisos</h3>
+      <p>Revisa periódicamente qué aplicaciones tienen acceso a tus perfiles sociales y revoca las que no utilices.</p>
+    `,
+    date: "2026-02-02",
+    readTime: "8 min",
+    slug: "seguridad-redes-sociales-guia",
+    category: "Seguridad",
+    image: "/images/blog/social-security.png"
+  },
+  {
+    id: 20,
+    title: "Tendencias de Video Corto para 2026",
+    excerpt: "Lo que viene en el mundo del video vertical y cómo adelantarte a la competencia.",
+    content: `
+      <h2>El Futuro del Contenido Vertical</h2>
+      <p>Analizamos las tendencias que dominarán los próximos meses en el ecosistema de video corto.</p>
+      
+      <h3>IA Generativa de Video</h3>
+      <p>La creación de clips mediante inteligencia artificial está transformando la velocidad de producción.</p>
+      
+      <h3>Contenido Educativo Rápido</h3>
+      <p>El "micro-learning" es la categoría de mayor crecimiento. Los usuarios buscan aprender habilidades en menos de 60 segundos.</p>
+    `,
+    date: "2026-02-01",
+    readTime: "11 min",
+    slug: "tendencias-video-corto-2026",
+    category: "Tendencias",
+    image: "/images/blog/video-trends-2026.png"
   }
 ]
 
-export const blogPosts = rawBlogPosts.filter(post => {
-  if (FEATURES.YOUTUBE_ENABLED) return true
-
-  // Si YouTube está desactivado, filtramos cualquier rastro
-  const forbiddenKeywords = ['youtube', 'respaldo', 'backup', 'gestión de video']
-  const contentToSearch = (post.title + post.excerpt + post.content).toLowerCase()
-
-  return !forbiddenKeywords.some(keyword => contentToSearch.includes(keyword))
-})
+export const blogPosts = rawBlogPosts

@@ -29,29 +29,29 @@ export default function YoutubeToolPage() {
             </div>
 
             <div className="prose prose-lg max-w-none text-gray-700">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6 font-bold">Cómo descargar videos de YouTube en HD y 4K</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 font-bold">Cómo guardar videos de Redes Sociales en HD y 4K</h2>
                 <p>
-                    YouTube es la biblioteca de video más grande del planeta. Ya sea que necesites un tutorial para estudiar,
-                    música para un evento o documentales para un viaje, <strong>FTY Downloader Pro</strong> te permite descargar
-                    contenido de forma eficiente y gratuita.
+                    Las plataformas digitales son la biblioteca de video más grande del planeta. Ya sea que necesites un tutorial para estudiar,
+                    música para un evento o documentales para un viaje, <strong>FTY Downloader Pro</strong> te permite gestionar
+                    tu contenido de forma eficiente y gratuita.
                 </p>
 
                 <h3 className="text-2xl font-semibold mt-8 mb-4">Tutorial Paso a Paso</h3>
                 <ul className="space-y-4">
-                    <li><strong>Copia la URL:</strong> En YouTube, presiona "Compartir" y copia el enlace del video o usa la URL de la barra del navegador.</li>
+                    <li><strong>Copia la URL:</strong> En tu aplicación social, presiona "Compartir" y copia el enlace del video o usa la URL de la barra del navegador.</li>
                     <li><strong>Pega y Analiza:</strong> Coloca el enlace arriba. Nuestro motor especializado analizará todas las resoluciones disponibles del video (desde 144p hasta 4K).</li>
-                    <li><strong>Elige el Formato:</strong> Puedes bajar el video completo en MP4 o solo el audio en MP3 de alta calidad.</li>
+                    <li><strong>Elige el Formato:</strong> Puedes guardar el video completo en MP4 o solo el audio en MP3 de alta calidad.</li>
                 </ul>
 
                 <div className="bg-red-50 p-6 rounded-xl my-8 border-l-4 border-red-500">
                     <h4 className="font-bold text-red-800 mb-2">🚀 Soporte para Videos 4K</h4>
                     <p className="text-red-700 text-sm">
-                        Nuestra herramienta soporta la tecnología DASH, permitiéndote descargar videos en 1080p, 1440p y 4K.
-                        Muchos otros descargadores solo llegan a 720p; nosotros te damos la resolución máxima real del video original.
+                        Nuestra herramienta soporta la tecnología DASH, permitiéndote gestionar videos en 1080p, 1440p y 4K.
+                        Muchos otros gestores solo llegan a 720p; nosotros te damos la resolución máxima real del video original.
                     </p>
                 </div>
 
-                <h2 className="text-3xl font-bold text-gray-900 mb-6 font-bold">Por qué somos la mejor opción para YouTube</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 font-bold">Por qué somos la mejor opción para Multimedia HD</h2>
                 <div className="grid md:grid-cols-2 gap-8 not-prose">
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                         <h4 className="font-bold text-lg mb-2">🔊 Audio 320kbps</h4>
@@ -71,15 +71,15 @@ export default function YoutubeToolPage() {
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold mt-12 mb-6 font-bold">FAQ sobre descargas de YouTube</h2>
+                <h2 className="text-2xl font-bold mt-12 mb-6 font-bold">FAQ sobre gestión multimedia</h2>
                 <div className="space-y-6">
                     <details className="group border-b pb-4">
                         <summary className="font-bold cursor-pointer list-none flex justify-between items-center text-lg">
-                            ¿Puedo descargar listas de reproducción (Playlists)?
+                            ¿Puedo gestionar listas de reproducción (Playlists)?
                             <span className="group-open:rotate-180 transition-transform">▼</span>
                         </summary>
                         <p className="mt-4 text-gray-600">
-                            Actualmente procesamos videos de forma individual para garantizar la máxima velocidad. Estamos trabajando para implementar la descarga de listas completas próximamente.
+                            Actualmente procesamos archivos de forma individual para garantizar la máxima velocidad. Estamos trabajando para implementar la gestión de listas completas próximamente.
                         </p>
                     </details>
                     <details className="group border-b pb-4">
@@ -93,12 +93,12 @@ export default function YoutubeToolPage() {
                     </details>
                     <details className="group border-b pb-4">
                         <summary className="font-bold cursor-pointer list-none flex justify-between items-center text-lg">
-                            ¿Por qué algunos videos no cargan?
+                            ¿Por qué algunos archivos no cargan?
                             <span className="group-open:rotate-180 transition-transform">▼</span>
                         </summary>
                         <p className="mt-4 text-gray-600">
-                            Algunos videos pueden tener restricciones de derechos de autor muy estrictas o estar bloqueados regionalmente.
-                            Si un video no procesa, intenta con otro enlace o verifica que el video sea público.
+                            Algunos contenidos pueden tener restricciones de derechos de autor muy estrictas o estar bloqueados regionalmente.
+                            Si un archivo no procesa, intenta con otro enlace o verifica que sea público.
                         </p>
                     </details>
                 </div>
