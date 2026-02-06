@@ -38,7 +38,7 @@ export default function CopyrightPage() {
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Responsabilidad del Usuario</h2>
                     <p>
                         El usuario es el único responsable de los datos que procesa a través de nuestra herramienta. FTY Downloader Pro no aloja contenido en sus servidores;
-                        actuamos como un puente técnico entre el servidor de origen (YouTube, Facebook, TikTok) y el dispositivo del usuario final.
+                        actuamos como un puente técnico entre el servidor de origen y el dispositivo del usuario final.
                     </p>
                     <p className="mt-4">
                         Al utilizar este sitio, usted acepta no utilizar nuestra plataforma para infringir leyes de derechos de autor ni para realizar redistribución comercial de contenido protegido sin autorización.

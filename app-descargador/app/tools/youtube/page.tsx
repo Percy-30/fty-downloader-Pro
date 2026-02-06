@@ -1,20 +1,26 @@
-import YoutubeDownloader from '@/components/platforms/YoutubeDownloader'
 import { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { FEATURES } from '@/lib/featureFlags'
 
 export const metadata: Metadata = {
-    title: 'Descargar Videos de YouTube Online | Gratis 4K y MP3',
-    description: 'Baja videos de YouTube en la mejor calidad disponible (4K, 1080p) y extrae audio en MP3. Rápido, seguro y sin publicidad intrusiva.',
+    title: 'Respaldo de Video Digital | Herramienta de Gestión Multimedia ✅',
+    description: 'Gestiona y respalda tus videos personales en la mejor calidad disponible. Rápido, seguro y profesional.',
 }
 
+import YoutubeDownloader from '@/components/platforms/YoutubeDownloader'
+
 export default function YoutubeToolPage() {
+    if (!FEATURES.YOUTUBE_ENABLED) {
+        redirect('/')
+    }
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl">
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                    Descargador de Videos de YouTube Pro
+                    Gestor de Respaldo Multimedia
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                    La forma más potente de guardar contenido de YouTube en alta definición y formato MP3.
+                    La forma más potente de guardar y organizar tu contenido digital en alta definición.
                 </p>
             </div>
 

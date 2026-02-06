@@ -15,33 +15,31 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.ftydownloader.com'),
-  // 🎯 TITLE PERFECTO - Combina ambas ideas
-  title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
+  // 🎯 TITLE PERFECTO - Enfocado en Redes Sociales (Facebook/TikTok) para evitar bloqueos
+  title: 'FTY Downloader - Descargar Videos de Facebook HD y TikTok Sin Marca de Agua ✅ Gratis',
 
   description:
-    '🚀 Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro. ✅ Videos MP4, audio MP3, sin marca de agua. Compatible con PC y móviles.',
+    '🚀 La herramienta más rápida para descargar videos de Facebook en HD y TikTok sin marca de agua. FTY Downloader: 100% gratis, seguro y en alta calidad. MP4 y MP3.',
   keywords: `
-descargar videos gratis, descargar videos de YouTube, youtube downloader,
-descargar videos de TikTok, tiktok downloader, descargar videos de Facebook,
-facebook downloader, convertir video a mp3, descargar mp4 gratis,
-bajar videos online, descargar videos para celular, youtube mp4,
-tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua, descargar videos tiktok sin marca de agua
+descargar videos tiktok sin marca de agua, facebook downloader hd, descargar videos facebook, 
+tiktok downloader no watermark, descargar videos de tiktok gratis, bajar videos de facebook,
+convertir video a mp3, descargar mp4 gratis, bajar videos online, downloader online
 `,
   authors: [{ name: 'ATP DEV', url: 'https://www.ftydownloader.com/' }],
   creator: 'ATP DEV',
   publisher: 'FTY Downloader',
   manifest: '/manifest.json',
   openGraph: {
-    title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
+    title: 'FTY Downloader - Descargar Videos de Facebook HD y TikTok Sin Marca de Agua ✅ Gratis',
     description:
-      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.', url: 'https://www.ftydownloader.com/',
+      'La herramienta más rápida para descargar videos de Facebook en HD y TikTok sin marca de agua. 100% gratis, seguro y en alta calidad.', url: 'https://www.ftydownloader.com/',
     siteName: 'FTY Downloader',
     images: [
       {
         url: 'https://www.ftydownloader.com/images/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok',
+        alt: 'FTY Downloader - Descargar Videos de Facebook y TikTok',
       },
     ],
     locale: 'es_PE',
@@ -49,9 +47,9 @@ tiktok mp4, facebook mp4, downloader online, descargar videos sin marca de agua,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FTY Downloader Pro - Descargar Videos Facebook HD, YouTube, TikTok Gratis ✅ Alta Calidad',
+    title: 'FTY Downloader - Descargar Videos de Facebook HD y TikTok Sin Marca de Agua ✅ Gratis',
     description:
-      'Descarga videos de Facebook, YouTube y TikTok en Alta Calidad HD. FTY Downloader Pro: 100% gratis, rápido y seguro.',
+      'La herramienta más rápida para descargar videos de Facebook en HD y TikTok sin marca de agua. 100% gratis, seguro y en alta calidad.',
     images: ['https://www.ftydownloader.com/images/og-image.png'],
   },
   robots: {
@@ -117,7 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta property="og:image" content="https://www.ftydownloader.com/images/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="FTY Downloader Pro - Descargar Videos de Facebook, YouTube, TikTok" />
+        <meta property="og:image:alt" content="FTY Downloader - Descargar Videos de Facebook y TikTok" />
         <meta property="og:image:type" content="image/png" />
 
         {/* Twitter Card Manual */}
@@ -133,7 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@context": "https://schema.org",
               "@type": "WebApplication",
               "name": "FTY Downloader Pro",
-              "description": "Descarga videos y audios de Facebook, YouTube y TikTok gratis, rápido y en alta calidad",
+              "description": "Descarga videos y audios de redes sociales gratis, rápido y en alta calidad",
               "url": "https://www.ftydownloader.com/",
               "image": "https://www.ftydownloader.com/images/og-image.png",
               "screenshot": "https://www.ftydownloader.com/images/og-image.png",

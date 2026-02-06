@@ -6,11 +6,11 @@ export default function FAQPage() {
     },
     {
       question: "¿Qué plataformas y redes sociales son compatibles?",
-      answer: "Actualmente, nuestra herramienta es totalmente compatible con las tres plataformas de video más grandes del mundo: YouTube, Facebook (incluyendo Reels y videos normales) y TikTok (con la opción de descarga sin marca de agua). Estamos constantemente monitoreando los cambios en las APIs de estas plataformas para asegurar que nuestro servicio nunca se interrumpa. En el futuro cercano, planeamos expandir el soporte a Instagram, Twitter (X) y Pinterest."
+      answer: "Actualmente, nuestra herramienta es totalmente compatible con Facebook (incluyendo Reels y videos normales), TikTok (con la opción de descarga sin marca de agua) e Instagram. Estamos constantemente monitoreando los cambios en las redes sociales para asegurar que nuestro servicio nunca se interrumpa."
     },
     {
       question: "¿Cómo garantizan la calidad de los videos descargados?",
-      answer: "FTY Downloader Pro utiliza tecnología de extracción directa. Esto significa que nuestro sistema analiza los metadatos del video original y descarga directamente el archivo fuente que la plataforma utiliza para el streaming. No comprimimos ni recodificamos el video durante el proceso, por lo que recibirás exactamente la misma calidad que el video original tiene disponible, desde resoluciones estándar (360p) hasta Alta Definición (1080p Full HD) e incluso 4K en plataformas compatibles como YouTube."
+      answer: "FTY Downloader utiliza tecnología de extracción directa. Esto significa que nuestro sistema analiza los metadatos del video original y descarga directamente el archivo fuente que la plataforma utiliza para el streaming. No comprimimos ni recodificamos el video durante el proceso, por lo que recibirás exactamente la misma calidad que el video original tiene disponible, desde resoluciones estándar (480p) hasta Alta Definición (1080p Full HD)."
     },
     {
       question: "¿Puedo extraer música o audio MP3 de mis videos?",
@@ -42,7 +42,7 @@ export default function FAQPage() {
     },
     {
       question: "¿Cuál es el formato de archivo final?",
-      answer: "El formato estándar de salida para video es MP4, el cual es el más compatible del mercado actual (funciona en Smart TVs, consolas de videojuegos, móviles y todos los sistemas operativos). Para audio, el formato estándar es MP3. En algunos casos avanzados de YouTube, podrías ver opciones de formato WEBM, que es excelente para calidades 4K en navegadores modernos."
+      answer: "El formato estándar de salida para video es MP4, el cual es el más compatible del mercado actual (funciona en Smart TVs, móviles y todos los sistemas operativos). Para audio, el formato estándar es MP3. En algunos casos avanzados, el sistema podría ofrecer otros formatos de alta fidelidad compatibles con dispositivos modernos."
     },
     {
       question: "¿Qué debo hacer si la descarga no comienza automáticamente?",

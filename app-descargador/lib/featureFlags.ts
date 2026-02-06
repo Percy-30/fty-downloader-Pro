@@ -10,7 +10,7 @@ export const FEATURES = {
      * - Web/APK builds: true
      * - Play Store builds: false (compliance with YouTube ToS)
      */
-    YOUTUBE_ENABLED: process.env.NEXT_PUBLIC_ENABLE_YOUTUBE !== 'false',
+    YOUTUBE_ENABLED: process.env.NEXT_PUBLIC_ENABLE_YOUTUBE === 'true',
 
     /**
      * Current app version identifier

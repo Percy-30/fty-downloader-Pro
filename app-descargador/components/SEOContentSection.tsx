@@ -59,21 +59,22 @@ export default function SEOContentSection() {
                             <li><strong>Descarga Limpia:</strong> Al pegar el enlace en nuestra herramienta, nuestro script ignora la capa de superposición (overlay) que contiene el logo y el nombre de usuario, entregándote el archivo .MP4 puro.</li>
                         </ol>
                         <div className="bg-gray-50 p-4 rounded-lg mt-4 text-sm border-l-4 border-black">
-                            <strong>Consejo Pro:</strong> Esta función es ideal para creadores de contenido que quieren resubir sus propios videos a Instagram Reels o YouTube Shorts sin el logo de la competencia.
+                            <strong>Consejo Pro:</strong> Esta función es ideal para creadores de contenido que quieren resubir sus propios videos a múltiples redes sociales sin el logo de la competencia.
                         </div>
                     </article>
 
-                    {/* YouTube Guide */}
+                    {/* YouTube Guide - MOVIDO AL FINAL Y SUAVIZADO */}
                     <article>
-                        <h3 className="text-2xl font-bold text-red-600 mb-4 flex items-center">
-                            <span className="mr-2">▶️</span> Extracción de Audio y Video de YouTube
+                        <h3 className="text-2xl font-bold text-gray-700 mb-4 flex items-center">
+                            <span className="mr-2">📁</span> Respaldo de Contenido Personal
                         </h3>
                         <p className="mb-4">
-                            YouTube utiliza tecnología DASH (Dynamic Adaptive Streaming over HTTP), lo que significa que el audio y el video suelen estar separados en resoluciones altas (1080p+).
+                            Muchas veces necesitamos una copia de seguridad local de nuestros propios videos subidos a plataformas de streaming.
+                            Nuestra herramienta facilita este proceso para que nunca pierdas tu trabajo original.
                         </p>
-                        <ul className="list-disc pl-6 space-y-3 marker:text-red-500">
-                            <li><strong>Para Videos 1080p, 2K y 4K:</strong> FTY Downloader descarga ambas pistas y las "muxea" (combina) automáticamente en nuestro servidor para entregarte un archivo final MP4 completo y sincronizado.</li>
-                            <li><strong>Conversión a MP3:</strong> Si solo te interesa la música o un podcast, selecciona la opción de "Audio". Convertimos el audio AAC original a MP3 de alta compatibilidad (320kbps cuando es posible).</li>
+                        <ul className="list-disc pl-6 space-y-3 marker:text-gray-500">
+                            <li><strong>Compatibilidad:</strong> Soportamos una amplia gama de resoluciones para que el archivo de respaldo mantenga la fidelidad del original.</li>
+                            <li><strong>Extracción de Audio:</strong> Ideal para creadores que necesitan recuperar el audio de sus propios tutoriales o conferencias pasadas.</li>
                         </ul>
                     </article>
                 </div>
@@ -142,7 +143,7 @@ export default function SEOContentSection() {
                                 <td className="px-6 py-4 font-semibold">WEBM</td>
                                 <td className="px-6 py-4">VP9 / AV1</td>
                                 <td className="px-6 py-4">Opus</td>
-                                <td className="px-6 py-4">Alta Calidad en YouTube (4K/8K)</td>
+                                <td className="px-6 py-4">Alta Calidad en Redes Sociales (HD)</td>
                             </tr>
                             <tr className="hover:bg-gray-50">
                                 <td className="px-6 py-4 font-semibold">MP3</td>

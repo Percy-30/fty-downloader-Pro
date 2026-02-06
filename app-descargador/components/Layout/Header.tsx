@@ -4,8 +4,8 @@ import Link from 'next/link'
 
 export default function Header() {
   const scrollToTools = () => {
-    document.getElementById('herramientas')?.scrollIntoView({ 
-      behavior: 'smooth' 
+    document.getElementById('herramientas')?.scrollIntoView({
+      behavior: 'smooth'
     })
   }
 
@@ -25,7 +25,7 @@ export default function Header() {
                 FTYDownloader Pro
               </h1>
               <p className="text-sm text-gray-600">
-                Facebook, YouTube & TikTok Downloader
+                Facebook & TikTok Downloader
               </p>
             </div>
           </Link>
@@ -38,7 +38,7 @@ export default function Header() {
             <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Blog
             </Link>
-            <button 
+            <button
               onClick={scrollToTools}
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
@@ -56,10 +56,10 @@ export default function Header() {
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">⚡ Rápido</span>
               <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">🔒 Seguro</span>
             </div>
-            
+
             {/* Botón Contacto - NUEVO */}
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm"
             >
               Contacto

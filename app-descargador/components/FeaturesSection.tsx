@@ -32,7 +32,7 @@ export default function FeaturesSection() {
         ¿Por qué elegirnos?
       </h2>
       <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
-        La mejor herramienta para descargar videos de Facebook, Youtube y Tiktok con la máxima calidad y velocidad
+        La mejor herramienta para descargar videos de Facebook y Tiktok con la máxima calidad y velocidad
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

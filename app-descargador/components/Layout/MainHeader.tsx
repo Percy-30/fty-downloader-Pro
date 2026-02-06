@@ -16,7 +16,7 @@ export default function MainHeader() {
                 FTYDownloader Pro
               </h1>
               <p className="text-sm text-gray-600">
-                Facebook, YouTube & TikTok Downloader
+                Facebook & TikTok Downloader
               </p>
             </div>
           </Link>
@@ -36,8 +36,8 @@ export default function MainHeader() {
             </Link>
           </nav>
 
-          <Link 
-            href="/contact" 
+          <Link
+            href="/contact"
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm"
           >
             Contacto

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { FEATURES } from '@/lib/featureFlags'
 
 export default function Footer() {
   const scrollToTools = () => {
@@ -24,7 +25,7 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">FTYDownloader Pro</h3>
             <p className="text-gray-400 text-sm">
-              Descarga videos de Facebook, YouTube y TikTok gratis y en alta calidad.
+              Descarga videos de Facebook y TikTok gratis y en alta calidad.
             </p>
           </div>
 
@@ -33,7 +34,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/tools/facebook" className="text-gray-400 hover:text-white transition-colors">Video Facebook</Link></li>
               <li><Link href="/tools/tiktok" className="text-gray-400 hover:text-white transition-colors">Video TikTok</Link></li>
-              <li><Link href="/tools/youtube" className="text-gray-400 hover:text-white transition-colors">Video YouTube</Link></li>
+              {FEATURES.YOUTUBE_ENABLED && <li><Link href="/tools/youtube" className="text-gray-400 hover:text-white transition-colors">Video YouTube</Link></li>}
               <li><Link href="/tools" className="text-gray-400 hover:text-white transition-colors">Herramientas Pro</Link></li>
             </ul>
           </div>
@@ -65,7 +66,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} FTYDownloader Pro. Herramienta gratuita para descargar videos.
           </p>
           <p className="text-gray-500 text-sm mt-2">
-            Facebook, YouTube, TikTok - No afiliado con estas plataformas.
+            Facebook, TikTok - No afiliado con estas plataformas.
           </p>
         </div>
       </div>

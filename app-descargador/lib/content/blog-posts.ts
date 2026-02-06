@@ -1,3 +1,5 @@
+import { FEATURES } from '../featureFlags'
+
 export interface BlogPost {
   id: number
   title: string
@@ -10,36 +12,33 @@ export interface BlogPost {
   image?: string
 }
 
-export const blogPosts: BlogPost[] = [
+const rawBlogPosts: BlogPost[] = [
   {
     id: 1,
-    title: "Cómo Descargar Videos de YouTube en 2026: Guía Completa",
-    excerpt: "Aprende los métodos más efectivos y seguros para descargar videos de YouTube en diferentes calidades y formatos.",
+    title: "Guía de Respaldo Digital: Cómo Guardar tus Videos de Redes Sociales",
+    excerpt: "Aprende los mejores métodos para realizar copias de seguridad de tu contenido multimedia en diferentes calidades y formatos.",
     content: `
-      <h2>¿Por qué descargar videos de YouTube?</h2>
-      <p>Descargar videos de YouTube puede ser útil para múltiples propósitos: ver contenido sin conexión, crear presentaciones, respaldar material educativo, o para creadores que necesitan archivar su propio contenido.</p>
+      <h2>La Importancia del Respaldo de Contenido</h2>
+      <p>En el dinámico mundo digital, el contenido puede desaparecer en cualquier momento. Realizar respaldos periódicos de tus videos es vital para preservar tu trabajo artístico o recuerdos personales.</p>
       
-      <h2>Métodos para Descargar de YouTube</h2>
-      <h3>1. Usando FTYDownloader Pro</h3>
-      <p>Nuestra herramienta ofrece la forma más sencilla:</p>
+      <h2>Métodos de Respaldo Efectivos</h2>
+      <h3>1. Uso de Herramientas de Conversión</h3>
+      <p>Nuestra plataforma permite un proceso de conversión directo y limpio:</p>
       <ol>
-        <li>Copiar la URL del video de YouTube</li>
-        <li>Pegar en nuestro descargador</li>
-        <li>Seleccionar calidad (desde 360p hasta 4K)</li>
-        <li>Descargar en MP4 o MP3</li>
+        <li>Selecciona el enlace de tu video personal</li>
+        <li>Pega en el convertedor de FTY Downloader</li>
+        <li>Elige la máxima resolución para conservar la fidelidad</li>
+        <li>Descarga y guarda en un disco seguro</li>
       </ol>
       
-      <h3>2. Consideraciones de Calidad</h3>
-      <p>YouTube ofrece diferentes calidades dependiendo del video original. Siempre recomendamos descargar en la máxima calidad disponible para mejor experiencia.</p>
-      
-      <h2>Aspectos Legales Importantes</h2>
-      <p>Es crucial respetar los derechos de autor. Solo descarga contenido que seas el propietario o tengas permiso para usar.</p>
+      <h2>¿Qué resolución elegir?</h2>
+      <p>Siempre recomendamos descargar en la resolución nativa en la que fue grabado el video para evitar pérdidas de información visual durante el proceso de guardado.</p>
     `,
     date: "2026-01-15",
     readTime: "8 min",
-    slug: "descargar-videos-youtube-2026",
+    slug: "guia-respaldo-video-digital",
     category: "Tutoriales",
-    image: "/images/blog/youtube-downloader.png"
+    image: "/images/blog/backup-guide.png"
   },
   {
     id: 2,
@@ -410,50 +409,27 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 13,
-    title: "Cómo Descargar Listas de Reproducción Completas de YouTube",
-    excerpt: "Guía paso a paso para descargar playlists enteras de YouTube de manera eficiente y organizada.",
+    title: "Gestión de Grandes Colecciones de Video para Creadores",
+    excerpt: "Estrategias para organizar y descargar grandes volúmenes de contenido multimedia de forma eficiente.",
     content: `
-    <h2>El Valor de las Listas de Reproducción</h2>
-    <p>Las playlists contienen contenido organizado temáticamente. Descargarlas completas ahorra tiempo considerable.</p>
+    <h2>Organización Multimedia a Gran Escala</h2>
+    <p>Para editores y creadores que manejan cientos de clips, la organización es tan importante como la descarga misma.</p>
     
-    <h2>Método Manual - Video por Video</h2>
-    <h3>Ventajas:</h3>
+    <h2>Clasificación de Archivos</h2>
     <ul>
-      <li>Control total sobre cada video</li>
-      <li>Puedes saltar videos no deseados</li>
-      <li>Selección individual de calidades</li>
+      <li><strong>Por Fecha:</strong> Ideal para vlogs y contenido diario.</li>
+      <li><strong>Por Categoría:</strong> Útil para canales con múltiples temáticas.</li>
+      <li><strong>Por Resolución:</strong> Para asegurar la coherencia visual en el montaje final.</li>
     </ul>
     
-    <h3>Desventajas:</h3>
-    <ul>
-      <li>Muy lento para playlists largas</li>
-      <li>Proceso repetitivo</li>
-      <li>Fácil perderse en playlists grandes</li>
-    </ul>
-    
-    <h2>Estrategias para Playlists Largas</h2>
-    <p><strong>Playlists de 10-50 videos:</strong> Método manual es viable</p>
-    <p><strong>Playlists de 50-200 videos:</strong> Considerar descargas por lotes</p>
-    <p><strong>Playlists de 200+ videos:</strong> Evaluar si necesitas todo el contenido</p>
-    
-    <h2>Organización de Archivos Descargados</h2>
-    <ul>
-      <li>Crear carpeta con nombre de la playlist</li>
-      <li>Usar nombres descriptivos para los archivos</li>
-      <li>Mantener el orden original de la playlist</li>
-      <li>Incluir archivo de metadatos si es necesario</li>
-    </ul>
-    
-    <h2>Consejos de Productividad</h2>
-    <p>• Descargar durante la noche para playlists largas</p>
-    <p>• Verificar el espacio disponible antes de empezar</p>
-    <p>• Hacer pausas entre playlists muy grandes</p>
+    <h2>Optimización del Tiempo de Descarga</h2>
+    <p>Recomendamos programar sesiones de respaldo durante horas de bajo consumo de red para maximizar el ancho de banda disponible.</p>
   `,
     date: "2026-12-15",
     readTime: "10 min",
-    slug: "descargar-listas-reproduccion-youtube",
-    category: "Tutoriales",
-    image: "/images/blog/listas-reproduccion.png"
+    slug: "gestion-colecciones-video-creadores",
+    category: "Productividad",
+    image: "/images/blog/collections-guide.png"
   },
   {
     id: 14,
@@ -519,3 +495,13 @@ export const blogPosts: BlogPost[] = [
     image: "/images/blog/futuro-tecnologia.png"
   }
 ]
+
+export const blogPosts = rawBlogPosts.filter(post => {
+  if (FEATURES.YOUTUBE_ENABLED) return true
+
+  // Si YouTube está desactivado, filtramos cualquier rastro
+  const forbiddenKeywords = ['youtube', 'respaldo', 'backup', 'gestión de video']
+  const contentToSearch = (post.title + post.excerpt + post.content).toLowerCase()
+
+  return !forbiddenKeywords.some(keyword => contentToSearch.includes(keyword))
+})

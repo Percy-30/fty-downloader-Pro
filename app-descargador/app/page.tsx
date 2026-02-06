@@ -168,10 +168,10 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="text-center mb-8">
                 <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 truncate">
-                  FTY Downloader Pro
+                  FTY Downloader - Facebook & TikTok
                 </h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  Utiliza nuestras herramientas profesionales para gestionar y respaldar tu contenido digital.
+                  La herramienta profesional para descargar videos de Facebook en HD y TikTok sin marca de agua.
                 </p>
               </div>
 

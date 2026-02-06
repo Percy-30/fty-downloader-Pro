@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { FEATURES } from '@/lib/featureFlags'
 import PlatformTabs from '@/components/PlatformTabs'
 import FacebookDownloader from '@/components/platforms/FacebookDownloader'
 import YoutubeDownloader from '@/components/platforms/YoutubeDownloader'
@@ -60,7 +61,7 @@ export default function ToolsPage() {
           <div className="mt-8 pt-8 border-t border-gray-100 flex flex-wrap justify-center gap-4">
             <a href="/tools/facebook" className="text-sm font-medium text-blue-600 hover:underline">Ver Guía Facebook HD →</a>
             <a href="/tools/tiktok" className="text-sm font-medium text-pink-600 hover:underline">Ver Guía TikTok Sin Logo →</a>
-            <a href="/tools/youtube" className="text-sm font-medium text-red-600 hover:underline">Ver Guía YouTube 4K →</a>
+            {FEATURES.YOUTUBE_ENABLED && <a href="/tools/youtube" className="text-sm font-medium text-red-600 hover:underline">Ver Guía YouTube 4K →</a>}
           </div>
         </div>
       </div>
@@ -75,7 +76,7 @@ export default function ToolsPage() {
             </div>
             <h3 className="font-semibold mb-2">Copia el enlace</h3>
             <p className="text-gray-600 text-sm">
-              Copia la URL del video que quieres descargar desde YouTube, Facebook o TikTok.
+              Copia la URL del video que quieres descargar desde Facebook o TikTok.
             </p>
           </div>
           <div className="text-center">

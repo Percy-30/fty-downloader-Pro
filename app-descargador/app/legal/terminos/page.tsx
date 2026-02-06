@@ -29,7 +29,7 @@ export default function TermsPage() {
         <h2 className="text-2xl font-semibold mt-8 mb-4">2. Descripción del Servicio</h2>
         <p>
           FTY Downloader Pro es una herramienta web gratuita que permite a los usuarios descargar videos
-          de plataformas públicas como YouTube, Facebook y TikTok. El Servicio está diseñado para uso
+          de plataformas públicas de video y redes sociales. El Servicio está diseñado para uso
           personal y educativo legítimo.
         </p>
 
