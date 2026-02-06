@@ -1,16 +1,13 @@
-// lib/featureFlags.ts
-/**
- * Feature Flags for build-time configuration
- * Controls which features are enabled in different builds (Web vs Play Store)
- */
+import { Capacitor } from '@capacitor/core'
 
 export const FEATURES = {
     /**
      * Enable YouTube platform support
      * - Web/APK builds: true
      * - Play Store builds: false (compliance with YouTube ToS)
+     * - Ezoic Compliance: false on web, true on native
      */
-    YOUTUBE_ENABLED: process.env.NEXT_PUBLIC_ENABLE_YOUTUBE === 'true',
+    YOUTUBE_ENABLED: process.env.NEXT_PUBLIC_ENABLE_YOUTUBE === 'true' || Capacitor.isNativePlatform(),
 
     /**
      * Current app version identifier
