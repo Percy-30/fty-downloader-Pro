@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Sobre Nosotros | FTY Downloader Pro - Nuestra Misión y Equipo',
@@ -7,135 +8,130 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">Sobre Nosotros</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Democratizando la conservación del contenido digital mediante tecnología de vanguardia y acceso gratuito universal.
-        </p>
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-        <div className="prose prose-lg text-gray-700">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Nuestra Historia</h2>
-          <p>
-            <strong>FTY Downloader Pro</strong> nació de una observación simple: internet es la biblioteca más grande de la historia,
-            pero es volátil. El contenido que hoy es vital para tu aprendizaje o entretenimiento, mañana puede desaparecer por cambios en los algoritmos o políticas de plataforma.
-          </p>
-          <p>
-            En 2023, nuestro fundador –un ingeniero de sistemas apasionado por el procesamiento de señales– desarrolló la primera versión de FTY como una solución minimalista para respaldar clases académicas de video.
-            Rápidamente, la herramienta fue adoptada por una comunidad de creadores que buscaban una alternativa segura, sin malware y sin las limitaciones de las plataformas comerciales.
-          </p>
-          <p>
-            Hoy, FTY Downloader Pro es un ecosistema completo que procesa miles de solicitudes diarias, manteniendo siempre su compromiso original: <strong>código gratuito y alta calidad.</strong>
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-20 px-8 rounded-[2.5rem] mb-20 shadow-xl">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-block bg-blue-400/30 text-blue-100 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6 border border-blue-300/20">
+            Nuestra Identidad
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-8 tracking-tight leading-tight">
+            Liderando la Preservación de <br />
+            <span className="text-blue-200">Activos Digitales</span>
+          </h1>
+          <p className="text-xl text-blue-50 leading-relaxed max-w-3xl mx-auto opacity-90">
+            Desde 2022, FTYDownloader Pro se ha consolidado como la plataforma técnica de referencia para creadores que buscan proteger su propiedad intelectual y su historial multimedia con calidad 4K.
           </p>
         </div>
-        <div className="bg-gradient-to-br from-blue-600 to-purple-700 p-1 rounded-3xl shadow-2xl">
-          <div className="bg-white p-8 rounded-[1.4rem]">
-            <h3 className="text-2xl font-bold mb-6 text-gray-900 italic">"Nuestra visión es simple: si está en la web y es público, deberías tener el derecho de guardarlo para tu uso personal sin complicaciones técnicas."</h3>
-            <div className="flex items-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mr-4">🚀</div>
-              <div>
-                <p className="font-bold text-gray-900">Equipo de Desarrollo</p>
-                <p className="text-gray-500">FTY Downloader Pro</p>
-              </div>
+      </section>
+
+      {/* Main Content Grid */}
+      <div className="space-y-24">
+        {/* Misión y Visión Section */}
+        <section className="grid md:grid-cols-2 gap-10">
+          <div className="group bg-white p-10 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+              🎯
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Nuestra Misión</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Empoderar a los usuarios dotándolos de las herramientas de extracción más potentes del mercado para recuperar el control sobre su contenido multimedia, garantizando integridad y accesibilidad offline permanente.
+            </p>
+          </div>
+          <div className="group bg-white p-10 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+              🚀
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Nuestra Visión</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Convertirnos en el centro de recursos multimedia más confiable del mundo de habla hispana, liderando en ciberseguridad, soberanía digital y gestión de datos de alto rendimiento.
+            </p>
+          </div>
+        </section>
+
+        {/* Historia y Propósito */}
+        <section className="bg-gray-50 rounded-[3rem] p-12 md:p-20">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-8 border-l-4 border-blue-600 pl-6">Nuestra Historia</h2>
+            <div className="prose prose-lg text-gray-600 space-y-6">
+              <p>
+                FTY Downloader Pro nació de una observación simple pero alarmante: internet es la biblioteca más grande de la historia, pero su arquitectura es volátil. El contenido que hoy es vital para tu educación o negocio puede desaparecer mañana por cambios en algoritmos o cierres de plataformas.
+              </p>
+              <p>
+                Lo que comenzó como un script de ingeniería para procesar flujos de datos HD, evolucionó rápidamente en un ecosistema profesional. Hoy, servimos a una comunidad global de creadores que exigen una alternativa segura, sin malware y orientada a la máxima fidelidad técnica.
+              </p>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div className="grid md:grid-cols-3 gap-8 mb-24">
-        <div className="bg-gray-50 p-8 rounded-2xl">
-          <div className="text-3xl mb-4">🏠</div>
-          <h4 className="text-xl font-bold mb-3 text-gray-900">Ubicación</h4>
-          <p className="text-gray-600">
-            Operamos de forma remota y descentralizada, con presencia en los principales nodos de desarrollo en Latinoamérica y Europa.
-          </p>
-        </div>
-        <div className="bg-gray-50 p-8 rounded-2xl">
-          <div className="text-3xl mb-4">🌍</div>
-          <h4 className="text-xl font-bold mb-3 text-gray-900">Impacto Global</h4>
-          <p className="text-gray-600">
-            Servimos a usuarios en más de 50 países, proporcionando soporte especializado para idiomas español e inglés.
-          </p>
-        </div>
-        <div className="bg-gray-50 p-8 rounded-2xl">
-          <div className="text-3xl mb-4">⚙️</div>
-          <h4 className="text-xl font-bold mb-3 text-gray-900">Tecnología</h4>
-          <p className="text-gray-600">
-            Utilizamos infraestructuras de nube de alto rendimiento para garantizar latencias mínimas y escalabilidad infinita.
-          </p>
-        </div>
-      </div>
+        {/* El Equipo */}
+        <section>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Mentes Detrás del Código</h2>
+            <p className="text-gray-600 text-lg">Especialistas dedicados a la excelencia técnica y la seguridad digital.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { name: 'Alex T.P.', role: 'Arquitecto Principal', icon: '💻' },
+              { name: 'M. García', role: 'Seguridad FIDO2', icon: '🛡️' },
+              { name: 'L. Mendez', role: 'Editora de Blog', icon: '✍️' },
+              { name: 'P. Rojas', role: 'Infraestructura Dev', icon: '⚡' },
+            ].map((member) => (
+              <div key={member.name} className="bg-white p-8 rounded-3xl text-center border border-gray-100 shadow-sm hover:border-blue-200 transition-colors">
+                <div className="text-4xl mb-4">{member.icon}</div>
+                <h3 className="font-bold text-gray-900 text-lg">{member.name}</h3>
+                <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mt-1">{member.role}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      <div className="bg-white border text-gray-900 p-12 rounded-3xl shadow-sm mb-20">
-        <h2 className="text-3xl font-bold mb-8 text-center italic">Nuestros Principios Innegociables</h2>
-        <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
-          <div>
-            <h4 className="text-xl font-bold mb-3 flex items-center">
-              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">1</span>
-              Privacidad por Diseño
-            </h4>
-            <p className="text-gray-600">
-              No rastreamos, no vendemos, no almacenamos. La web debería ser un lugar seguro para todos. Aplicamos cifrado SSL en todas las transferencias.
-            </p>
+        {/* Valores */}
+        <section className="space-y-12">
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center">Nuestras Columnas Vertebrales</h2>
+          <div className="grid gap-6">
+            {[
+              { title: 'Soberanía Digital', desc: 'Tu contenido es tuyo. Te damos la llave para sacarlo de la nube y guardarlo en tu propia infraestructura.' },
+              { title: 'Calidad 1:1', desc: 'No escalamos video; extraemos el stream original sin pérdida de frames ni bitrates, tal como fue subido.' },
+              { title: 'Higiene de Datos', desc: 'Privacidad absoluta. No rastreamos tus descargas ni almacenamos historiales de tus sesiones.' },
+            ].map((value, index) => (
+              <div key={value.title} className="flex flex-col md:flex-row gap-6 p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <div className="text-blue-600 text-3xl font-black">0{index + 1}</div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{value.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{value.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <div>
-            <h4 className="text-xl font-bold mb-3 flex items-center">
-              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">2</span>
-              Procesamiento Seguro
-            </h4>
-            <p className="text-gray-600">
-              Cada enlace es analizado en tiempo real para evitar redirecciones maliciosas. Nuestra tecnología de sandboxing garantiza que el archivo que recibes es limpio.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-xl font-bold mb-3 flex items-center">
-              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">3</span>
-              Innovación Constante
-            </h4>
-            <p className="text-gray-600">
-              Las redes sociales cambian cada día; nosotros nos adaptamos más rápido para que tu flujo de trabajo no se detenga nunca.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-xl font-bold mb-3 flex items-center">
-              <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center mr-3 text-sm">4</span>
-              Responsabilidad Ética y Legal
-            </h4>
-            <p className="text-gray-600">
-              Fomentamos el uso responsable del contenido. FTY Downloader Pro es una herramienta para respaldo personal y educación, respetando siempre los términos de servicio de las plataformas originales.
-            </p>
-          </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Stats Section */}
-      <div className="bg-gray-900 text-white rounded-[3rem] p-12 mb-20 grid md:grid-cols-3 gap-12 text-center">
-        <div>
-          <div className="text-5xl font-extrabold text-blue-400 mb-2">+1M</div>
-          <div className="text-gray-400 uppercase tracking-widest text-sm">Videos Procesados</div>
-        </div>
-        <div>
-          <div className="text-5xl font-extrabold text-purple-400 mb-2">99.9%</div>
-          <div className="text-gray-400 uppercase tracking-widest text-sm">Uptime del Servidor</div>
-        </div>
-        <div>
-          <div className="text-5xl font-extrabold text-pink-400 mb-2">0</div>
-          <div className="text-gray-400 uppercase tracking-widest text-sm">Costo para el Usuario</div>
-        </div>
-      </div>
+        {/* CTA Section */}
+        <section className="bg-gray-900 text-white p-12 md:p-20 rounded-[3rem] text-center overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl -ml-32 -mb-32"></div>
 
-      <div className="text-center py-12">
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-8">Únete a nuestra comunidad</h2>
-        <div className="flex justify-center gap-6">
-          <a href="/contact" className="bg-blue-600 text-white px-10 py-5 rounded-2xl hover:bg-blue-700 font-bold transition-all shadow-xl hover:-translate-y-1">
-            📧 Contacto Directo
-          </a>
-          <a href="/blog" className="bg-gray-100 text-gray-900 px-10 py-5 rounded-2xl hover:bg-gray-200 font-bold transition-all">
-            📰 Ver el Blog
-          </a>
-        </div>
+          <div className="relative z-10">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">¿Tienes un Proyecto o Duda Técnica?</h2>
+            <p className="text-gray-400 mb-10 max-w-2xl mx-auto text-lg">
+              Nuestro equipo de soporte humano está listo para asistirte en colaboraciones, reportes de errores o consultas legales sobre copyright.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/contact"
+                className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/40 text-lg"
+              >
+                Inicia una Conversación
+              </Link>
+              <Link
+                href="/blog"
+                className="bg-white/10 backdrop-blur-md text-white px-10 py-4 rounded-2xl font-bold hover:bg-white/20 transition-all text-lg"
+              >
+                Explora nuestras Guías
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   )

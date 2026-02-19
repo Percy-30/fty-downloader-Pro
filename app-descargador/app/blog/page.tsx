@@ -4,53 +4,69 @@ import Image from 'next/image'
 
 export default function BlogPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog para Creadores</h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Aprende, mejora y optimiza tu trabajo como creador de contenido con nuestros tutoriales y guías.
-        </p>
-      </div>
+    <div className="min-h-screen bg-white">
+      {/* Blog Hero Section */}
+      <section className="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white py-24 px-4">
+        <div className="container mx-auto max-w-5xl text-center">
+          <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 border border-blue-400/30">
+            <span className="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
+            Centro de Aprendizaje Pro
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+            Guías y Tutoriales para <span className="text-blue-400">Creadores Digitales</span>
+          </h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Profundiza en estrategias de monetización, seguridad digital y optimización multimedia con nuestras guías maestras de 2026.
+          </p>
+        </div>
+      </section>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {blogPosts.map((post) => (
-          <article key={post.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-            {post.image && (
-              <div className="h-48 relative">
-                <Image
-                  src={post.image}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-3">
-                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                  {post.category}
-                </span>
-                <span className="text-sm text-gray-500">{post.date}</span>
-              </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-                {post.title}
-              </h2>
-              <p className="text-gray-600 mb-4 line-clamp-3">
-                {post.excerpt}
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">{post.readTime}</span>
-                <Link 
+      {/* Blog Grid Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {blogPosts.map((post) => (
+            <article key={post.id} className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+              {post.image && (
+                <div className="h-56 relative overflow-hidden">
+                  <Image
+                    src={post.image}
+                    alt={post.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-white/90 backdrop-blur-sm text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+              )}
+              <div className="p-8">
+                <div className="flex items-center gap-3 mb-4 text-xs text-gray-400 font-medium">
+                  <span>{post.date}</span>
+                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span>{post.readTime}</span>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                  {post.title}
+                </h2>
+                <p className="text-gray-600 mb-6 line-clamp-3 text-sm leading-relaxed">
+                  {post.excerpt}
+                </p>
+                <Link
                   href={`/blog/${post.slug}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold text-sm"
                 >
-                  Leer más →
+                  Leer Guía Completa
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
                 </Link>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
