@@ -11,6 +11,12 @@ export default function HeroSection() {
 
   return (
     <section className="text-center mb-16">
+      <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 border border-blue-100 shadow-sm">
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.64.304 1.24.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+        Herramienta Verificada y Segura - 2026
+      </div>
       <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
         FTYDownloader <span className="text-blue-600">Pro</span>
       </h1>
@@ -46,7 +52,7 @@ export default function HeroSection() {
                 <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
               </svg>
             </div>
-            <span className="text-sm font-medium text-gray-700">YouTube</span>
+            <span className="text-sm font-medium text-gray-700">Multimedia</span>
           </div>
         )}
       </div>
@@ -92,7 +98,7 @@ export default function HeroSection() {
               <path d="M3.609 1.814L13.792 12 3.61 22.186a2.156 2.156 0 0 1-.41-.708V2.522a2.156 2.156 0 0 1 .41-.708zm1.066-.341a2.13 2.13 0 0 1 1.763.15l13.064 7.625c.983.573.983 1.506 0 2.079L6.438 19.336a2.13 2.13 0 0 1-1.763.15L14.858 12 4.675 1.473zm-.11 20.31s-.001 0 0 0z" />
             </svg>
             <div className="text-left">
-              <p className="text-[10px] uppercase leading-none">Disponible en</p>
+              <p className="text-[10px] uppercase leading-none">Ejemplos:</p>
               <p className="text-xl font-bold leading-tight">Google Play</p>
             </div>
           </a>

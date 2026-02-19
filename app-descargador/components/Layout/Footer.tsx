@@ -40,23 +40,22 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Recursos</h4>
+            <h4 className="font-semibold mb-4">Sitemap</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-gray-400 hover:text-white transition-colors">Inicio</Link></li>
               <li><Link href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog (Guías)</Link></li>
-              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">Nosotros</Link></li>
-              <li><Link href="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ / Ayuda</Link></li>
+              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">Sobre Nosotros</Link></li>
               <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contacto</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Políticas Legales</h4>
+            <h4 className="font-semibold mb-4">Centro de Ayuda</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/legal/privacidad" className="text-gray-400 hover:text-white transition-colors">Privacidad</Link></li>
-              <li><Link href="/legal/terminos" className="text-gray-400 hover:text-white transition-colors">Términos de Uso</Link></li>
-              <li><Link href="/legal/cookies" className="text-gray-400 hover:text-white transition-colors">Cookies</Link></li>
-              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">Descargo de Responsabilidad</Link></li>
+              <li><Link href="/faq" className="text-gray-400 hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
+              <li><Link href="/legal/privacidad" className="text-gray-400 hover:text-white transition-colors">Política de Privacidad</Link></li>
+              <li><Link href="/legal/terminos" className="text-gray-400 hover:text-white transition-colors">Términos de Servicio</Link></li>
+              <li><Link href="/legal/cookies" className="text-gray-400 hover:text-white transition-colors">Política de Cookies</Link></li>
             </ul>
           </div>
         </div>

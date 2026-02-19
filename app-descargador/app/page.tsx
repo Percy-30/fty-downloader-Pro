@@ -11,6 +11,7 @@ import FeaturesSection from '@/components/FeaturesSection'
 import SEOContentSection from '@/components/SEOContentSection'
 import BlogPreview from '@/components/blog/BlogPreview'
 import HeroSection from '@/components/HeroSection'
+import ExpertiseSection from '@/components/ExpertiseSection'
 import AdMobBanner from '@/components/AdMobBanner'
 import EzoicAd from '@/components/EzoicAd'
 import VideoRewardsAds from '@/components/Layout/VideoRewardsAds'
@@ -209,6 +210,11 @@ export default function Home() {
           {/* 5. SEO Content Section (NUEVO PARA ADSENSE) */}
           <section className="mb-16">
             <SEOContentSection />
+          </section>
+
+          {/* 6. Expertise Section */}
+          <section className="mb-16">
+            <ExpertiseSection />
           </section>
 
           {/* 4. Features Section */}
