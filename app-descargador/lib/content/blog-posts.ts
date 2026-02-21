@@ -67,7 +67,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "15 min",
     slug: "guia-respaldo-video-digital",
     category: "Tutoriales",
-    image: "/images/blog/backup-guide.png"
+    image: "/images/blog/backup-guide.svg"
   },
   {
     id: 2,
@@ -121,7 +121,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "12 min",
     slug: "descargar-videos-facebook-guia",
     category: "Tutoriales",
-    image: "/images/blog/facebook-guide.png"
+    image: "/images/blog/facebook-guide.svg"
   },
   {
     id: 3,
@@ -158,7 +158,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "7 min",
     slug: "descargar-tiktok-sin-marca-agua",
     category: "Tutoriales",
-    image: "/images/blog/tiktok-tutorial.png"
+    image: "/images/blog/tiktok-tutorial.svg"
   },
   {
     id: 4,
@@ -191,7 +191,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "10 min",
     slug: "formatos-video-mp4-avi-mkv",
     category: "Tecnología",
-    image: "/images/blog/formatos-video-comparacion.png"
+    image: "/images/blog/formatos-video-comparacion.svg"
   },
   {
     id: 5,
@@ -225,7 +225,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "9 min",
     slug: "mejores-herramientas-creadores-contenido",
     category: "Herramientas",
-    image: "/images/blog/herramientas-creadores.png"
+    image: "/images/blog/herramientas-creadores.svg"
   },
   {
     id: 6,
@@ -261,7 +261,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "8 min",
     slug: "optimizar-videos-redes-sociales",
     category: "Optimización",
-    image: "/images/blog/optimizacion-redes-sociales.png"
+    image: "/images/blog/optimizacion-redes-sociales.svg"
   },
   {
     id: 7,
@@ -294,7 +294,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "11 min",
     slug: "derechos-autor-creadores-digitales",
     category: "Legal",
-    image: "/images/blog/derechos-autor.png"
+    image: "/images/blog/derechos-autor.svg"
   },
   {
     id: 8,
@@ -328,7 +328,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "5 min",
     slug: "convertir-video-mp3-metodos",
     category: "Tutoriales",
-    image: "/images/blog/convertir-mp3.png"
+    image: "/images/blog/convertir-mp3.svg"
   },
   {
     id: 9,
@@ -357,7 +357,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "6 min",
     slug: "solucion-problemas-descarga-videos",
     category: "Soporte",
-    image: "/images/blog/solucion-problemas.png"
+    image: "/images/blog/solucion-problemas.svg"
   },
   {
     id: 10,
@@ -389,7 +389,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "7 min",
     slug: "ventajas-descargar-videos-vs-streaming",
     category: "Análisis",
-    image: "/images/blog/streaming-vs-descarga.png"
+    image: "/images/blog/streaming-vs-descarga.svg"
   },
   {
     id: 11,
@@ -426,7 +426,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "9 min",
     slug: "descargar-videos-4k-guia",
     category: "Calidad",
-    image: "/images/blog/calidad-4k.png"
+    image: "/images/blog/calidad-4k.svg"
   },
   {
     id: 12,
@@ -451,7 +451,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "12 min",
     slug: "evolucion-codecs-video-2026",
     category: "Tecnología",
-    image: "/images/blog/codecs-guide.png"
+    image: "/images/blog/codecs-guide.svg"
   },
   {
     id: 13,
@@ -475,7 +475,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "10 min",
     slug: "gestion-colecciones-video-creadores",
     category: "Productividad",
-    image: "/images/blog/collections-guide.png"
+    image: "/images/blog/collections-guide.svg"
   },
   {
     id: 14,
@@ -503,7 +503,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "10 min",
     slug: "optimizacion-flujo-trabajo-creadores",
     category: "Productividad",
-    image: "/images/blog/creative-workflow.png"
+    image: "/images/blog/creative-workflow.svg"
   },
   {
     id: 15,
@@ -538,7 +538,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "12 min",
     slug: "futuro-descarga-videos-tendencias",
     category: "Tecnología",
-    image: "/images/blog/futuro-tecnologia.png"
+    image: "/images/blog/futuro-tecnologia.svg"
   },
   {
     id: 16,
@@ -588,7 +588,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "15 min",
     slug: "monetizacion-tiktok-estrategias-2026",
     category: "Negocios",
-    image: "/images/blog/tiktok-monetization.png"
+    image: "/images/blog/tiktok-monetization.svg"
   },
   {
     id: 17,
@@ -608,7 +608,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "12 min",
     slug: "guia-facebook-ads-negocios",
     category: "Marketing",
-    image: "/images/blog/facebook-ads-guide.png"
+    image: "/images/blog/facebook-ads-guide.svg"
   },
   {
     id: 18,
@@ -628,7 +628,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "10 min",
     slug: "editar-reels-capcut-pro",
     category: "Tutoriales",
-    image: "/images/blog/capcut-tutorial.png"
+    image: "/images/blog/capcut-tutorial.svg"
   },
   {
     id: 19,
@@ -689,7 +689,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "12 min",
     slug: "seguridad-redes-sociales-guia",
     category: "Seguridad",
-    image: "/images/blog/social-security.png"
+    image: "/images/blog/social-security.svg"
   },
   {
     id: 20,
@@ -734,7 +734,7 @@ const rawBlogPosts: BlogPost[] = [
     readTime: "11 min",
     slug: "tendencias-video-corto-2026",
     category: "Tendencias",
-    image: "/images/blog/video-trends-2026.png"
+    image: "/images/blog/video-trends-2026.svg"
   }
 ]
 
